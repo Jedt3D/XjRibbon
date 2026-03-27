@@ -30,13 +30,23 @@ Inherits WebCanvas
 		  // Hit-test items
 		  Var hitItem As XjRibbonItem = HitTestItems(x, y)
 		  If hitItem <> Nil And hitItem.IsEnabled Then
-		    RaiseEvent ItemPressed(hitItem.Tag)
+		    If hitItem.ItemType = 2 And hitItem.mMenuItems.Count > 0 Then
+		      // Dropdown: show a JavaScript-based popup menu
+		      mDropdownPendingItem = hitItem
+		      ShowDropdownMenu(hitItem, x, y)
+		    Else
+		      RaiseEvent ItemPressed(hitItem.Tag)
+		    End If
 		  End If
 		End Sub
 	#tag EndEvent
 
 	#tag Hook, Flags = &h0
 		Event ItemPressed(tag As String)
+	#tag EndHook
+
+	#tag Hook, Flags = &h0
+		Event DropdownMenuAction(itemTag As String, menuItemTag As String)
 	#tag EndHook
 
 	#tag Method, Flags = &h0
@@ -94,14 +104,46 @@ Inherits WebCanvas
 		  For Each group As XjRibbonGroup In activeTab.mGroups
 		    Var itemX As Double = groupX + kGroupPaddingH
 		    Var itemAreaH As Double = contentH - kGroupLabelHeight
+		    Var idx As Integer = 0
 
-		    For Each item As XjRibbonItem In group.mItems
-		      item.mBoundsX = itemX
-		      item.mBoundsY = contentY
-		      item.mBoundsW = kLargeButtonWidth
-		      item.mBoundsH = itemAreaH
-		      itemX = itemX + kLargeButtonWidth + kItemGap
-		    Next
+		    While idx <= group.mItems.LastIndex
+		      Var item As XjRibbonItem = group.mItems(idx)
+
+		      If item.ItemType = 1 Then
+		        // Small buttons: batch up to 3 into a vertical column
+		        Var batch() As XjRibbonItem
+		        Var maxTextW As Double = 0
+		        While idx <= group.mItems.LastIndex And group.mItems(idx).ItemType = 1 And batch.Count < 3
+		          batch.Add(group.mItems(idx))
+		          Var tw As Double = MeasureTextWidth(group.mItems(idx).Caption, 9, False)
+		          If tw > maxTextW Then maxTextW = tw
+		          idx = idx + 1
+		        Wend
+
+		        Var colWidth As Double = kSmallButtonIconSize + kSmallButtonTextPadding + maxTextW + kSmallButtonTextPadding * 2
+		        If colWidth < kSmallButtonMinWidth Then colWidth = kSmallButtonMinWidth
+
+		        Var totalRowH As Double = batch.Count * kSmallButtonHeight + (batch.Count - 1) * kSmallRowGap
+		        Var startY As Double = contentY + (itemAreaH - totalRowH) / 2
+
+		        For row As Integer = 0 To batch.LastIndex
+		          batch(row).mBoundsX = itemX
+		          batch(row).mBoundsY = startY + row * (kSmallButtonHeight + kSmallRowGap)
+		          batch(row).mBoundsW = colWidth
+		          batch(row).mBoundsH = kSmallButtonHeight
+		        Next
+
+		        itemX = itemX + colWidth + kItemGap
+		      Else
+		        // Large or Dropdown: full height column
+		        item.mBoundsX = itemX
+		        item.mBoundsY = contentY
+		        item.mBoundsW = kLargeButtonWidth
+		        item.mBoundsH = itemAreaH
+		        itemX = itemX + kLargeButtonWidth + kItemGap
+		        idx = idx + 1
+		      End If
+		    Wend
 
 		    Var groupInnerW As Double = itemX - groupX - kGroupPaddingH
 		    If group.mItems.Count > 0 Then
@@ -217,7 +259,14 @@ Inherits WebCanvas
 		    Var group As XjRibbonGroup = activeTab.mGroups(groupIdx)
 
 		    For Each item As XjRibbonItem In group.mItems
-		      DrawLargeButton(g, item)
+		      Select Case item.ItemType
+		      Case 1
+		        DrawSmallButton(g, item)
+		      Case 2
+		        DrawDropdownButton(g, item)
+		      Else
+		        DrawLargeButton(g, item)
+		      End Select
 		    Next
 
 		    g.DrawingColor = cGroupLabelText
@@ -289,6 +338,66 @@ Inherits WebCanvas
 	#tag EndMethod
 
 	#tag Method, Flags = &h21
+		Private Sub DrawSmallButton(g As WebGraphics, item As XjRibbonItem)
+		  Var bx As Double = item.mBoundsX
+		  Var by As Double = item.mBoundsY
+		  Var bw As Double = item.mBoundsW
+		  Var bh As Double = item.mBoundsH
+
+		  // Icon (16x16) on the left
+		  Var iconX As Double = bx + 3
+		  Var iconY As Double = by + (bh - kSmallButtonIconSize) / 2
+
+		  If item.Icon <> Nil Then
+		    g.DrawPicture(item.Icon, iconX, iconY, kSmallButtonIconSize, kSmallButtonIconSize)
+		  Else
+		    If item.IsEnabled Then
+		      g.DrawingColor = cPlaceholderIcon
+		    Else
+		      g.DrawingColor = cPlaceholderIconDisabled
+		    End If
+		    g.FillRoundRectangle(iconX, iconY, kSmallButtonIconSize, kSmallButtonIconSize, 2)
+		  End If
+
+		  // Text to the right of icon
+		  If item.IsEnabled Then
+		    g.DrawingColor = cItemText
+		  Else
+		    g.DrawingColor = cItemDisabledText
+		  End If
+		  g.FontSize = 9
+		  g.Bold = False
+		  Var textX As Double = iconX + kSmallButtonIconSize + kSmallButtonTextPadding
+		  Var textY As Double = by + (bh + MeasureTextHeight(9)) / 2 - 1
+		  g.DrawText(item.Caption, textX, textY)
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Sub DrawDropdownButton(g As WebGraphics, item As XjRibbonItem)
+		  // Draw base like a large button
+		  DrawLargeButton(g, item)
+
+		  // Draw dropdown chevron arrow
+		  Var arrowW As Double = kDropdownArrowSize
+		  Var arrowX As Double = item.mBoundsX + (item.mBoundsW - arrowW) / 2
+		  Var arrowY As Double = item.mBoundsY + item.mBoundsH - 6
+
+		  If item.IsEnabled Then
+		    g.DrawingColor = cItemText
+		  Else
+		    g.DrawingColor = cItemDisabledText
+		  End If
+
+		  Var midX As Double = arrowX + arrowW / 2
+		  g.PenSize = 1.5
+		  g.DrawLine(arrowX, arrowY, midX, arrowY + arrowW / 2)
+		  g.DrawLine(midX, arrowY + arrowW / 2, arrowX + arrowW, arrowY)
+		  g.PenSize = 1
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
 		Private Function HitTestTabs(x As Double, y As Double) As XjRibbonTab
 		  For Each tab As XjRibbonTab In mTabs
 		    If x >= tab.mBoundsX And x < tab.mBoundsX + tab.mBoundsW And _
@@ -342,6 +451,63 @@ Inherits WebCanvas
 	#tag EndMethod
 
 	#tag Method, Flags = &h21
+		Private Sub ShowDropdownMenu(item As XjRibbonItem, clickX As Integer, clickY As Integer)
+		  #Pragma Unused clickX
+		  #Pragma Unused clickY
+
+		  // Build a JavaScript dropdown overlay that calls back via Session.HashTag
+		  Var ctrlId As String = Me.ControlID
+		  Var js As String = "var existing = document.getElementById('xjribbon-dropdown');" + _
+		    "if(existing) existing.remove();" + _
+		    "var menu = document.createElement('div');" + _
+		    "menu.id = 'xjribbon-dropdown';"
+
+		  // Style the menu
+		  js = js + "menu.style.cssText = 'position:absolute; background:white; border:1px solid #ccc; " + _
+		    "box-shadow:2px 4px 12px rgba(0,0,0,0.15); padding:4px 0; z-index:99999; " + _
+		    "min-width:140px; font-family:system-ui,-apple-system,sans-serif; font-size:13px; border-radius:4px;';"
+
+		  // Position below the button, relative to canvas
+		  Var canvasEl As String = "document.getElementById('" + ctrlId + "')"
+		  js = js + "var canvas = " + canvasEl + ";" + _
+		    "var rect = canvas.getBoundingClientRect();" + _
+		    "menu.style.left = (rect.left + " + Str(item.mBoundsX) + ") + 'px';" + _
+		    "menu.style.top = (rect.top + " + Str(item.mBoundsY + item.mBoundsH) + ") + 'px';"
+
+		  // Add menu items
+		  For i As Integer = 0 To item.mMenuItems.LastIndex
+		    Var mi As WebMenuItem = item.mMenuItems(i)
+		    Var miTag As String = mi.Tag.StringValue
+		    Var miText As String = mi.Text
+
+		    js = js + "var mi" + Str(i) + " = document.createElement('div');" + _
+		      "mi" + Str(i) + ".textContent = '" + miText.ReplaceAll("'", "\\'") + "';" + _
+		      "mi" + Str(i) + ".style.cssText = 'padding:6px 16px; cursor:pointer; color:#333;';" + _
+		      "mi" + Str(i) + ".onmouseover = function(){this.style.background='#0078d4';this.style.color='white';};" + _
+		      "mi" + Str(i) + ".onmouseout = function(){this.style.background='white';this.style.color='#333';};" + _
+		      "mi" + Str(i) + ".onclick = function(e){" + _
+		      "e.stopPropagation(); menu.remove();" + _
+		      "window.location.hash = 'xjdd:" + item.Tag + ":" + miTag + "';" + _
+		      "};" + _
+		      "menu.appendChild(mi" + Str(i) + ");"
+		  Next
+
+		  // Close on outside click
+		  js = js + "setTimeout(function(){document.addEventListener('click', function h(e){" + _
+		    "if(!menu.contains(e.target)){menu.remove();document.removeEventListener('click',h);}},true);},50);"
+
+		  js = js + "document.body.appendChild(menu);"
+		  Me.ExecuteJavaScript(js)
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub HandleDropdownSelection(itemTag As String, menuItemTag As String)
+		  RaiseEvent DropdownMenuAction(itemTag, menuItemTag)
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
 		Private Sub ClearHoverStates()
 		  If mHoveredTab <> Nil Then
 		    mHoveredTab.mIsHovered = False
@@ -376,6 +542,10 @@ Inherits WebCanvas
 
 	#tag Property, Flags = &h21
 		Private mMeasurePic As Picture
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private mDropdownPendingItem As XjRibbonItem
 	#tag EndProperty
 
 	#tag Property, Flags = &h21
@@ -473,6 +643,24 @@ Inherits WebCanvas
 	#tag EndConstant
 
 	#tag Constant, Name = kItemGap, Type = Double, Dynamic = False, Default = \"4", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = kSmallButtonHeight, Type = Double, Dynamic = False, Default = \"22", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = kSmallButtonIconSize, Type = Double, Dynamic = False, Default = \"16", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = kSmallButtonMinWidth, Type = Double, Dynamic = False, Default = \"60", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = kSmallButtonTextPadding, Type = Double, Dynamic = False, Default = \"4", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = kSmallRowGap, Type = Double, Dynamic = False, Default = \"2", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = kDropdownArrowSize, Type = Double, Dynamic = False, Default = \"6", Scope = Private
 	#tag EndConstant
 
 	#tag ViewBehavior
