@@ -9,22 +9,61 @@ Inherits DesktopCanvas
 		  LayoutTabs(g)
 		  DrawBackground(g)
 		  DrawTabStrip(g)
-		  DrawContentArea(g)
-		  DrawGroups(g)
+		  If Not mIsCollapsed Or mIsPeeking Then
+		    DrawContentArea(g)
+		    DrawGroups(g)
+		  End If
+		  DrawCollapseChevron(g)
 		End Sub
 	#tag EndEvent
 
 	#tag Event
 		Function MouseDown(x As Integer, y As Integer) As Boolean
+		  // Hit-test collapse chevron
+		  If HitTestCollapseChevron(x, y) Then
+		    mIsCollapsed = Not mIsCollapsed
+		    mIsPeeking = False
+		    mLastTabClickTime = 0
+		    mLastTabClickIndex = -1
+		    RaiseEvent CollapseStateChanged(mIsCollapsed)
+		    ClearHoverStates
+		    Me.Refresh
+		    Return True
+		  End If
+
 		  // Hit-test tab headers
 		  Var hitTab As XjRibbonTab = HitTestTabs(x, y)
 		  If hitTab <> Nil Then
+		    Var tabIdx As Integer = -1
 		    For i As Integer = 0 To mTabs.LastIndex
 		      If mTabs(i) Is hitTab Then
-		        mActiveTabIndex = i
+		        tabIdx = i
 		        Exit
 		      End If
 		    Next
+
+		    // Double-click detection: toggle collapse
+		    Var now As Double = Microseconds
+		    If tabIdx = mLastTabClickIndex And (now - mLastTabClickTime) < kDoubleClickUs Then
+		      mIsCollapsed = Not mIsCollapsed
+		      mIsPeeking = False
+		      mLastTabClickTime = 0
+		      mLastTabClickIndex = -1
+		      RaiseEvent CollapseStateChanged(mIsCollapsed)
+		      ClearHoverStates
+		      Me.Refresh
+		      Return True
+		    End If
+
+		    // Single click: switch tab
+		    mActiveTabIndex = tabIdx
+		    mLastTabClickTime = now
+		    mLastTabClickIndex = tabIdx
+
+		    If mIsCollapsed Then
+		      mIsPeeking = True
+		    End If
+
 		    ClearHoverStates
 		    Me.Refresh
 		    Return True
@@ -66,6 +105,12 @@ Inherits DesktopCanvas
 		    End If
 		    mPressedItem.mIsPressed = False
 		    mPressedItem = Nil
+
+		    // Dismiss peek after item action
+		    If mIsPeeking Then
+		      mIsPeeking = False
+		    End If
+
 		    Me.Refresh
 		  End If
 		End Sub
@@ -129,6 +174,9 @@ Inherits DesktopCanvas
 		    mPressedItem.mIsPressed = False
 		    mPressedItem = Nil
 		  End If
+		  If mIsPeeking Then
+		    mIsPeeking = False
+		  End If
 		  Me.Refresh
 		End Sub
 	#tag EndEvent
@@ -139,6 +187,10 @@ Inherits DesktopCanvas
 
 	#tag Hook, Flags = &h0
 		Event DropdownMenuAction(itemTag As String, menuItemTag As String)
+	#tag EndHook
+
+	#tag Hook, Flags = &h0
+		Event CollapseStateChanged(isCollapsed As Boolean)
 	#tag EndHook
 
 	#tag Method, Flags = &h0
@@ -154,6 +206,8 @@ Inherits DesktopCanvas
 	#tag Method, Flags = &h0
 		Sub SelectTab(index As Integer)
 		  If index >= 0 And index < mTabs.Count Then
+		    Var tab As XjRibbonTab = mTabs(index)
+		    If tab.IsContextual And Not tab.IsContextVisible Then Return
 		    mActiveTabIndex = index
 		    ClearHoverStates
 		    Me.Refresh
@@ -172,12 +226,108 @@ Inherits DesktopCanvas
 		End Sub
 	#tag EndMethod
 
+	#tag Method, Flags = &h0
+		Function AddContextualTab(caption As String, contextGroup As String, accentColor As Color) As XjRibbonTab
+		  Var tab As New XjRibbonTab
+		  tab.Caption = caption
+		  tab.IsContextual = True
+		  tab.ContextGroup = contextGroup
+		  tab.ContextAccentColor = accentColor
+		  tab.IsContextVisible = False
+		  mTabs.Add(tab)
+		  Return tab
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub ShowContextualTabs(contextGroup As String)
+		  For Each tab As XjRibbonTab In mTabs
+		    If tab.IsContextual And tab.ContextGroup = contextGroup Then
+		      tab.IsContextVisible = True
+		    End If
+		  Next
+		  Me.Refresh
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub HideContextualTabs(contextGroup As String)
+		  For Each tab As XjRibbonTab In mTabs
+		    If tab.IsContextual And tab.ContextGroup = contextGroup Then
+		      tab.IsContextVisible = False
+		    End If
+		  Next
+		  EnsureValidActiveTab
+		  Me.Refresh
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub HideAllContextualTabs()
+		  For Each tab As XjRibbonTab In mTabs
+		    If tab.IsContextual Then
+		      tab.IsContextVisible = False
+		    End If
+		  Next
+		  EnsureValidActiveTab
+		  Me.Refresh
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function IsContextualTabVisible(contextGroup As String) As Boolean
+		  For Each tab As XjRibbonTab In mTabs
+		    If tab.IsContextual And tab.ContextGroup = contextGroup And tab.IsContextVisible Then
+		      Return True
+		    End If
+		  Next
+		  Return False
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Sub EnsureValidActiveTab()
+		  If mActiveTabIndex >= 0 And mActiveTabIndex < mTabs.Count Then
+		    Var tab As XjRibbonTab = mTabs(mActiveTabIndex)
+		    If Not tab.IsContextual Or tab.IsContextVisible Then Return
+		  End If
+		  // Active tab is invalid — find first regular tab
+		  For i As Integer = 0 To mTabs.LastIndex
+		    If Not mTabs(i).IsContextual Then
+		      mActiveTabIndex = i
+		      Return
+		    End If
+		  Next
+		  mActiveTabIndex = 0
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub SetCollapsed(value As Boolean)
+		  If mIsCollapsed <> value Then
+		    mIsCollapsed = value
+		    mIsPeeking = False
+		    RaiseEvent CollapseStateChanged(mIsCollapsed)
+		    Me.Refresh
+		  End If
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function IsCollapsed() As Boolean
+		  Return mIsCollapsed
+		End Function
+	#tag EndMethod
+
 	#tag Method, Flags = &h21
 		Private Sub LayoutTabs(g As Graphics)
 		  // Layout tab headers
 		  Var tabX As Double = kTabPaddingH
 
 		  For Each tab As XjRibbonTab In mTabs
+		    // Skip invisible contextual tabs
+		    If tab.IsContextual And Not tab.IsContextVisible Then Continue
+
 		    Var textW As Double = g.TextWidth(tab.Caption)
 		    tab.mBoundsX = tabX
 		    tab.mBoundsY = 0
@@ -187,6 +337,7 @@ Inherits DesktopCanvas
 		  Next
 
 		  // Layout groups and items for active tab
+		  If mIsCollapsed And Not mIsPeeking Then Return
 		  If mActiveTabIndex < 0 Or mActiveTabIndex >= mTabs.Count Then Return
 
 		  Var activeTab As XjRibbonTab = mTabs(mActiveTabIndex)
@@ -272,12 +423,31 @@ Inherits DesktopCanvas
 		  For i As Integer = 0 To mTabs.LastIndex
 		    Var tab As XjRibbonTab = mTabs(i)
 
+		    // Skip invisible contextual tabs
+		    If tab.IsContextual And Not tab.IsContextVisible Then Continue
+
+		    // Contextual tab background tint
+		    If tab.IsContextual And tab.IsContextVisible Then
+		      g.DrawingColor = tab.ContextAccentColor
+		      g.Transparency = 85
+		      g.FillRectangle(tab.mBoundsX, tab.mBoundsY, tab.mBoundsW, tab.mBoundsH)
+		      g.Transparency = 0
+
+		      // Thicker accent bar (3px)
+		      g.DrawingColor = tab.ContextAccentColor
+		      g.FillRectangle(tab.mBoundsX, 0, tab.mBoundsW, 3)
+		    End If
+
 		    If i = mActiveTabIndex Then
 		      g.DrawingColor = cTabActiveBackground
 		      g.FillRectangle(tab.mBoundsX, tab.mBoundsY, tab.mBoundsW, tab.mBoundsH)
 
-		      // Accent line at top
-		      g.DrawingColor = cTabAccent
+		      // Accent line at top — use context color for contextual tabs
+		      If tab.IsContextual Then
+		        g.DrawingColor = tab.ContextAccentColor
+		      Else
+		        g.DrawingColor = cTabAccent
+		      End If
 		      g.FillRectangle(tab.mBoundsX, 0, tab.mBoundsW, 2)
 		    ElseIf tab.mIsHovered Then
 		      g.DrawingColor = cTabHoverBackground
@@ -487,8 +657,43 @@ Inherits DesktopCanvas
 	#tag EndMethod
 
 	#tag Method, Flags = &h21
+		Private Sub DrawCollapseChevron(g As Graphics)
+		  Var chevX As Double = g.Width - kCollapseChevronSize - 8
+		  Var chevY As Double = (kTabStripHeight - kCollapseChevronSize) / 2
+		  Var midX As Double = chevX + kCollapseChevronSize / 2
+
+		  g.DrawingColor = cCollapseChevron
+		  g.PenSize = 1.5
+
+		  If mIsCollapsed Then
+		    // Down chevron (v) — "expand"
+		    Var topY As Double = chevY + 2
+		    g.DrawLine(chevX, topY, midX, topY + kCollapseChevronSize / 2)
+		    g.DrawLine(midX, topY + kCollapseChevronSize / 2, chevX + kCollapseChevronSize, topY)
+		  Else
+		    // Up chevron (^) — "collapse"
+		    Var botY As Double = chevY + kCollapseChevronSize - 2
+		    g.DrawLine(chevX, botY, midX, botY - kCollapseChevronSize / 2)
+		    g.DrawLine(midX, botY - kCollapseChevronSize / 2, chevX + kCollapseChevronSize, botY)
+		  End If
+
+		  g.PenSize = 1
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Function HitTestCollapseChevron(x As Double, y As Double) As Boolean
+		  Var chevX As Double = Me.Width - kCollapseChevronSize - 8
+		  Var chevY As Double = (kTabStripHeight - kCollapseChevronSize) / 2
+		  Return x >= chevX - 4 And x <= chevX + kCollapseChevronSize + 4 And _
+		    y >= chevY - 4 And y <= chevY + kCollapseChevronSize + 4
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
 		Private Function HitTestTabs(x As Double, y As Double) As XjRibbonTab
 		  For Each tab As XjRibbonTab In mTabs
+		    If tab.IsContextual And Not tab.IsContextVisible Then Continue
 		    If x >= tab.mBoundsX And x < tab.mBoundsX + tab.mBoundsW And _
 		      y >= tab.mBoundsY And y < tab.mBoundsY + tab.mBoundsH Then
 		      Return tab
@@ -500,6 +705,7 @@ Inherits DesktopCanvas
 
 	#tag Method, Flags = &h21
 		Private Function HitTestItems(x As Double, y As Double) As XjRibbonItem
+		  If mIsCollapsed And Not mIsPeeking Then Return Nil
 		  If mActiveTabIndex < 0 Or mActiveTabIndex >= mTabs.Count Then Return Nil
 
 		  Var activeTab As XjRibbonTab = mTabs(mActiveTabIndex)
@@ -547,6 +753,7 @@ Inherits DesktopCanvas
 		    cPlaceholderIcon = Color.RGB(60, 150, 230)
 		    cPlaceholderIconDisabled = Color.RGB(80, 80, 80)
 		    cPlaceholderIconText = Color.RGB(255, 255, 255)
+		    cCollapseChevron = Color.RGB(150, 150, 150)
 		  Else
 		    cBackground = Color.RGB(245, 245, 245)
 		    cContentBackground = Color.RGB(255, 255, 255)
@@ -564,6 +771,7 @@ Inherits DesktopCanvas
 		    cPlaceholderIcon = Color.RGB(0, 120, 212)
 		    cPlaceholderIconDisabled = Color.RGB(180, 180, 180)
 		    cPlaceholderIconText = Color.RGB(255, 255, 255)
+		    cCollapseChevron = Color.RGB(120, 120, 120)
 		  End If
 		End Sub
 	#tag EndMethod
@@ -586,6 +794,22 @@ Inherits DesktopCanvas
 
 	#tag Property, Flags = &h21
 		Private mHoveredTab As XjRibbonTab
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private mIsCollapsed As Boolean = False
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private mIsPeeking As Boolean = False
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private mLastTabClickTime As Double = 0
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private mLastTabClickIndex As Integer = -1
 	#tag EndProperty
 
 	#tag Property, Flags = &h21
@@ -652,6 +876,10 @@ Inherits DesktopCanvas
 		Private cPlaceholderIconText As Color
 	#tag EndProperty
 
+	#tag Property, Flags = &h21
+		Private cCollapseChevron As Color
+	#tag EndProperty
+
 	#tag Constant, Name = kTabStripHeight, Type = Double, Dynamic = False, Default = \"24", Scope = Private
 	#tag EndConstant
 
@@ -701,6 +929,12 @@ Inherits DesktopCanvas
 	#tag EndConstant
 
 	#tag Constant, Name = kSmallRowGap, Type = Double, Dynamic = False, Default = \"2", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = kCollapseChevronSize, Type = Double, Dynamic = False, Default = \"12", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = kDoubleClickUs, Type = Double, Dynamic = False, Default = \"400000", Scope = Private
 	#tag EndConstant
 
 	#tag Constant, Name = kItemTypeLarge, Type = Double, Dynamic = False, Default = \"0", Scope = Public
