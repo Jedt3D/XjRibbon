@@ -48,7 +48,21 @@ Inherits DesktopCanvas
 		  If mPressedItem <> Nil Then
 		    Var hitItem As XjRibbonItem = HitTestItems(x, y)
 		    If hitItem Is mPressedItem And mPressedItem.IsEnabled Then
-		      RaiseEvent ItemPressed(mPressedItem.Tag)
+		      If mPressedItem.ItemType = 2 And mPressedItem.mMenuItems.Count > 0 Then
+		        // Show dropdown popup menu
+		        Var baseMenu As New DesktopMenuItem
+		        For Each mi As DesktopMenuItem In mPressedItem.mMenuItems
+		          Var menuItem As New DesktopMenuItem(mi.Text)
+		          menuItem.Tag = mi.Tag
+		          baseMenu.AddMenu(menuItem)
+		        Next
+		        Var selected As DesktopMenuItem = baseMenu.PopUp
+		        If selected <> Nil Then
+		          RaiseEvent DropdownMenuAction(mPressedItem.Tag, selected.Tag.StringValue)
+		        End If
+		      Else
+		        RaiseEvent ItemPressed(mPressedItem.Tag)
+		      End If
 		    End If
 		    mPressedItem.mIsPressed = False
 		    mPressedItem = Nil
@@ -106,6 +120,10 @@ Inherits DesktopCanvas
 
 	#tag Hook, Flags = &h0
 		Event ItemPressed(tag As String)
+	#tag EndHook
+
+	#tag Hook, Flags = &h0
+		Event DropdownMenuAction(itemTag As String, menuItemTag As String)
 	#tag EndHook
 
 	#tag Method, Flags = &h0
@@ -288,6 +306,8 @@ Inherits DesktopCanvas
 		      Select Case item.ItemType
 		      Case 1
 		        DrawSmallButton(g, item)
+		      Case 2
+		        DrawDropdownButton(g, item)
 		      Else
 		        DrawLargeButton(g, item)
 		      End Select
@@ -424,6 +444,30 @@ Inherits DesktopCanvas
 		  Var textX As Double = iconX + kSmallButtonIconSize + kSmallButtonTextPadding
 		  Var textY As Double = by + (bh + g.TextHeight) / 2 - 1
 		  g.DrawText(item.Caption, textX, textY)
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Sub DrawDropdownButton(g As Graphics, item As XjRibbonItem)
+		  // Draw the base button like a large button
+		  DrawLargeButton(g, item)
+
+		  // Draw dropdown arrow chevron below the text
+		  Var arrowW As Double = kDropdownArrowSize
+		  Var arrowX As Double = item.mBoundsX + (item.mBoundsW - arrowW) / 2
+		  Var arrowY As Double = item.mBoundsY + item.mBoundsH - 6
+
+		  If item.IsEnabled Then
+		    g.DrawingColor = cItemText
+		  Else
+		    g.DrawingColor = cItemDisabledText
+		  End If
+
+		  Var midX As Double = arrowX + arrowW / 2
+		  g.PenSize = 1.5
+		  g.DrawLine(arrowX, arrowY, midX, arrowY + arrowW / 2)
+		  g.DrawLine(midX, arrowY + arrowW / 2, arrowX + arrowW, arrowY)
+		  g.PenSize = 1
 		End Sub
 	#tag EndMethod
 
@@ -624,6 +668,9 @@ Inherits DesktopCanvas
 	#tag EndConstant
 
 	#tag Constant, Name = kItemGap, Type = Double, Dynamic = False, Default = \"4", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = kDropdownArrowSize, Type = Double, Dynamic = False, Default = \"6", Scope = Private
 	#tag EndConstant
 
 	#tag Constant, Name = kSmallButtonHeight, Type = Double, Dynamic = False, Default = \"22", Scope = Private
