@@ -501,6 +501,12 @@ Inherits WebCanvas
 		End Sub
 	#tag EndMethod
 
+	#tag Method, Flags = &h0
+		Sub HandleDropdownSelection(itemTag As String, menuItemTag As String)
+		  RaiseEvent DropdownMenuAction(itemTag, menuItemTag)
+		End Sub
+	#tag EndMethod
+
 	#tag Method, Flags = &h21
 		Private Sub ClearHoverStates()
 		  If mHoveredTab <> Nil Then
