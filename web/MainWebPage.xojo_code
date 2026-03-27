@@ -69,11 +69,14 @@ End
 		  // === Home Tab ===
 		  Var homeTab As XjRibbonTab = XjRibbon1.AddTab("Home")
 
-		  // Clipboard: large Paste + small Cut/Copy
+		  // Clipboard: large Paste + small Cut/Copy (with tooltips)
 		  Var clipGroup As XjRibbonGroup = homeTab.AddNewGroup("Clipboard")
-		  Call clipGroup.AddLargeButton("Paste", "clipboard.paste")
-		  Call clipGroup.AddSmallButton("Cut", "clipboard.cut")
-		  Call clipGroup.AddSmallButton("Copy", "clipboard.copy")
+		  Var pasteBtn As XjRibbonItem = clipGroup.AddLargeButton("Paste", "clipboard.paste")
+		  pasteBtn.TooltipText = "Paste from clipboard (Ctrl+V)"
+		  Var cutBtn As XjRibbonItem = clipGroup.AddSmallButton("Cut", "clipboard.cut")
+		  cutBtn.TooltipText = "Cut selection (Ctrl+X)"
+		  Var copyBtn As XjRibbonItem = clipGroup.AddSmallButton("Copy", "clipboard.copy")
+		  copyBtn.TooltipText = "Copy selection (Ctrl+C)"
 
 		  // Font: small buttons stacked 3-high
 		  Var fontGroup As XjRibbonGroup = homeTab.AddNewGroup("Font")
@@ -98,6 +101,7 @@ End
 		  Call imageGroup.AddLargeButton("Picture", "insert.picture")
 
 		  Var shapesBtn As XjRibbonItem = imageGroup.AddDropdownButton("Shapes", "insert.shapes")
+		  shapesBtn.TooltipText = "Insert a shape"
 		  shapesBtn.AddMenuItem("Rectangle", "shapes.rect")
 		  shapesBtn.AddMenuItem("Circle", "shapes.circle")
 		  shapesBtn.AddMenuItem("Arrow", "shapes.arrow")
