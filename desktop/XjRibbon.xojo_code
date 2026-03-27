@@ -206,6 +206,8 @@ Inherits DesktopCanvas
 	#tag Method, Flags = &h0
 		Sub SelectTab(index As Integer)
 		  If index >= 0 And index < mTabs.Count Then
+		    Var tab As XjRibbonTab = mTabs(index)
+		    If tab.IsContextual And Not tab.IsContextVisible Then Return
 		    mActiveTabIndex = index
 		    ClearHoverStates
 		    Me.Refresh
@@ -323,6 +325,9 @@ Inherits DesktopCanvas
 		  Var tabX As Double = kTabPaddingH
 
 		  For Each tab As XjRibbonTab In mTabs
+		    // Skip invisible contextual tabs
+		    If tab.IsContextual And Not tab.IsContextVisible Then Continue
+
 		    Var textW As Double = g.TextWidth(tab.Caption)
 		    tab.mBoundsX = tabX
 		    tab.mBoundsY = 0
@@ -418,12 +423,31 @@ Inherits DesktopCanvas
 		  For i As Integer = 0 To mTabs.LastIndex
 		    Var tab As XjRibbonTab = mTabs(i)
 
+		    // Skip invisible contextual tabs
+		    If tab.IsContextual And Not tab.IsContextVisible Then Continue
+
+		    // Contextual tab background tint
+		    If tab.IsContextual And tab.IsContextVisible Then
+		      g.DrawingColor = tab.ContextAccentColor
+		      g.Transparency = 85
+		      g.FillRectangle(tab.mBoundsX, tab.mBoundsY, tab.mBoundsW, tab.mBoundsH)
+		      g.Transparency = 0
+
+		      // Thicker accent bar (3px)
+		      g.DrawingColor = tab.ContextAccentColor
+		      g.FillRectangle(tab.mBoundsX, 0, tab.mBoundsW, 3)
+		    End If
+
 		    If i = mActiveTabIndex Then
 		      g.DrawingColor = cTabActiveBackground
 		      g.FillRectangle(tab.mBoundsX, tab.mBoundsY, tab.mBoundsW, tab.mBoundsH)
 
-		      // Accent line at top
-		      g.DrawingColor = cTabAccent
+		      // Accent line at top — use context color for contextual tabs
+		      If tab.IsContextual Then
+		        g.DrawingColor = tab.ContextAccentColor
+		      Else
+		        g.DrawingColor = cTabAccent
+		      End If
 		      g.FillRectangle(tab.mBoundsX, 0, tab.mBoundsW, 2)
 		    ElseIf tab.mIsHovered Then
 		      g.DrawingColor = cTabHoverBackground
@@ -669,6 +693,7 @@ Inherits DesktopCanvas
 	#tag Method, Flags = &h21
 		Private Function HitTestTabs(x As Double, y As Double) As XjRibbonTab
 		  For Each tab As XjRibbonTab In mTabs
+		    If tab.IsContextual And Not tab.IsContextVisible Then Continue
 		    If x >= tab.mBoundsX And x < tab.mBoundsX + tab.mBoundsW And _
 		      y >= tab.mBoundsY And y < tab.mBoundsY + tab.mBoundsH Then
 		      Return tab
