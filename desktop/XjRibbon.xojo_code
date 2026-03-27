@@ -14,7 +14,7 @@ Inherits DesktopCanvas
 		  LayoutTabs(g)
 		  DrawBackground(g)
 		  DrawTabStrip(g)
-		  If Not mIsCollapsed Or mIsPeeking Then
+		  If Not mIsCollapsed Then
 		    DrawContentArea(g)
 		    DrawGroups(g)
 		  End If
@@ -59,10 +59,8 @@ Inherits DesktopCanvas
 		    mLastTabClickTime = now
 		    mLastTabClickIndex = tabIdx
 
-		    If mIsCollapsed Then
-		      mIsPeeking = True
-		      Me.Height = CType(mExpandedHeight, Integer)
-		    End If
+		    // When collapsed, single-click just switches active tab (no peek)
+		    // Double-click will expand via detection above
 
 		    ClearHoverStates
 		    Me.Refresh
@@ -105,12 +103,6 @@ Inherits DesktopCanvas
 		    End If
 		    mPressedItem.mIsPressed = False
 		    mPressedItem = Nil
-
-		    // Dismiss peek after item action
-		    If mIsPeeking Then
-		      mIsPeeking = False
-		      DismissPeek
-		    End If
 
 		    Me.Refresh
 		  End If
@@ -174,10 +166,6 @@ Inherits DesktopCanvas
 		  If mPressedItem <> Nil Then
 		    mPressedItem.mIsPressed = False
 		    mPressedItem = Nil
-		  End If
-		  If mIsPeeking Then
-		    mIsPeeking = False
-		    DismissPeek
 		  End If
 		  Me.Refresh
 		End Sub
@@ -308,12 +296,18 @@ Inherits DesktopCanvas
 		Sub SetCollapsed(value As Boolean)
 		  If mIsCollapsed <> value Then
 		    mIsCollapsed = value
-		    mIsPeeking = False
 
+		    Var oldH As Integer = Me.Height
 		    If mIsCollapsed Then
 		      Me.Height = CType(kTabStripHeight + 2, Integer)
 		    Else
 		      Me.Height = CType(mExpandedHeight, Integer)
+		    End If
+
+		    // Resize window by the same delta
+		    Var delta As Integer = Me.Height - oldH
+		    If Me.Window <> Nil Then
+		      Me.Window.Height = Me.Window.Height + delta
 		    End If
 
 		    RaiseEvent CollapseStateChanged(mIsCollapsed)
@@ -352,7 +346,7 @@ Inherits DesktopCanvas
 		  Next
 
 		  // Layout groups and items for active tab
-		  If mIsCollapsed And Not mIsPeeking Then Return
+		  If mIsCollapsed Then Return
 		  If mActiveTabIndex < 0 Or mActiveTabIndex >= mTabs.Count Then Return
 
 		  Var activeTab As XjRibbonTab = mTabs(mActiveTabIndex)
@@ -720,7 +714,7 @@ Inherits DesktopCanvas
 
 	#tag Method, Flags = &h21
 		Private Function HitTestItems(x As Double, y As Double) As XjRibbonItem
-		  If mIsCollapsed And Not mIsPeeking Then Return Nil
+		  If mIsCollapsed Then Return Nil
 		  If mActiveTabIndex < 0 Or mActiveTabIndex >= mTabs.Count Then Return Nil
 
 		  Var activeTab As XjRibbonTab = mTabs(mActiveTabIndex)
@@ -734,12 +728,6 @@ Inherits DesktopCanvas
 		  Next
 		  Return Nil
 		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h21
-		Private Sub DismissPeek()
-		  Me.Height = CType(kTabStripHeight + 2, Integer)
-		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h21
@@ -819,10 +807,6 @@ Inherits DesktopCanvas
 
 	#tag Property, Flags = &h21
 		Private mIsCollapsed As Boolean = False
-	#tag EndProperty
-
-	#tag Property, Flags = &h21
-		Private mIsPeeking As Boolean = False
 	#tag EndProperty
 
 	#tag Property, Flags = &h21
