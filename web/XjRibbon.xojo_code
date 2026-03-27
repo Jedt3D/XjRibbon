@@ -85,6 +85,10 @@ Inherits WebCanvas
 		Event DropdownMenuAction(itemTag As String, menuItemTag As String)
 	#tag EndHook
 
+	#tag Hook, Flags = &h0
+		Event CollapseStateChanged(isCollapsed As Boolean)
+	#tag EndHook
+
 	#tag Method, Flags = &h0
 		Function AddTab(caption As String) As XjRibbonTab
 		  Var tab As New XjRibbonTab
