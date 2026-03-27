@@ -257,7 +257,7 @@ Inherits WebCanvas
 		  Var iconY As Double = by + 6
 
 		  If item.Icon <> Nil Then
-		    g.DrawPicture(item.Icon, iconX, iconY, iconSize, iconSize, 0, 0, item.Icon.Width, item.Icon.Height)
+		    g.DrawPicture(item.Icon, iconX, iconY, iconSize, iconSize)
 		  Else
 		    If item.IsEnabled Then
 		      g.DrawingColor = cPlaceholderIcon
