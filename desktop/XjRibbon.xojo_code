@@ -61,7 +61,11 @@ Inherits DesktopCanvas
 
 		    If mIsCollapsed Then
 		      mIsPeeking = True
+		      Var diff As Integer = CType(mExpandedHeight, Integer) - Me.Height
 		      Me.Height = CType(mExpandedHeight, Integer)
+		      If Me.Window <> Nil Then
+		        Me.Window.Height = Me.Window.Height + diff
+		      End If
 		    End If
 
 		    ClearHoverStates
@@ -109,7 +113,7 @@ Inherits DesktopCanvas
 		    // Dismiss peek after item action
 		    If mIsPeeking Then
 		      mIsPeeking = False
-		      Me.Height = CType(kTabStripHeight + 2, Integer)
+		      DismissPeek
 		    End If
 
 		    Me.Refresh
@@ -177,7 +181,7 @@ Inherits DesktopCanvas
 		  End If
 		  If mIsPeeking Then
 		    mIsPeeking = False
-		    Me.Height = CType(kTabStripHeight + 2, Integer)
+		    DismissPeek
 		  End If
 		  Me.Refresh
 		End Sub
@@ -310,10 +314,18 @@ Inherits DesktopCanvas
 		    mIsCollapsed = value
 		    mIsPeeking = False
 
+		    Var diff As Integer
 		    If mIsCollapsed Then
+		      diff = Me.Height - CType(kTabStripHeight + 2, Integer)
 		      Me.Height = CType(kTabStripHeight + 2, Integer)
 		    Else
+		      diff = Me.Height - CType(mExpandedHeight, Integer)
 		      Me.Height = CType(mExpandedHeight, Integer)
+		    End If
+
+		    // Shrink/grow the window by the same amount
+		    If Me.Window <> Nil Then
+		      Me.Window.Height = Me.Window.Height - diff
 		    End If
 
 		    RaiseEvent CollapseStateChanged(mIsCollapsed)
@@ -728,6 +740,17 @@ Inherits DesktopCanvas
 		  Next
 		  Return Nil
 		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Sub DismissPeek()
+		  Var collapsedH As Integer = CType(kTabStripHeight + 2, Integer)
+		  Var diff As Integer = Me.Height - collapsedH
+		  Me.Height = collapsedH
+		  If Me.Window <> Nil And diff > 0 Then
+		    Me.Window.Height = Me.Window.Height - diff
+		  End If
+		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h21
