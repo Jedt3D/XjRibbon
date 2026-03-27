@@ -21,7 +21,7 @@ Begin DesktopWindow MainWindow
    MinimumHeight   =   64
    MinimumWidth    =   64
    Resizeable      =   True
-   Title           =   "XjRibbon Demo"
+   Title           =   "XjRibbon Demo for Desktop"
    Type            =   0
    Visible         =   True
    Width           =   600
@@ -38,8 +38,9 @@ Begin DesktopWindow MainWindow
       LockBottom      =   False
       LockedInPosition=   False
       LockLeft        =   True
-      LockRight       =   False
+      LockRight       =   True
       LockTop         =   True
+      mActiveTabIndex =   0
       Scope           =   0
       TabIndex        =   0
       TabPanelIndex   =   0
@@ -58,59 +59,61 @@ End
 		Sub Opening()
 		  // === Home Tab ===
 		  Var homeTab As XjRibbonTab = XjRibbon1.AddTab("Home")
-
+		  
 		  // Clipboard: large Paste + small Cut/Copy (mixed layout demo)
 		  Var clipGroup As XjRibbonGroup = homeTab.AddNewGroup("Clipboard")
 		  Var pasteItem As XjRibbonItem = clipGroup.AddLargeButton("Paste", "clipboard.paste")
 		  pasteItem.TooltipText = "Paste from clipboard (Cmd+V)"
 		  Call clipGroup.AddSmallButton("Cut", "clipboard.cut")
 		  Call clipGroup.AddSmallButton("Copy", "clipboard.copy")
-
+		  
 		  // Font: small buttons stacked 3-high
 		  Var fontGroup As XjRibbonGroup = homeTab.AddNewGroup("Font")
 		  Call fontGroup.AddSmallButton("Bold", "font.bold")
 		  Call fontGroup.AddSmallButton("Italic", "font.italic")
 		  Call fontGroup.AddSmallButton("Underline", "font.underline")
-
+		  
 		  // Paragraph: small buttons
 		  Var paraGroup As XjRibbonGroup = homeTab.AddNewGroup("Paragraph")
 		  Call paraGroup.AddSmallButton("Left", "para.left")
 		  Call paraGroup.AddSmallButton("Center", "para.center")
 		  Call paraGroup.AddSmallButton("Right", "para.right")
-
+		  
 		  // === Insert Tab ===
 		  Var insertTab As XjRibbonTab = XjRibbon1.AddTab("Insert")
-
+		  
 		  Var tableGroup As XjRibbonGroup = insertTab.AddNewGroup("Tables")
 		  Call tableGroup.AddLargeButton("Table", "insert.table")
-
+		  
 		  // Illustrations: large buttons + dropdown for Shapes
 		  Var imageGroup As XjRibbonGroup = insertTab.AddNewGroup("Illustrations")
 		  Call imageGroup.AddLargeButton("Picture", "insert.picture")
-
+		  
 		  Var shapesBtn As XjRibbonItem = imageGroup.AddDropdownButton("Shapes", "insert.shapes")
 		  shapesBtn.TooltipText = "Insert a shape"
 		  shapesBtn.AddMenuItem("Rectangle", "shapes.rect")
 		  shapesBtn.AddMenuItem("Circle", "shapes.circle")
 		  shapesBtn.AddMenuItem("Arrow", "shapes.arrow")
 		  shapesBtn.AddMenuItem("Line", "shapes.line")
-
+		  
 		  Call imageGroup.AddLargeButton("Chart", "insert.chart")
-
+		  
 		  // === View Tab ===
 		  Var viewTab As XjRibbonTab = XjRibbon1.AddTab("View")
-
+		  
 		  Var zoomGroup As XjRibbonGroup = viewTab.AddNewGroup("Zoom")
 		  Call zoomGroup.AddLargeButton("Zoom In", "view.zoomin")
 		  Call zoomGroup.AddLargeButton("Zoom Out", "view.zoomout")
 		  Call zoomGroup.AddLargeButton("100%", "view.zoom100")
-
+		  
 		  Var showGroup As XjRibbonGroup = viewTab.AddNewGroup("Show")
 		  Call showGroup.AddSmallButton("Ruler", "view.ruler")
 		  Call showGroup.AddSmallButton("Grid", "view.grid")
 		  Call showGroup.AddSmallButton("Guides", "view.guides")
 		End Sub
 	#tag EndEvent
+
+
 #tag EndWindowCode
 
 #tag Events XjRibbon1
@@ -125,4 +128,3 @@ End
 		End Sub
 	#tag EndEvent
 #tag EndEvents
-
