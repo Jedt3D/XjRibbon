@@ -344,6 +344,15 @@ Inherits WebCanvas
 		  Var bw As Double = item.mBoundsW
 		  Var bh As Double = item.mBoundsH
 
+		  // Hover/pressed background
+		  If item.mIsPressed Then
+		    g.DrawingColor = cItemPressedBackground
+		    g.FillRoundRectangle(bx, by, bw, bh, 3)
+		  ElseIf item.mIsHovered Then
+		    g.DrawingColor = cItemHoverBackground
+		    g.FillRoundRectangle(bx, by, bw, bh, 3)
+		  End If
+
 		  // Icon (16x16) on the left
 		  Var iconX As Double = bx + 3
 		  Var iconY As Double = by + (bh - kSmallButtonIconSize) / 2
