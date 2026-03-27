@@ -65,6 +65,22 @@ End
 
 #tag WindowCode
 	#tag Event
+		Sub HashTagChanged(hashTag As String)
+		  // Handle dropdown menu selection callback from JavaScript
+		  If hashTag.BeginsWith("xjdd:") Then
+		    Var parts() As String = hashTag.Split(":")
+		    If parts.Count >= 3 Then
+		      Var itemTag As String = parts(1)
+		      Var menuTag As String = parts(2)
+		      XjRibbon1.HandleDropdownSelection(itemTag, menuTag)
+		    End If
+		    // Clear the hash
+		    Session.HashTag = ""
+		  End If
+		End Sub
+	#tag EndEvent
+
+	#tag Event
 		Sub Shown()
 		  // === Home Tab ===
 		  Var homeTab As XjRibbonTab = XjRibbon1.AddTab("Home")

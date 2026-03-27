@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(\"/Users/worajedt/Xojo Projects/xojo_run/xojo.sh\" analyze \"/Users/worajedt/Xojo Projects/XjRibbon/XjRibbon.xojo_project\")"
+      "Bash(\"/Users/worajedt/Xojo Projects/xojo_run/xojo.sh\" analyze \"/Users/worajedt/Xojo Projects/XjRibbon/XjRibbon.xojo_project\")",
+      "Bash(\"/Users/worajedt/Xojo Projects/xojo_run/xojo.sh\" analyze \"/Users/worajedt/Xojo Projects/XjRibbon/web/XjRibbon.xojo_project\")"
     ]
   }
 }

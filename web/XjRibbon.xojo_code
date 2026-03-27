@@ -31,9 +31,9 @@ Inherits WebCanvas
 		  Var hitItem As XjRibbonItem = HitTestItems(x, y)
 		  If hitItem <> Nil And hitItem.IsEnabled Then
 		    If hitItem.ItemType = 2 And hitItem.mMenuItems.Count > 0 Then
-		      // Dropdown: fire ItemPressed with the button tag
-		      // (WebCanvas has no popup menu — consumer handles it)
-		      RaiseEvent ItemPressed(hitItem.Tag)
+		      // Dropdown: show a JavaScript-based popup menu
+		      mDropdownPendingItem = hitItem
+		      ShowDropdownMenu(hitItem, x, y)
 		    Else
 		      RaiseEvent ItemPressed(hitItem.Tag)
 		    End If
@@ -451,6 +451,57 @@ Inherits WebCanvas
 	#tag EndMethod
 
 	#tag Method, Flags = &h21
+		Private Sub ShowDropdownMenu(item As XjRibbonItem, clickX As Integer, clickY As Integer)
+		  #Pragma Unused clickX
+		  #Pragma Unused clickY
+
+		  // Build a JavaScript dropdown overlay that calls back via Session.HashTag
+		  Var ctrlId As String = Me.ControlID
+		  Var js As String = "var existing = document.getElementById('xjribbon-dropdown');" + _
+		    "if(existing) existing.remove();" + _
+		    "var menu = document.createElement('div');" + _
+		    "menu.id = 'xjribbon-dropdown';"
+
+		  // Style the menu
+		  js = js + "menu.style.cssText = 'position:absolute; background:white; border:1px solid #ccc; " + _
+		    "box-shadow:2px 4px 12px rgba(0,0,0,0.15); padding:4px 0; z-index:99999; " + _
+		    "min-width:140px; font-family:system-ui,-apple-system,sans-serif; font-size:13px; border-radius:4px;';"
+
+		  // Position below the button, relative to canvas
+		  Var canvasEl As String = "document.getElementById('" + ctrlId + "')"
+		  js = js + "var canvas = " + canvasEl + ";" + _
+		    "var rect = canvas.getBoundingClientRect();" + _
+		    "menu.style.left = (rect.left + " + Str(item.mBoundsX) + ") + 'px';" + _
+		    "menu.style.top = (rect.top + " + Str(item.mBoundsY + item.mBoundsH) + ") + 'px';"
+
+		  // Add menu items
+		  For i As Integer = 0 To item.mMenuItems.LastIndex
+		    Var mi As WebMenuItem = item.mMenuItems(i)
+		    Var miTag As String = mi.Tag.StringValue
+		    Var miText As String = mi.Text
+
+		    js = js + "var mi" + Str(i) + " = document.createElement('div');" + _
+		      "mi" + Str(i) + ".textContent = '" + miText.ReplaceAll("'", "\\'") + "';" + _
+		      "mi" + Str(i) + ".style.cssText = 'padding:6px 16px; cursor:pointer; color:#333;';" + _
+		      "mi" + Str(i) + ".onmouseover = function(){this.style.background='#0078d4';this.style.color='white';};" + _
+		      "mi" + Str(i) + ".onmouseout = function(){this.style.background='white';this.style.color='#333';};" + _
+		      "mi" + Str(i) + ".onclick = function(e){" + _
+		      "e.stopPropagation(); menu.remove();" + _
+		      "window.location.hash = 'xjdd:" + item.Tag + ":" + miTag + "';" + _
+		      "};" + _
+		      "menu.appendChild(mi" + Str(i) + ");"
+		  Next
+
+		  // Close on outside click
+		  js = js + "setTimeout(function(){document.addEventListener('click', function h(e){" + _
+		    "if(!menu.contains(e.target)){menu.remove();document.removeEventListener('click',h);}},true);},50);"
+
+		  js = js + "document.body.appendChild(menu);"
+		  Me.ExecuteJavaScript(js)
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
 		Private Sub ClearHoverStates()
 		  If mHoveredTab <> Nil Then
 		    mHoveredTab.mIsHovered = False
@@ -485,6 +536,10 @@ Inherits WebCanvas
 
 	#tag Property, Flags = &h21
 		Private mMeasurePic As Picture
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private mDropdownPendingItem As XjRibbonItem
 	#tag EndProperty
 
 	#tag Property, Flags = &h21
