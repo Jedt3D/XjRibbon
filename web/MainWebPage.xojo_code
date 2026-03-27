@@ -152,10 +152,5 @@ End
 		  MessageBox("Dropdown " + itemTag + " selected: " + menuItemTag)
 		End Sub
 	#tag EndEvent
-	#tag Event
-		Sub CollapseStateChanged(isCollapsed As Boolean)
-		  #Pragma Unused isCollapsed
-		End Sub
-	#tag EndEvent
 #tag EndEvents
 
