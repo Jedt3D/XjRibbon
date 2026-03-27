@@ -9,6 +9,11 @@ Inherits WebCanvas
 		  DrawTabStrip(g)
 		  DrawContentArea(g)
 		  DrawGroups(g)
+
+		  If Not mMouseTrackingInjected Then
+		    InjectMouseTracking
+		    mMouseTrackingInjected = True
+		  End If
 		End Sub
 	#tag EndEvent
 
@@ -510,6 +515,30 @@ Inherits WebCanvas
 		End Sub
 	#tag EndMethod
 
+	#tag Method, Flags = &h21
+		Private Sub InjectMouseTracking()
+		  Var ctrlId As String = Me.ControlID
+		  Var js As String = "var el = document.getElementById('" + ctrlId + "');" + _
+		    "if(el && !el._xjmmAttached){" + _
+		    "el._xjmmAttached = true;" + _
+		    "var lastT = 0;" + _
+		    "el.addEventListener('mousemove', function(e){" + _
+		    "var now = Date.now();" + _
+		    "if(now - lastT < 60) return;" + _
+		    "lastT = now;" + _
+		    "var r = el.getBoundingClientRect();" + _
+		    "var x = Math.round(e.clientX - r.left);" + _
+		    "var y = Math.round(e.clientY - r.top);" + _
+		    "window.location.hash = 'xjmm:' + x + ':' + y;" + _
+		    "});" + _
+		    "el.addEventListener('mouseleave', function(){" + _
+		    "window.location.hash = 'xjml';" + _
+		    "});" + _
+		    "}"
+		  Me.ExecuteJavaScript(js)
+		End Sub
+	#tag EndMethod
+
 	#tag Method, Flags = &h0
 		Sub HandleDropdownSelection(itemTag As String, menuItemTag As String)
 		  RaiseEvent DropdownMenuAction(itemTag, menuItemTag)
@@ -555,6 +584,10 @@ Inherits WebCanvas
 
 	#tag Property, Flags = &h21
 		Private mDropdownPendingItem As XjRibbonItem
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private mMouseTrackingInjected As Boolean = False
 	#tag EndProperty
 
 	#tag Property, Flags = &h21
