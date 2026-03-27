@@ -422,6 +422,15 @@ Inherits DesktopCanvas
 	#tag Constant, Name = kItemGap, Type = Double, Dynamic = False, Default = \"4", Scope = Private
 	#tag EndConstant
 
+	#tag Constant, Name = kItemTypeLarge, Type = Double, Dynamic = False, Default = \"0", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = kItemTypeSmall, Type = Double, Dynamic = False, Default = \"1", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = kItemTypeDropdown, Type = Double, Dynamic = False, Default = \"2", Scope = Public
+	#tag EndConstant
+
 	#tag ViewBehavior
 		#tag ViewProperty
 			Name="Name"

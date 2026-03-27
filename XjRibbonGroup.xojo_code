@@ -11,6 +11,41 @@ Protected Class XjRibbonGroup
 		  Var item As New XjRibbonItem
 		  item.Caption = caption
 		  item.Tag = tag
+		  item.ItemType = 0
+		  mItems.Add(item)
+		  Return item
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function AddLargeButton(caption As String, tag As String, icon As Picture) As XjRibbonItem
+		  Var item As New XjRibbonItem
+		  item.Caption = caption
+		  item.Tag = tag
+		  item.Icon = icon
+		  item.ItemType = 0
+		  mItems.Add(item)
+		  Return item
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function AddSmallButton(caption As String, tag As String) As XjRibbonItem
+		  Var item As New XjRibbonItem
+		  item.Caption = caption
+		  item.Tag = tag
+		  item.ItemType = 1
+		  mItems.Add(item)
+		  Return item
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function AddDropdownButton(caption As String, tag As String) As XjRibbonItem
+		  Var item As New XjRibbonItem
+		  item.Caption = caption
+		  item.Tag = tag
+		  item.ItemType = 2
 		  mItems.Add(item)
 		  Return item
 		End Function
