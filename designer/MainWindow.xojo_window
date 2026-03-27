@@ -68,7 +68,7 @@ Begin DesktopWindow MainWindow
       Bold            =   False
       ColumnCount     =   2
       ColumnWidths    =   "*,25%"
-      DefaultRowHeight=   -1
+      DefaultRowHeight=   22
       DropIndicatorVisible=   False
       Enabled         =   True
       FontName        =   "System"
@@ -219,7 +219,7 @@ Begin DesktopWindow MainWindow
       TabIndex        =   7
       TabPanelIndex   =   0
       TabStop         =   True
-      Text            =   "XjToolbar Designer version 0.3.0"
+      Text            =   "XjToolbar Designer version 0.4.0"
       TextAlignment   =   0
       TextColor       =   &c000000
       Tooltip         =   ""
@@ -664,7 +664,7 @@ Begin DesktopWindow MainWindow
          Bold            =   False
          ColumnCount     =   2
          ColumnWidths    =   "60%,40%"
-         DefaultRowHeight=   -1
+         DefaultRowHeight=   22
          DropIndicatorVisible=   False
          Enabled         =   True
          FontName        =   "System"
@@ -918,6 +918,26 @@ End
 		    End If
 		    IsEnabled.Value = d.Lookup("isEnabled", True)
 		    TooltipTextField.Text = d.Lookup("tooltipText", "")
+
+		    // Load menu items for large buttons
+		    MenuItems.RemoveAllRows
+		    If rowType = "large" Then
+		      Var items() As Dictionary = d.Lookup("menuItems", Nil)
+		      If items <> Nil Then
+		        For Each mi As Dictionary In items
+		          MenuItems.AddRow(mi.Lookup("caption", ""), mi.Lookup("tag", ""))
+		          MenuItems.CellTypeAt(MenuItems.LastAddedRowIndex, 0) = DesktopListBox.CellTypes.TextField
+		          MenuItems.CellTypeAt(MenuItems.LastAddedRowIndex, 1) = DesktopListBox.CellTypes.TextField
+		        Next
+		      End If
+		    End If
+		  Else
+		    // Clear item-only fields for tab/group
+		    TagField.Text = ""
+		    ItemTypeField.Text = ""
+		    IsEnabled.Value = False
+		    TooltipTextField.Text = ""
+		    MenuItems.RemoveAllRows
 		  End If
 
 		  mUpdatingInspector = False
@@ -960,6 +980,26 @@ End
 
 		  Return lastChild
 		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub SyncMenuItemsToRowTag()
+		  // Write MenuItems listbox contents back to the selected row's RowTag
+		  Var row As Integer = RibbonStructure.SelectedRowIndex
+		  If row < 0 Then Return
+
+		  Var d As Dictionary = Dictionary(RibbonStructure.RowTagAt(row))
+		  If d = Nil Then Return
+
+		  Var items() As Dictionary
+		  For i As Integer = 0 To MenuItems.RowCount - 1
+		    Var mi As New Dictionary
+		    mi.Value("caption") = MenuItems.CellTextAt(i, 0)
+		    mi.Value("tag") = MenuItems.CellTextAt(i, 1)
+		    items.Add(mi)
+		  Next
+		  d.Value("menuItems") = items
+		End Sub
 	#tag EndMethod
 
 	#tag Property, Flags = &h21
@@ -1143,6 +1183,99 @@ End
 		  d.Value("caption") = Me.Text
 		  RibbonStructure.CellTextAt(row, 0) = Me.Text
 		End Sub
+	#tag EndEvent
+#tag EndEvents
+
+#tag Events TagField
+	#tag Event
+		Sub TextChanged()
+		  If mUpdatingInspector Then Return
+
+		  Var row As Integer = RibbonStructure.SelectedRowIndex
+		  If row < 0 Then Return
+
+		  Var d As Dictionary = Dictionary(RibbonStructure.RowTagAt(row))
+		  If d = Nil Then Return
+
+		  d.Value("tag") = Me.Text
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+
+#tag Events IsEnabled
+	#tag Event
+		Sub ValueChanged()
+		  If mUpdatingInspector Then Return
+
+		  Var row As Integer = RibbonStructure.SelectedRowIndex
+		  If row < 0 Then Return
+
+		  Var d As Dictionary = Dictionary(RibbonStructure.RowTagAt(row))
+		  If d = Nil Then Return
+
+		  d.Value("isEnabled") = Me.Value
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+
+#tag Events TooltipTextField
+	#tag Event
+		Sub TextChanged()
+		  If mUpdatingInspector Then Return
+
+		  Var row As Integer = RibbonStructure.SelectedRowIndex
+		  If row < 0 Then Return
+
+		  Var d As Dictionary = Dictionary(RibbonStructure.RowTagAt(row))
+		  If d = Nil Then Return
+
+		  d.Value("tooltipText") = Me.Text
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+
+#tag Events AddMenuItem
+	#tag Event
+		Sub Pressed()
+		  // Add a new menu item row
+		  MenuItems.AddRow("New Item", "")
+		  Var addedRow As Integer = MenuItems.LastAddedRowIndex
+		  MenuItems.CellTypeAt(addedRow, 0) = DesktopListBox.CellTypes.TextField
+		  MenuItems.CellTypeAt(addedRow, 1) = DesktopListBox.CellTypes.TextField
+		  MenuItems.SelectedRowIndex = addedRow
+
+		  // Sync back to RowTag
+		  SyncMenuItemsToRowTag
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+
+#tag Events MenuItems
+	#tag Event
+		Sub CellAction(row As Integer, column As Integer)
+		  #Pragma Unused row
+		  #Pragma Unused column
+		  // After inline edit, sync back to RowTag
+		  SyncMenuItemsToRowTag
+		End Sub
+	#tag EndEvent
+
+	#tag Event
+		Function KeyDown(key As String) As Boolean
+		  // Forward Delete (Chr(127)) on Mac, Backspace (Chr(8)) on Windows
+		  If key = Chr(127) Or key = Chr(8) Then
+		    Var row As Integer = Me.SelectedRowIndex
+		    If row >= 0 Then
+		      Me.RemoveRowAt(row)
+		      If Me.RowCount > 0 Then
+		        If row >= Me.RowCount Then row = Me.RowCount - 1
+		        Me.SelectedRowIndex = row
+		      End If
+		      SyncMenuItemsToRowTag
+		    End If
+		    Return True
+		  End If
+		End Function
 	#tag EndEvent
 #tag EndEvents
 

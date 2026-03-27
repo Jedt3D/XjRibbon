@@ -193,45 +193,48 @@ Wire Edit menu to operate on focused listbox (row-level) or textfield (text-leve
 
 ## Implementation Phases
 
-### Phase 1 — Tab Level (v0.2.0)
-- [ ] NewItem popup: add Tab at root → new row with Caption="New Tab", Type="Tab"
-- [ ] RowTag stores Dictionary: `{"type": "tab", "caption": "New Tab"}`
-- [ ] SelectionChanged → enable only CaptionField; disable Tag, ItemType, IsEnabled, Tooltip, ResourceName, MenuItems, AddMenuItem
-- [ ] CaptionField TextChanged → update RowTag + listbox cell
-- [ ] Double-click cell in RibbonStructure → inline edit (CellAction), sync to RowTag + CaptionField
-- [ ] Delete key (KeyDown) → remove selected Tab row + all children
-- [ ] Edit menu Delete → same as Delete key
-- [ ] Drag reorder tabs
-- [ ] ProjectName label → `"Untitled" Structure`
-- [ ] StatusBar → `"XjToolbar Designer version 0.2.0"`
-- [ ] Git: commit + tag v0.2.0
+### Phase 1 — Tab Level (v0.2.0) ✅
+- [x] NewItem popup: add Tab at root via `AddExpandableRow`
+- [x] RowTag stores Dictionary: `{"type": "tab", "caption": "New Tab"}`
+- [x] SelectionChanged → enable only CaptionField; disable all other inspector fields
+- [x] CaptionField TextChanged → update RowTag + listbox cell
+- [x] Double-click cell → inline edit (CellTypeAt = TextField + CellAction), sync to RowTag + CaptionField
+- [x] Delete key (KeyDown: Chr(127) / Chr(8)) → remove selected Tab row + all children
+- [x] ProjectName label → `"Untitled" Structure`
+- [x] AboutBox: KeyDown Esc + MouseDown click anywhere to close
+- [x] Help > About menu handler wired → shows AboutBox modal
+- [x] StatusBar → v0.2.0, AboutBox → v0.2.0
+- [x] Git: commit da49d7f + tag v0.2.0-designer
 
-### Phase 2 — Group Level (v0.3.0)
-- [ ] NewItem popup: add Group as child of selected Tab
-- [ ] Validation: if no Tab selected → StatusBar hint "Select a Tab to add a Group inside it"
-- [ ] RowTag Dictionary: `{"type": "group", "caption": "New Group"}`
-- [ ] SelectionChanged → enable only CaptionField for Group rows
-- [ ] Double-click cell → inline edit, sync to RowTag + CaptionField
-- [ ] Delete key → remove Group row + all child items
-- [ ] Drag reorder groups within a tab
-- [ ] StatusBar → v0.3.0
-- [ ] Git: commit + tag v0.3.0
+### Phase 2 — Group Level (v0.3.0) ✅
+- [x] NewItem popup: add Group as child of selected Tab via `AddExpandableRowAt(insertAt, text, 1)`
+- [x] Validation: if no Tab selected → StatusBar hint
+- [x] `FindLastChildRow()` helper to find correct insertion position
+- [x] RowTag Dictionary: `{"type": "group", "caption": "New Group"}`
+- [x] SelectionChanged → enable only CaptionField for Group rows
+- [x] Double-click cell → inline edit, sync to RowTag + CaptionField
+- [x] Delete key → remove Group row + all child items
+- [x] StatusBar → v0.3.0, AboutBox → v0.3.0
+- [x] Git: commit 80d5d51 + tag v0.3.0-designer
 
-### Phase 3 — Item Level + Dropdown Menu (v0.4.0)
-- [ ] NewItem popup: add Large Button / Small Button as child of selected Group
-- [ ] Validation: if no Group selected → StatusBar hint "Select a Group to add a Button inside it"
-- [ ] RowTag Dictionary: `{"type": "large", "caption": "New Button", "tag": "", "isEnabled": true, "tooltipText": "", "menuItems": []}` (or "small")
-- [ ] SelectionChanged → enable all Item fields; disable MenuItems section for Small Buttons
-- [ ] CaptionField, TagField, IsEnabled, TooltipTextField → update RowTag on change
-- [ ] ItemTypeField → readonly, shows "Large Button" or "Small Button"
-- [ ] MenuItems listbox: AddMenuItem adds row, double-click cell to rename, DEL to delete, drag to reorder
-- [ ] MenuItems changes → sync back to RowTag menuItems array
-- [ ] Delete key on RibbonStructure → remove Item row
-- [ ] StatusBar → v0.4.0
-- [ ] Git: commit + tag v0.4.0
+### Phase 3 — Item Level + Dropdown Menu (v0.4.0) ← CURRENT
+- [x] NewItem popup: add Large/Small Button as child of Group via `AddRowAt(insertAt, text, 2)`
+- [x] Validation: if no Group selected → StatusBar hint
+- [x] RowTag Dictionary: `{"type": "large/small", "caption", "tag", "isEnabled", "tooltipText", "menuItems": []}`
+- [x] SelectionChanged → enable all Item fields; disable MenuItems section for Small Buttons
+- [x] CaptionField, TagField, IsEnabled, TooltipTextField → update RowTag on change
+- [x] ItemTypeField → readonly, shows "Large Button" or "Small Button"
+- [x] PopulateInspector loads MenuItems from RowTag; clears item fields for tab/group
+- [x] MenuItems listbox: AddMenuItem adds row, double-click cells to rename, DEL to delete
+- [x] `SyncMenuItemsToRowTag()` syncs MenuItems listbox back to RowTag after every change
+- [x] Delete key on RibbonStructure → remove Item row
+- [ ] StatusBar → v0.4.0, AboutBox → v0.4.0
+- [ ] Git: commit + tag v0.4.0-designer
+- **Pending: Xojo analysis + user testing**
 
 ### Phase 4 — Save / Load (v0.5.0)
-- [ ] Add File menu items: New (Cmd+N), Open (Cmd+O), Save (Cmd+S), Save As (Cmd+Shift+S)
+- [ ] Rename menu `NewItem` → `FileNew` to avoid conflict with PopupMenu control
+- [ ] Wire File menu handlers: FileNew, OpenItem, SaveItem, SaveAsItem
 - [ ] Build JSONItem from ListBox hierarchy (walk rows recursively)
 - [ ] Rebuild ListBox from JSONItem (recursive add with proper parent/depth)
 - [ ] FolderItem dialog with `.ribbon` file type filter
@@ -239,8 +242,8 @@ Wire Edit menu to operate on focused listbox (row-level) or textfield (text-leve
 - [ ] Prompt "Save changes?" on close/new/open if dirty
 - [ ] ProjectName label → `"filename" Structure` on save/open
 - [ ] Window title → `"XjRibbon Designer — filename.ribbon"`
-- [ ] StatusBar → v0.5.0
-- [ ] Git: commit + tag v0.5.0
+- [ ] StatusBar → v0.5.0, AboutBox → v0.5.0
+- [ ] Git: commit + tag v0.5.0-designer
 
 ### Phase 5 — Code Generation (v0.6.0)
 - [ ] CopyToolbarCode button → build Xojo source string from data model
@@ -251,8 +254,8 @@ Wire Edit menu to operate on focused listbox (row-level) or textfield (text-leve
 - [ ] Save before copy: if new/unsaved → prompt Save As first
 - [ ] Copy to clipboard via `Clipboard.Text = code`
 - [ ] StatusBar feedback: "Code copied to clipboard!"
-- [ ] StatusBar version → v0.6.0
-- [ ] Git: commit + tag v0.6.0
+- [ ] StatusBar → v0.6.0, AboutBox → v0.6.0
+- [ ] Git: commit + tag v0.6.0-designer
 
 ### Phase 6 — Polish + Edit Operations (v1.0.0)
 - [ ] Edit menu wiring: Cut/Copy/Paste for listbox rows (internal clipboard as Dictionary)
@@ -262,8 +265,8 @@ Wire Edit menu to operate on focused listbox (row-level) or textfield (text-leve
 - [ ] Ensure Delete key works cross-platform (forward-DEL on Mac, Backspace/Delete on Windows)
 - [ ] Resource Name controls (Label10, ResourceNameField) → always disabled for now
 - [ ] Final testing of full workflow: create → edit → save → load → copy code
-- [ ] StatusBar → v1.0.0
-- [ ] Git: commit + tag v1.0.0
+- [ ] StatusBar → v1.0.0, AboutBox → v1.0.0
+- [ ] Git: commit + tag v1.0.0-designer
 
 ---
 
