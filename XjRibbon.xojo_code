@@ -292,25 +292,37 @@ Inherits DesktopCanvas
 		    g.FillRoundRectangle(bx, by, bw, bh, 4, 4)
 		  End If
 
-		  // Placeholder icon (colored rectangle)
+		  // Icon area
 		  Var iconSize As Double = kLargeButtonIconSize
 		  Var iconX As Double = bx + (bw - iconSize) / 2
 		  Var iconY As Double = by + 6
 
-		  If item.IsEnabled Then
-		    g.DrawingColor = Color.RGB(0, 120, 212)
+		  If item.Icon <> Nil Then
+		    // Draw real icon
+		    If item.IsEnabled Then
+		      g.DrawPicture(item.Icon, iconX, iconY, iconSize, iconSize, 0, 0, item.Icon.Width, item.Icon.Height)
+		    Else
+		      g.Transparency = 60
+		      g.DrawPicture(item.Icon, iconX, iconY, iconSize, iconSize, 0, 0, item.Icon.Width, item.Icon.Height)
+		      g.Transparency = 0
+		    End If
 		  Else
-		    g.DrawingColor = Color.RGB(180, 180, 180)
-		  End If
-		  g.FillRoundRectangle(iconX, iconY, iconSize, iconSize, 4, 4)
+		    // Placeholder icon (colored rectangle)
+		    If item.IsEnabled Then
+		      g.DrawingColor = Color.RGB(0, 120, 212)
+		    Else
+		      g.DrawingColor = Color.RGB(180, 180, 180)
+		    End If
+		    g.FillRoundRectangle(iconX, iconY, iconSize, iconSize, 4, 4)
 
-		  // Icon letter (first char of caption as visual hint)
-		  g.DrawingColor = Color.RGB(255, 255, 255)
-		  g.FontSize = 16
-		  g.Bold = True
-		  Var letter As String = item.Caption.Left(1)
-		  Var letterW As Double = g.TextWidth(letter)
-		  g.DrawText(letter, iconX + (iconSize - letterW) / 2, iconY + iconSize / 2 + g.TextHeight / 2 - 3)
+		    // Icon letter (first char of caption as visual hint)
+		    g.DrawingColor = Color.RGB(255, 255, 255)
+		    g.FontSize = 16
+		    g.Bold = True
+		    Var letter As String = item.Caption.Left(1)
+		    Var letterW As Double = g.TextWidth(letter)
+		    g.DrawText(letter, iconX + (iconSize - letterW) / 2, iconY + iconSize / 2 + g.TextHeight / 2 - 3)
+		  End If
 
 		  // Button text below icon
 		  If item.IsEnabled Then
