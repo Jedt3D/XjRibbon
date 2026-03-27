@@ -2,10 +2,12 @@
 Protected Class Session
 Inherits WebSession
 	#tag Event
-		Sub HashTagChanged(hashTag As String)
+		Sub HashtagChanged(name As String, data As String)
+		  #Pragma Unused data
+
 		  // Handle dropdown menu selection
-		  If hashTag.BeginsWith("xjdd:") Then
-		    Var parts() As String = hashTag.Split(":")
+		  If name.BeginsWith("xjdd:") Then
+		    Var parts() As String = name.Split(":")
 		    If parts.Count >= 3 Then
 		      Var itemTag As String = parts(1)
 		      Var menuTag As String = parts(2)
@@ -18,8 +20,8 @@ Inherits WebSession
 		  End If
 
 		  // Handle mouse move on ribbon
-		  If hashTag.BeginsWith("xjmm:") Then
-		    Var parts() As String = hashTag.Split(":")
+		  If name.BeginsWith("xjmm:") Then
+		    Var parts() As String = name.Split(":")
 		    If parts.Count >= 3 Then
 		      Var mx As Integer = CType(Val(parts(1)), Integer)
 		      Var my As Integer = CType(Val(parts(2)), Integer)
@@ -32,7 +34,7 @@ Inherits WebSession
 		  End If
 
 		  // Handle mouse leave on ribbon
-		  If hashTag = "xjml" Then
+		  If name = "xjml" Then
 		    If MainWebPage <> Nil Then
 		      MainWebPage.XjRibbon1.HandleMouseLeave
 		    End If

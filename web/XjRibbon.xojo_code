@@ -563,18 +563,19 @@ Inherits WebCanvas
 
 	#tag Method, Flags = &h21
 		Private Sub UpdateTooltip()
+		  Var newTip As String = ""
+
 		  If mHoveredItem <> Nil And mHoveredItem.TooltipText <> "" Then
-		    If Me.Tooltip <> mHoveredItem.TooltipText Then
-		      Me.Tooltip = mHoveredItem.TooltipText
-		    End If
+		    newTip = mHoveredItem.TooltipText
 		  ElseIf mHoveredTab <> Nil Then
-		    If Me.Tooltip <> mHoveredTab.Caption Then
-		      Me.Tooltip = mHoveredTab.Caption
-		    End If
-		  Else
-		    If Me.Tooltip <> "" Then
-		      Me.Tooltip = ""
-		    End If
+		    newTip = mHoveredTab.Caption
+		  End If
+
+		  If newTip <> mCurrentTooltip Then
+		    mCurrentTooltip = newTip
+		    // Set native browser title attribute via JS
+		    Var escaped As String = newTip.ReplaceAll("'", "\\'")
+		    Me.ExecuteJavaScript("var el=document.getElementById('" + Me.ControlID + "');if(el)el.title='" + escaped + "';")
 		  End If
 		End Sub
 	#tag EndMethod
@@ -652,6 +653,10 @@ Inherits WebCanvas
 
 	#tag Property, Flags = &h21
 		Private mMouseTrackingInjected As Boolean = False
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private mCurrentTooltip As String
 	#tag EndProperty
 
 	#tag Property, Flags = &h21
