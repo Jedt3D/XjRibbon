@@ -9,6 +9,11 @@ Inherits WebCanvas
 		  DrawTabStrip(g)
 		  DrawContentArea(g)
 		  DrawGroups(g)
+
+		  If Not mMouseTrackingInjected Then
+		    InjectMouseTracking
+		    mMouseTrackingInjected = True
+		  End If
 		End Sub
 	#tag EndEvent
 
@@ -344,6 +349,15 @@ Inherits WebCanvas
 		  Var bw As Double = item.mBoundsW
 		  Var bh As Double = item.mBoundsH
 
+		  // Hover/pressed background
+		  If item.mIsPressed Then
+		    g.DrawingColor = cItemPressedBackground
+		    g.FillRoundRectangle(bx, by, bw, bh, 3)
+		  ElseIf item.mIsHovered Then
+		    g.DrawingColor = cItemHoverBackground
+		    g.FillRoundRectangle(bx, by, bw, bh, 3)
+		  End If
+
 		  // Icon (16x16) on the left
 		  Var iconX As Double = bx + 3
 		  Var iconY As Double = by + (bh - kSmallButtonIconSize) / 2
@@ -502,6 +516,95 @@ Inherits WebCanvas
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Sub HandleMouseMove(x As Integer, y As Integer)
+		  Var needsRefresh As Boolean = False
+
+		  // Hit-test tab headers
+		  Var hitTab As XjRibbonTab = HitTestTabs(x, y)
+		  If Not (hitTab Is mHoveredTab) Then
+		    If mHoveredTab <> Nil Then
+		      mHoveredTab.mIsHovered = False
+		    End If
+		    mHoveredTab = hitTab
+		    If mHoveredTab <> Nil Then
+		      mHoveredTab.mIsHovered = True
+		    End If
+		    needsRefresh = True
+		  End If
+
+		  // Hit-test items
+		  Var hitItem As XjRibbonItem = HitTestItems(x, y)
+		  If Not (hitItem Is mHoveredItem) Then
+		    If mHoveredItem <> Nil Then
+		      mHoveredItem.mIsHovered = False
+		    End If
+		    mHoveredItem = hitItem
+		    If mHoveredItem <> Nil Then
+		      mHoveredItem.mIsHovered = True
+		    End If
+		    needsRefresh = True
+		  End If
+
+		  UpdateTooltip
+
+		  If needsRefresh Then
+		    Me.Refresh
+		  End If
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub HandleMouseLeave()
+		  ClearHoverStates
+		  UpdateTooltip
+		  Me.Refresh
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Sub UpdateTooltip()
+		  Var newTip As String = ""
+
+		  If mHoveredItem <> Nil And mHoveredItem.TooltipText <> "" Then
+		    newTip = mHoveredItem.TooltipText
+		  ElseIf mHoveredTab <> Nil Then
+		    newTip = mHoveredTab.Caption
+		  End If
+
+		  If newTip <> mCurrentTooltip Then
+		    mCurrentTooltip = newTip
+		    // Set native browser title attribute via JS
+		    Var escaped As String = newTip.ReplaceAll("'", "\\'")
+		    Me.ExecuteJavaScript("var el=document.getElementById('" + Me.ControlID + "');if(el)el.title='" + escaped + "';")
+		  End If
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Sub InjectMouseTracking()
+		  Var ctrlId As String = Me.ControlID
+		  Var js As String = "var el = document.getElementById('" + ctrlId + "');" + _
+		    "if(el && !el._xjmmAttached){" + _
+		    "el._xjmmAttached = true;" + _
+		    "var lastT = 0;" + _
+		    "el.addEventListener('mousemove', function(e){" + _
+		    "var now = Date.now();" + _
+		    "if(now - lastT < 60) return;" + _
+		    "lastT = now;" + _
+		    "var r = el.getBoundingClientRect();" + _
+		    "var x = Math.round(e.clientX - r.left);" + _
+		    "var y = Math.round(e.clientY - r.top);" + _
+		    "window.location.hash = 'xjmm:' + x + ':' + y;" + _
+		    "});" + _
+		    "el.addEventListener('mouseleave', function(){" + _
+		    "window.location.hash = 'xjml';" + _
+		    "});" + _
+		    "}"
+		  Me.ExecuteJavaScript(js)
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Sub HandleDropdownSelection(itemTag As String, menuItemTag As String)
 		  RaiseEvent DropdownMenuAction(itemTag, menuItemTag)
 		End Sub
@@ -546,6 +649,14 @@ Inherits WebCanvas
 
 	#tag Property, Flags = &h21
 		Private mDropdownPendingItem As XjRibbonItem
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private mMouseTrackingInjected As Boolean = False
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private mCurrentTooltip As String
 	#tag EndProperty
 
 	#tag Property, Flags = &h21
