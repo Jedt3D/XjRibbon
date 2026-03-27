@@ -101,6 +101,21 @@ Inherits DesktopCanvas
 		    needsRefresh = True
 		  End If
 
+		  // Update per-item tooltip
+		  If mHoveredItem <> Nil And mHoveredItem.TooltipText <> "" Then
+		    If Me.Tooltip <> mHoveredItem.TooltipText Then
+		      Me.Tooltip = mHoveredItem.TooltipText
+		    End If
+		  ElseIf mHoveredTab <> Nil Then
+		    If Me.Tooltip <> mHoveredTab.Caption Then
+		      Me.Tooltip = mHoveredTab.Caption
+		    End If
+		  Else
+		    If Me.Tooltip <> "" Then
+		      Me.Tooltip = ""
+		    End If
+		  End If
+
 		  If needsRefresh Then
 		    Me.Refresh
 		  End If
