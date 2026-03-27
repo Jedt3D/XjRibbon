@@ -5,6 +5,7 @@ Inherits DesktopCanvas
 		Sub Paint(g As Graphics, areas() As Rect)
 		  #Pragma Unused areas
 
+		  ResolveColors
 		  LayoutTabs(g)
 		  DrawBackground(g)
 		  DrawTabStrip(g)
@@ -191,11 +192,11 @@ Inherits DesktopCanvas
 
 	#tag Method, Flags = &h21
 		Private Sub DrawBackground(g As Graphics)
-		  g.DrawingColor = Color.RGB(245, 245, 245)
+		  g.DrawingColor = cBackground
 		  g.FillRectangle(0, 0, g.Width, g.Height)
 
 		  // Bottom border
-		  g.DrawingColor = Color.RGB(210, 210, 210)
+		  g.DrawingColor = cBorder
 		  g.FillRectangle(0, g.Height - 1, g.Width, 1)
 		End Sub
 	#tag EndMethod
@@ -206,21 +207,19 @@ Inherits DesktopCanvas
 		    Var tab As XjRibbonTab = mTabs(i)
 
 		    If i = mActiveTabIndex Then
-		      // Active tab: white background
-		      g.DrawingColor = Color.RGB(255, 255, 255)
+		      g.DrawingColor = cTabActiveBackground
 		      g.FillRectangle(tab.mBoundsX, tab.mBoundsY, tab.mBoundsW, tab.mBoundsH)
 
-		      // Blue accent line at top
-		      g.DrawingColor = Color.RGB(0, 120, 212)
+		      // Accent line at top
+		      g.DrawingColor = cTabAccent
 		      g.FillRectangle(tab.mBoundsX, 0, tab.mBoundsW, 2)
 		    ElseIf tab.mIsHovered Then
-		      // Hovered tab: light blue
-		      g.DrawingColor = Color.RGB(230, 240, 250)
+		      g.DrawingColor = cTabHoverBackground
 		      g.FillRectangle(tab.mBoundsX, tab.mBoundsY, tab.mBoundsW, tab.mBoundsH)
 		    End If
 
 		    // Tab text
-		    g.DrawingColor = Color.RGB(60, 60, 60)
+		    g.DrawingColor = cTabText
 		    g.FontSize = 11
 		    g.Bold = False
 		    Var textW As Double = g.TextWidth(tab.Caption)
@@ -230,15 +229,14 @@ Inherits DesktopCanvas
 		  Next
 
 		  // Tab strip bottom border
-		  g.DrawingColor = Color.RGB(210, 210, 210)
+		  g.DrawingColor = cBorder
 		  g.FillRectangle(0, kTabStripHeight, g.Width, 1)
 		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h21
 		Private Sub DrawContentArea(g As Graphics)
-		  // White content area below tab strip
-		  g.DrawingColor = Color.RGB(255, 255, 255)
+		  g.DrawingColor = cContentBackground
 		  g.FillRectangle(0, kContentTop, g.Width, g.Height - kContentTop - 1)
 		End Sub
 	#tag EndMethod
@@ -258,7 +256,7 @@ Inherits DesktopCanvas
 		    Next
 
 		    // Draw group label
-		    g.DrawingColor = Color.RGB(120, 120, 120)
+		    g.DrawingColor = cGroupLabelText
 		    g.FontSize = 9
 		    g.Bold = False
 		    Var labelW As Double = g.TextWidth(group.Caption)
@@ -268,7 +266,7 @@ Inherits DesktopCanvas
 
 		    // Draw separator on right edge (except for last group)
 		    If groupIdx < activeTab.mGroups.LastIndex Then
-		      g.DrawingColor = Color.RGB(220, 220, 220)
+		      g.DrawingColor = cGroupSeparator
 		      Var sepX As Double = group.mBoundsX + group.mBoundsW + kGroupGap / 2
 		      g.FillRectangle(sepX, group.mBoundsY + 2, 1, group.mBoundsH - kGroupLabelHeight - 4)
 		    End If
@@ -285,10 +283,10 @@ Inherits DesktopCanvas
 
 		  // Background for hover/pressed states
 		  If item.mIsPressed Then
-		    g.DrawingColor = Color.RGB(200, 220, 240)
+		    g.DrawingColor = cItemPressedBackground
 		    g.FillRoundRectangle(bx, by, bw, bh, 4, 4)
 		  ElseIf item.mIsHovered Then
-		    g.DrawingColor = Color.RGB(220, 235, 250)
+		    g.DrawingColor = cItemHoverBackground
 		    g.FillRoundRectangle(bx, by, bw, bh, 4, 4)
 		  End If
 
@@ -309,14 +307,14 @@ Inherits DesktopCanvas
 		  Else
 		    // Placeholder icon (colored rectangle)
 		    If item.IsEnabled Then
-		      g.DrawingColor = Color.RGB(0, 120, 212)
+		      g.DrawingColor = cPlaceholderIcon
 		    Else
-		      g.DrawingColor = Color.RGB(180, 180, 180)
+		      g.DrawingColor = cPlaceholderIconDisabled
 		    End If
 		    g.FillRoundRectangle(iconX, iconY, iconSize, iconSize, 4, 4)
 
 		    // Icon letter (first char of caption as visual hint)
-		    g.DrawingColor = Color.RGB(255, 255, 255)
+		    g.DrawingColor = cPlaceholderIconText
 		    g.FontSize = 16
 		    g.Bold = True
 		    Var letter As String = item.Caption.Left(1)
@@ -326,9 +324,9 @@ Inherits DesktopCanvas
 
 		  // Button text below icon
 		  If item.IsEnabled Then
-		    g.DrawingColor = Color.RGB(60, 60, 60)
+		    g.DrawingColor = cItemText
 		  Else
-		    g.DrawingColor = Color.RGB(160, 160, 160)
+		    g.DrawingColor = cItemDisabledText
 		  End If
 		  g.FontSize = 9
 		  g.Bold = False
@@ -381,6 +379,46 @@ Inherits DesktopCanvas
 		End Sub
 	#tag EndMethod
 
+	#tag Method, Flags = &h21
+		Private Sub ResolveColors()
+		  If Color.IsDarkMode Then
+		    cBackground = Color.RGB(40, 40, 40)
+		    cContentBackground = Color.RGB(50, 50, 50)
+		    cBorder = Color.RGB(70, 70, 70)
+		    cTabText = Color.RGB(220, 220, 220)
+		    cTabActiveBackground = Color.RGB(50, 50, 50)
+		    cTabHoverBackground = Color.RGB(60, 70, 80)
+		    cTabAccent = Color.RGB(60, 150, 230)
+		    cItemText = Color.RGB(220, 220, 220)
+		    cItemDisabledText = Color.RGB(100, 100, 100)
+		    cItemHoverBackground = Color.RGB(70, 80, 95)
+		    cItemPressedBackground = Color.RGB(55, 70, 90)
+		    cGroupLabelText = Color.RGB(150, 150, 150)
+		    cGroupSeparator = Color.RGB(70, 70, 70)
+		    cPlaceholderIcon = Color.RGB(60, 150, 230)
+		    cPlaceholderIconDisabled = Color.RGB(80, 80, 80)
+		    cPlaceholderIconText = Color.RGB(255, 255, 255)
+		  Else
+		    cBackground = Color.RGB(245, 245, 245)
+		    cContentBackground = Color.RGB(255, 255, 255)
+		    cBorder = Color.RGB(210, 210, 210)
+		    cTabText = Color.RGB(60, 60, 60)
+		    cTabActiveBackground = Color.RGB(255, 255, 255)
+		    cTabHoverBackground = Color.RGB(230, 240, 250)
+		    cTabAccent = Color.RGB(0, 120, 212)
+		    cItemText = Color.RGB(60, 60, 60)
+		    cItemDisabledText = Color.RGB(160, 160, 160)
+		    cItemHoverBackground = Color.RGB(220, 235, 250)
+		    cItemPressedBackground = Color.RGB(200, 220, 240)
+		    cGroupLabelText = Color.RGB(120, 120, 120)
+		    cGroupSeparator = Color.RGB(220, 220, 220)
+		    cPlaceholderIcon = Color.RGB(0, 120, 212)
+		    cPlaceholderIconDisabled = Color.RGB(180, 180, 180)
+		    cPlaceholderIconText = Color.RGB(255, 255, 255)
+		  End If
+		End Sub
+	#tag EndMethod
+
 	#tag Property, Flags = &h0
 		mTabs() As XjRibbonTab
 	#tag EndProperty
@@ -399,6 +437,70 @@ Inherits DesktopCanvas
 
 	#tag Property, Flags = &h21
 		Private mHoveredTab As XjRibbonTab
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private cBackground As Color
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private cContentBackground As Color
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private cBorder As Color
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private cTabText As Color
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private cTabActiveBackground As Color
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private cTabHoverBackground As Color
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private cTabAccent As Color
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private cItemText As Color
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private cItemDisabledText As Color
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private cItemHoverBackground As Color
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private cItemPressedBackground As Color
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private cGroupLabelText As Color
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private cGroupSeparator As Color
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private cPlaceholderIcon As Color
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private cPlaceholderIconDisabled As Color
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private cPlaceholderIconText As Color
 	#tag EndProperty
 
 	#tag Constant, Name = kTabStripHeight, Type = Double, Dynamic = False, Default = \"24", Scope = Private
