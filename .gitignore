@@ -1,0 +1,12 @@
+# Xojo binary/state files
+*.xojo_uistate
+*.xojo_resources
+
+# Build output
+Builds - */
+
+# macOS
+.DS_Store
+
+# Xojo debug
+Debug*/
