@@ -219,7 +219,7 @@ Begin DesktopWindow MainWindow
       TabIndex        =   7
       TabPanelIndex   =   0
       TabStop         =   True
-      Text            =   "XjToolbar Designer version 0.2.0"
+      Text            =   "XjToolbar Designer version 0.3.0"
       TextAlignment   =   0
       TextColor       =   &c000000
       Tooltip         =   ""
