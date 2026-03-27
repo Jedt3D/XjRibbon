@@ -9,8 +9,10 @@ Inherits DesktopCanvas
 		  LayoutTabs(g)
 		  DrawBackground(g)
 		  DrawTabStrip(g)
-		  DrawContentArea(g)
-		  DrawGroups(g)
+		  If Not mIsCollapsed Or mIsPeeking Then
+		    DrawContentArea(g)
+		    DrawGroups(g)
+		  End If
 		End Sub
 	#tag EndEvent
 
@@ -19,12 +21,36 @@ Inherits DesktopCanvas
 		  // Hit-test tab headers
 		  Var hitTab As XjRibbonTab = HitTestTabs(x, y)
 		  If hitTab <> Nil Then
+		    Var tabIdx As Integer = -1
 		    For i As Integer = 0 To mTabs.LastIndex
 		      If mTabs(i) Is hitTab Then
-		        mActiveTabIndex = i
+		        tabIdx = i
 		        Exit
 		      End If
 		    Next
+
+		    // Double-click detection: toggle collapse
+		    Var now As Double = Microseconds
+		    If tabIdx = mLastTabClickIndex And (now - mLastTabClickTime) < kDoubleClickUs Then
+		      mIsCollapsed = Not mIsCollapsed
+		      mIsPeeking = False
+		      mLastTabClickTime = 0
+		      mLastTabClickIndex = -1
+		      RaiseEvent CollapseStateChanged(mIsCollapsed)
+		      ClearHoverStates
+		      Me.Refresh
+		      Return True
+		    End If
+
+		    // Single click: switch tab
+		    mActiveTabIndex = tabIdx
+		    mLastTabClickTime = now
+		    mLastTabClickIndex = tabIdx
+
+		    If mIsCollapsed Then
+		      mIsPeeking = True
+		    End If
+
 		    ClearHoverStates
 		    Me.Refresh
 		    Return True
@@ -66,6 +92,12 @@ Inherits DesktopCanvas
 		    End If
 		    mPressedItem.mIsPressed = False
 		    mPressedItem = Nil
+
+		    // Dismiss peek after item action
+		    If mIsPeeking Then
+		      mIsPeeking = False
+		    End If
+
 		    Me.Refresh
 		  End If
 		End Sub
@@ -129,6 +161,9 @@ Inherits DesktopCanvas
 		    mPressedItem.mIsPressed = False
 		    mPressedItem = Nil
 		  End If
+		  If mIsPeeking Then
+		    mIsPeeking = False
+		  End If
 		  Me.Refresh
 		End Sub
 	#tag EndEvent
@@ -139,6 +174,10 @@ Inherits DesktopCanvas
 
 	#tag Hook, Flags = &h0
 		Event DropdownMenuAction(itemTag As String, menuItemTag As String)
+	#tag EndHook
+
+	#tag Hook, Flags = &h0
+		Event CollapseStateChanged(isCollapsed As Boolean)
 	#tag EndHook
 
 	#tag Method, Flags = &h0
@@ -172,6 +211,23 @@ Inherits DesktopCanvas
 		End Sub
 	#tag EndMethod
 
+	#tag Method, Flags = &h0
+		Sub SetCollapsed(value As Boolean)
+		  If mIsCollapsed <> value Then
+		    mIsCollapsed = value
+		    mIsPeeking = False
+		    RaiseEvent CollapseStateChanged(mIsCollapsed)
+		    Me.Refresh
+		  End If
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function IsCollapsed() As Boolean
+		  Return mIsCollapsed
+		End Function
+	#tag EndMethod
+
 	#tag Method, Flags = &h21
 		Private Sub LayoutTabs(g As Graphics)
 		  // Layout tab headers
@@ -187,6 +243,7 @@ Inherits DesktopCanvas
 		  Next
 
 		  // Layout groups and items for active tab
+		  If mIsCollapsed And Not mIsPeeking Then Return
 		  If mActiveTabIndex < 0 Or mActiveTabIndex >= mTabs.Count Then Return
 
 		  Var activeTab As XjRibbonTab = mTabs(mActiveTabIndex)
@@ -500,6 +557,7 @@ Inherits DesktopCanvas
 
 	#tag Method, Flags = &h21
 		Private Function HitTestItems(x As Double, y As Double) As XjRibbonItem
+		  If mIsCollapsed And Not mIsPeeking Then Return Nil
 		  If mActiveTabIndex < 0 Or mActiveTabIndex >= mTabs.Count Then Return Nil
 
 		  Var activeTab As XjRibbonTab = mTabs(mActiveTabIndex)
@@ -586,6 +644,22 @@ Inherits DesktopCanvas
 
 	#tag Property, Flags = &h21
 		Private mHoveredTab As XjRibbonTab
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private mIsCollapsed As Boolean = False
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private mIsPeeking As Boolean = False
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private mLastTabClickTime As Double = 0
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private mLastTabClickIndex As Integer = -1
 	#tag EndProperty
 
 	#tag Property, Flags = &h21
@@ -701,6 +775,9 @@ Inherits DesktopCanvas
 	#tag EndConstant
 
 	#tag Constant, Name = kSmallRowGap, Type = Double, Dynamic = False, Default = \"2", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = kDoubleClickUs, Type = Double, Dynamic = False, Default = \"400000", Scope = Private
 	#tag EndConstant
 
 	#tag Constant, Name = kItemTypeLarge, Type = Double, Dynamic = False, Default = \"0", Scope = Public
