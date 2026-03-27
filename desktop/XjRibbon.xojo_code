@@ -225,6 +225,82 @@ Inherits DesktopCanvas
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Function AddContextualTab(caption As String, contextGroup As String, accentColor As Color) As XjRibbonTab
+		  Var tab As New XjRibbonTab
+		  tab.Caption = caption
+		  tab.IsContextual = True
+		  tab.ContextGroup = contextGroup
+		  tab.ContextAccentColor = accentColor
+		  tab.IsContextVisible = False
+		  mTabs.Add(tab)
+		  Return tab
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub ShowContextualTabs(contextGroup As String)
+		  For Each tab As XjRibbonTab In mTabs
+		    If tab.IsContextual And tab.ContextGroup = contextGroup Then
+		      tab.IsContextVisible = True
+		    End If
+		  Next
+		  Me.Refresh
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub HideContextualTabs(contextGroup As String)
+		  For Each tab As XjRibbonTab In mTabs
+		    If tab.IsContextual And tab.ContextGroup = contextGroup Then
+		      tab.IsContextVisible = False
+		    End If
+		  Next
+		  EnsureValidActiveTab
+		  Me.Refresh
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub HideAllContextualTabs()
+		  For Each tab As XjRibbonTab In mTabs
+		    If tab.IsContextual Then
+		      tab.IsContextVisible = False
+		    End If
+		  Next
+		  EnsureValidActiveTab
+		  Me.Refresh
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function IsContextualTabVisible(contextGroup As String) As Boolean
+		  For Each tab As XjRibbonTab In mTabs
+		    If tab.IsContextual And tab.ContextGroup = contextGroup And tab.IsContextVisible Then
+		      Return True
+		    End If
+		  Next
+		  Return False
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Sub EnsureValidActiveTab()
+		  If mActiveTabIndex >= 0 And mActiveTabIndex < mTabs.Count Then
+		    Var tab As XjRibbonTab = mTabs(mActiveTabIndex)
+		    If Not tab.IsContextual Or tab.IsContextVisible Then Return
+		  End If
+		  // Active tab is invalid — find first regular tab
+		  For i As Integer = 0 To mTabs.LastIndex
+		    If Not mTabs(i).IsContextual Then
+		      mActiveTabIndex = i
+		      Return
+		    End If
+		  Next
+		  mActiveTabIndex = 0
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Sub SetCollapsed(value As Boolean)
 		  If mIsCollapsed <> value Then
 		    mIsCollapsed = value

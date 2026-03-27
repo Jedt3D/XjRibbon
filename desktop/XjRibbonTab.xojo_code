@@ -43,5 +43,21 @@ Protected Class XjRibbonTab
 		mIsHovered As Boolean
 	#tag EndProperty
 
+	#tag Property, Flags = &h0
+		IsContextual As Boolean = False
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		ContextGroup As String
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		ContextAccentColor As Color
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		IsContextVisible As Boolean = False
+	#tag EndProperty
+
 End Class
 #tag EndClass
