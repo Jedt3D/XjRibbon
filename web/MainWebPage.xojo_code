@@ -120,6 +120,23 @@ End
 		  Call showGroup.AddSmallButton("Ruler", "view.ruler")
 		  Call showGroup.AddSmallButton("Grid", "view.grid")
 		  Call showGroup.AddSmallButton("Guides", "view.guides")
+
+		  // === Contextual Tab: Table Tools ===
+		  Var tableDesign As XjRibbonTab = XjRibbon1.AddContextualTab("Design", "Table Tools", Color.RGB(0, 128, 0))
+		  Var styleGroup As XjRibbonGroup = tableDesign.AddNewGroup("Table Styles")
+		  Call styleGroup.AddLargeButton("Style 1", "table.style1")
+		  Call styleGroup.AddLargeButton("Style 2", "table.style2")
+		  Call styleGroup.AddLargeButton("Style 3", "table.style3")
+
+		  // === Contextual Tab: Picture Tools ===
+		  Var picFormat As XjRibbonTab = XjRibbon1.AddContextualTab("Format", "Picture Tools", Color.RGB(200, 120, 0))
+		  Var adjustGroup As XjRibbonGroup = picFormat.AddNewGroup("Adjust")
+		  Call adjustGroup.AddLargeButton("Brightness", "pic.brightness")
+		  Call adjustGroup.AddLargeButton("Contrast", "pic.contrast")
+		  Call adjustGroup.AddLargeButton("Crop", "pic.crop")
+
+		  // Show Table Tools by default for demo
+		  XjRibbon1.ShowContextualTabs("Table Tools")
 		End Sub
 	#tag EndEvent
 #tag EndWindowCode
@@ -133,6 +150,11 @@ End
 	#tag Event
 		Sub DropdownMenuAction(itemTag As String, menuItemTag As String)
 		  MessageBox("Dropdown " + itemTag + " selected: " + menuItemTag)
+		End Sub
+	#tag EndEvent
+	#tag Event
+		Sub CollapseStateChanged(isCollapsed As Boolean)
+		  #Pragma Unused isCollapsed
 		End Sub
 	#tag EndEvent
 #tag EndEvents
