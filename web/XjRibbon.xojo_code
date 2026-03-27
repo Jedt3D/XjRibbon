@@ -515,6 +515,70 @@ Inherits WebCanvas
 		End Sub
 	#tag EndMethod
 
+	#tag Method, Flags = &h0
+		Sub HandleMouseMove(x As Integer, y As Integer)
+		  Var needsRefresh As Boolean = False
+
+		  // Hit-test tab headers
+		  Var hitTab As XjRibbonTab = HitTestTabs(x, y)
+		  If Not (hitTab Is mHoveredTab) Then
+		    If mHoveredTab <> Nil Then
+		      mHoveredTab.mIsHovered = False
+		    End If
+		    mHoveredTab = hitTab
+		    If mHoveredTab <> Nil Then
+		      mHoveredTab.mIsHovered = True
+		    End If
+		    needsRefresh = True
+		  End If
+
+		  // Hit-test items
+		  Var hitItem As XjRibbonItem = HitTestItems(x, y)
+		  If Not (hitItem Is mHoveredItem) Then
+		    If mHoveredItem <> Nil Then
+		      mHoveredItem.mIsHovered = False
+		    End If
+		    mHoveredItem = hitItem
+		    If mHoveredItem <> Nil Then
+		      mHoveredItem.mIsHovered = True
+		    End If
+		    needsRefresh = True
+		  End If
+
+		  UpdateTooltip
+
+		  If needsRefresh Then
+		    Me.Refresh
+		  End If
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub HandleMouseLeave()
+		  ClearHoverStates
+		  UpdateTooltip
+		  Me.Refresh
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Sub UpdateTooltip()
+		  If mHoveredItem <> Nil And mHoveredItem.TooltipText <> "" Then
+		    If Me.Tooltip <> mHoveredItem.TooltipText Then
+		      Me.Tooltip = mHoveredItem.TooltipText
+		    End If
+		  ElseIf mHoveredTab <> Nil Then
+		    If Me.Tooltip <> mHoveredTab.Caption Then
+		      Me.Tooltip = mHoveredTab.Caption
+		    End If
+		  Else
+		    If Me.Tooltip <> "" Then
+		      Me.Tooltip = ""
+		    End If
+		  End If
+		End Sub
+	#tag EndMethod
+
 	#tag Method, Flags = &h21
 		Private Sub InjectMouseTracking()
 		  Var ctrlId As String = Me.ControlID

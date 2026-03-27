@@ -3,18 +3,41 @@ Protected Class Session
 Inherits WebSession
 	#tag Event
 		Sub HashTagChanged(hashTag As String)
-		  // Handle dropdown menu selection callback from JavaScript
+		  // Handle dropdown menu selection
 		  If hashTag.BeginsWith("xjdd:") Then
 		    Var parts() As String = hashTag.Split(":")
 		    If parts.Count >= 3 Then
 		      Var itemTag As String = parts(1)
 		      Var menuTag As String = parts(2)
-		      // Find the XjRibbon on the current page and fire the event
 		      If MainWebPage <> Nil Then
 		        MainWebPage.XjRibbon1.HandleDropdownSelection(itemTag, menuTag)
 		      End If
 		    End If
 		    Self.HashTag = ""
+		    Return
+		  End If
+
+		  // Handle mouse move on ribbon
+		  If hashTag.BeginsWith("xjmm:") Then
+		    Var parts() As String = hashTag.Split(":")
+		    If parts.Count >= 3 Then
+		      Var mx As Integer = CType(Val(parts(1)), Integer)
+		      Var my As Integer = CType(Val(parts(2)), Integer)
+		      If MainWebPage <> Nil Then
+		        MainWebPage.XjRibbon1.HandleMouseMove(mx, my)
+		      End If
+		    End If
+		    Self.HashTag = ""
+		    Return
+		  End If
+
+		  // Handle mouse leave on ribbon
+		  If hashTag = "xjml" Then
+		    If MainWebPage <> Nil Then
+		      MainWebPage.XjRibbon1.HandleMouseLeave
+		    End If
+		    Self.HashTag = ""
+		    Return
 		  End If
 		End Sub
 	#tag EndEvent
