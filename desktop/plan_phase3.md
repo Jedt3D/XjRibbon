@@ -18,10 +18,10 @@ Phases 1-2 complete: tabs, groups, large/small/dropdown buttons, dark mode, icon
 ## Feature 1: Ribbon Collapse/Minimize
 
 ### Visual Behavior
-- **Expanded** (default): Full ribbon as today (122px)
-- **Collapsed**: Only tab strip (24px) drawn; content area shows blank background
-- **Peek**: When collapsed, single-clicking a tab temporarily shows content. Clicking an item fires the action and dismisses peek. MouseExit also dismisses.
+- **Expanded** (default): Full ribbon at 122px
+- **Collapsed**: Canvas shrinks to tab strip height (26px), window height shrinks by same delta
 - **Toggle**: Double-click a tab header, OR click a chevron button at far-right of tab strip
+- ~~**Peek**~~: Removed — interfered with double-click detection. When collapsed, single-click just switches active tab.
 
 ### Implementation (Steps 1-2)
 
@@ -30,9 +30,9 @@ Phases 1-2 complete: tabs, groups, large/small/dropdown buttons, dark mode, icon
 New properties on `XjRibbon`:
 ```
 mIsCollapsed As Boolean = False
-mIsPeeking As Boolean = False
 mLastTabClickTime As Double = 0       // Microseconds timestamp
 mLastTabClickIndex As Integer = -1
+mExpandedHeight As Double = 0         // Captured on first Paint
 ```
 
 New constant: `kDoubleClickMs = 400000` (microseconds)
@@ -155,12 +155,16 @@ IsContextVisible As Boolean
 ## Verification
 
 1. Run project — ribbon looks identical to Phase 2 (no regression)
-2. Double-click a tab — ribbon collapses to tabs-only
-3. Double-click again — ribbon expands
+2. Double-click a tab — ribbon collapses, canvas + window shrink
+3. Double-click again — ribbon expands, canvas + window restore
 4. Click chevron button — toggles collapse
-5. When collapsed, click a tab — content peeks temporarily
-6. Click a button while peeking — action fires, peek dismisses
-7. Move mouse off canvas while peeking — peek dismisses
-8. Toggle "Table Tools" button — contextual tab appears with green accent
-9. Click contextual tab — shows its groups/buttons
-10. Hide contextual tabs while one is active — switches to first regular tab
+5. When collapsed, click a tab — switches active tab (no peek)
+6. Buttons below ribbon reposition via CollapseStateChanged + BottomEdge()
+7. Toggle "Table Tools" button — contextual tab appears with green accent
+8. Click contextual tab — shows its groups/buttons
+9. Hide contextual tabs while one is active — switches to first regular tab
+
+### Lessons Learned (Desktop Phase 3)
+- **Peek removed**: Peek interfered with double-click detection — first click activated peek, second click was treated as single click. Simplifying to no-peek made double-click reliable.
+- **Window resize**: XjRibbon resizes itself AND the parent window by the same delta. Consumer repositions sibling controls via CollapseStateChanged event + BottomEdge() helper.
+- **Microseconds for timing**: Use `Microseconds` (Double) not `System.Ticks` for cross-platform double-click detection.

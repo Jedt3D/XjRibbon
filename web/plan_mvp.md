@@ -10,8 +10,13 @@ Port of the desktop XjRibbon MVP to Xojo Web. The ribbon toolbar is drawn entire
 |---------|-----|-------|
 | `DesktopCanvas` | `WebCanvas` | Base class |
 | `Paint(g As Graphics, areas() As Rect)` | `Paint(g As WebGraphics)` | No areas param, WebGraphics type |
-| `MouseDown(x,y) As Boolean` | `MouseDown(x,y)` | No return value (Sub not Function) |
-| `MouseExit()` | *(not available)* | Track via MouseMove bounds check |
+| `MouseDown(x,y) As Boolean` | *(not available)* | WebCanvas has NO MouseDown/Up/Move events |
+| `MouseUp(x,y)` | *(not available)* | Use `Pressed(x,y)` for click handling |
+| `MouseMove(x,y)` | *(not available)* | Inject JS mousemove listener (Phase 2.5) |
+| `MouseExit()` | *(not available)* | Inject JS mouseleave listener (Phase 2.5) |
+| `g.TextWidth(str)` | *(not available)* | Use `Picture.Graphics.TextWidth()` workaround |
+| `g.TextHeight` | *(not available)* | Use `Picture.Graphics.TextHeight` workaround |
+| `g.DrawPicture(9 params)` | `g.DrawPicture(5 params)` | No source rect overload |
 | `g.FillRoundRectangle(x,y,w,h,cw,ch)` | `g.FillRoundRectangle(x,y,w,h,cw)` | Single corner param |
 | `g.Transparency = 60` | Color alpha: `Color.RGB(r,g,b, 153)` | No Transparency property |
 | `DesktopMenuItem` | `WebMenuItem` | For popup menus (Phase 2) |
@@ -37,9 +42,10 @@ XjRibbon (WebCanvas) → mTabs() → XjRibbonTab → mGroups() → XjRibbonGroup
 
 ## Key Implementation Differences
 
-1. **Paint**: `Sub Paint(g As WebGraphics)` — no `areas()` param, no `#Pragma Unused`
-2. **MouseDown**: `Sub MouseDown(x As Integer, y As Integer)` — void, no `Return True`
-3. **No MouseExit**: Check bounds in MouseMove: `If x < 0 Or y < 0 Or x > Me.Width Or y > Me.Height Then ClearHoverStates`
+1. **Paint**: `Sub Paint(g As WebGraphics)` — no `areas()` param
+2. **No mouse events**: WebCanvas only has `Pressed(x, y)` — no MouseDown/Up/Move/Exit
+3. **No TextWidth**: WebGraphics lacks TextWidth/TextHeight — use `Picture.Graphics` to measure
+4. **No hover**: No mouse tracking means no hover effects in MVP (added in Phase 2.5 via JS)
 4. **FillRoundRectangle**: Single corner param: `g.FillRoundRectangle(x, y, w, h, 4)`
 5. **Demo wiring**: Use `Shown` event (not `Opening`) on MainWebPage per Xojo Web best practice
 6. **MainWebPage format**: Uses `#tag WebPageCode` for page-level code
@@ -57,5 +63,14 @@ XjRibbon (WebCanvas) → mTabs() → XjRibbonTab → mGroups() → XjRibbonGroup
 1. Run project — opens browser at localhost:8080
 2. 3 tabs (Home, Insert, View) with groups and buttons
 3. Tab switching works
-4. Hover highlights on mouse move
+4. ~~Hover highlights~~ — not available in MVP (WebCanvas has no MouseMove)
 5. Button click fires ItemPressed with correct tag
+
+## Post-Implementation Notes
+
+**Critical discoveries during MVP implementation:**
+- WebCanvas `MouseDown`, `MouseUp`, `MouseMove` listed in some docs but DO NOT EXIST as events
+- WebGraphics `TextWidth`/`TextHeight` DO NOT EXIST — required Picture.Graphics workaround
+- WebGraphics `DrawPicture` only accepts 5 parameters (no 9-param source rect overload)
+- `Session.HashtagChanged` signature is `(name As String, data As String)` not `(hashTag As String)`
+- `WebCanvas.Tooltip` is `WebToolTip` type, not String — use JS `title` attribute for dynamic tooltips
