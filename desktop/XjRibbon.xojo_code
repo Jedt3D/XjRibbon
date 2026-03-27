@@ -5,6 +5,11 @@ Inherits DesktopCanvas
 		Sub Paint(g As Graphics, areas() As Rect)
 		  #Pragma Unused areas
 
+		  // Capture expanded height on first paint
+		  If mExpandedHeight = 0 Then
+		    mExpandedHeight = Me.Height
+		  End If
+
 		  ResolveColors
 		  LayoutTabs(g)
 		  DrawBackground(g)
@@ -21,13 +26,10 @@ Inherits DesktopCanvas
 		Function MouseDown(x As Integer, y As Integer) As Boolean
 		  // Hit-test collapse chevron
 		  If HitTestCollapseChevron(x, y) Then
-		    mIsCollapsed = Not mIsCollapsed
-		    mIsPeeking = False
 		    mLastTabClickTime = 0
 		    mLastTabClickIndex = -1
-		    RaiseEvent CollapseStateChanged(mIsCollapsed)
 		    ClearHoverStates
-		    Me.Refresh
+		    SetCollapsed(Not mIsCollapsed)
 		    Return True
 		  End If
 
@@ -45,13 +47,10 @@ Inherits DesktopCanvas
 		    // Double-click detection: toggle collapse
 		    Var now As Double = Microseconds
 		    If tabIdx = mLastTabClickIndex And (now - mLastTabClickTime) < kDoubleClickUs Then
-		      mIsCollapsed = Not mIsCollapsed
-		      mIsPeeking = False
 		      mLastTabClickTime = 0
 		      mLastTabClickIndex = -1
-		      RaiseEvent CollapseStateChanged(mIsCollapsed)
 		      ClearHoverStates
-		      Me.Refresh
+		      SetCollapsed(Not mIsCollapsed)
 		      Return True
 		    End If
 
@@ -62,6 +61,7 @@ Inherits DesktopCanvas
 
 		    If mIsCollapsed Then
 		      mIsPeeking = True
+		      Me.Height = CType(mExpandedHeight, Integer)
 		    End If
 
 		    ClearHoverStates
@@ -109,6 +109,7 @@ Inherits DesktopCanvas
 		    // Dismiss peek after item action
 		    If mIsPeeking Then
 		      mIsPeeking = False
+		      Me.Height = CType(kTabStripHeight + 2, Integer)
 		    End If
 
 		    Me.Refresh
@@ -176,6 +177,7 @@ Inherits DesktopCanvas
 		  End If
 		  If mIsPeeking Then
 		    mIsPeeking = False
+		    Me.Height = CType(kTabStripHeight + 2, Integer)
 		  End If
 		  Me.Refresh
 		End Sub
@@ -307,6 +309,13 @@ Inherits DesktopCanvas
 		  If mIsCollapsed <> value Then
 		    mIsCollapsed = value
 		    mIsPeeking = False
+
+		    If mIsCollapsed Then
+		      Me.Height = CType(kTabStripHeight + 2, Integer)
+		    Else
+		      Me.Height = CType(mExpandedHeight, Integer)
+		    End If
+
 		    RaiseEvent CollapseStateChanged(mIsCollapsed)
 		    Me.Refresh
 		  End If
@@ -810,6 +819,10 @@ Inherits DesktopCanvas
 
 	#tag Property, Flags = &h21
 		Private mLastTabClickIndex As Integer = -1
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private mExpandedHeight As Double = 0
 	#tag EndProperty
 
 	#tag Property, Flags = &h21
