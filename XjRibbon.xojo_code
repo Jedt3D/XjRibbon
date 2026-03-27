@@ -164,14 +164,47 @@ Inherits DesktopCanvas
 		  For Each group As XjRibbonGroup In activeTab.mGroups
 		    Var itemX As Double = groupX + kGroupPaddingH
 		    Var itemAreaH As Double = contentH - kGroupLabelHeight
+		    Var idx As Integer = 0
 
-		    For Each item As XjRibbonItem In group.mItems
-		      item.mBoundsX = itemX
-		      item.mBoundsY = contentY
-		      item.mBoundsW = kLargeButtonWidth
-		      item.mBoundsH = itemAreaH
-		      itemX = itemX + kLargeButtonWidth + kItemGap
-		    Next
+		    While idx <= group.mItems.LastIndex
+		      Var item As XjRibbonItem = group.mItems(idx)
+
+		      If item.ItemType = 1 Then
+		        // Small button: batch consecutive small buttons (up to 3) into a vertical column
+		        Var batch() As XjRibbonItem
+		        Var maxTextW As Double = 0
+		        While idx <= group.mItems.LastIndex And group.mItems(idx).ItemType = 1 And batch.Count < 3
+		          batch.Add(group.mItems(idx))
+		          g.FontSize = 9
+		          Var tw As Double = g.TextWidth(group.mItems(idx).Caption)
+		          If tw > maxTextW Then maxTextW = tw
+		          idx = idx + 1
+		        Wend
+
+		        Var colWidth As Double = kSmallButtonIconSize + kSmallButtonTextPadding + maxTextW + kSmallButtonTextPadding * 2
+		        If colWidth < kSmallButtonMinWidth Then colWidth = kSmallButtonMinWidth
+
+		        Var totalRowH As Double = batch.Count * kSmallButtonHeight + (batch.Count - 1) * kSmallRowGap
+		        Var startY As Double = contentY + (itemAreaH - totalRowH) / 2
+
+		        For row As Integer = 0 To batch.LastIndex
+		          batch(row).mBoundsX = itemX
+		          batch(row).mBoundsY = startY + row * (kSmallButtonHeight + kSmallRowGap)
+		          batch(row).mBoundsW = colWidth
+		          batch(row).mBoundsH = kSmallButtonHeight
+		        Next
+
+		        itemX = itemX + colWidth + kItemGap
+		      Else
+		        // Large or Dropdown: full height column
+		        item.mBoundsX = itemX
+		        item.mBoundsY = contentY
+		        item.mBoundsW = kLargeButtonWidth
+		        item.mBoundsH = itemAreaH
+		        itemX = itemX + kLargeButtonWidth + kItemGap
+		        idx = idx + 1
+		      End If
+		    Wend
 
 		    Var groupInnerW As Double = itemX - groupX - kGroupPaddingH
 		    If group.mItems.Count > 0 Then
@@ -250,9 +283,14 @@ Inherits DesktopCanvas
 		  For groupIdx As Integer = 0 To activeTab.mGroups.LastIndex
 		    Var group As XjRibbonGroup = activeTab.mGroups(groupIdx)
 
-		    // Draw items
+		    // Draw items by type
 		    For Each item As XjRibbonItem In group.mItems
-		      DrawLargeButton(g, item)
+		      Select Case item.ItemType
+		      Case 1
+		        DrawSmallButton(g, item)
+		      Else
+		        DrawLargeButton(g, item)
+		      End Select
 		    Next
 
 		    // Draw group label
@@ -333,6 +371,58 @@ Inherits DesktopCanvas
 		  Var textW As Double = g.TextWidth(item.Caption)
 		  Var textX As Double = bx + (bw - textW) / 2
 		  Var textY As Double = iconY + iconSize + 12
+		  g.DrawText(item.Caption, textX, textY)
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Sub DrawSmallButton(g As Graphics, item As XjRibbonItem)
+		  Var bx As Double = item.mBoundsX
+		  Var by As Double = item.mBoundsY
+		  Var bw As Double = item.mBoundsW
+		  Var bh As Double = item.mBoundsH
+
+		  // Hover/pressed background
+		  If item.mIsPressed Then
+		    g.DrawingColor = cItemPressedBackground
+		    g.FillRoundRectangle(bx, by, bw, bh, 3, 3)
+		  ElseIf item.mIsHovered Then
+		    g.DrawingColor = cItemHoverBackground
+		    g.FillRoundRectangle(bx, by, bw, bh, 3, 3)
+		  End If
+
+		  // Icon (16x16) on the left
+		  Var iconX As Double = bx + 3
+		  Var iconY As Double = by + (bh - kSmallButtonIconSize) / 2
+
+		  If item.Icon <> Nil Then
+		    If item.IsEnabled Then
+		      g.DrawPicture(item.Icon, iconX, iconY, kSmallButtonIconSize, kSmallButtonIconSize, 0, 0, item.Icon.Width, item.Icon.Height)
+		    Else
+		      g.Transparency = 60
+		      g.DrawPicture(item.Icon, iconX, iconY, kSmallButtonIconSize, kSmallButtonIconSize, 0, 0, item.Icon.Width, item.Icon.Height)
+		      g.Transparency = 0
+		    End If
+		  Else
+		    // Small placeholder square
+		    If item.IsEnabled Then
+		      g.DrawingColor = cPlaceholderIcon
+		    Else
+		      g.DrawingColor = cPlaceholderIconDisabled
+		    End If
+		    g.FillRoundRectangle(iconX, iconY, kSmallButtonIconSize, kSmallButtonIconSize, 2, 2)
+		  End If
+
+		  // Text to the right of icon
+		  If item.IsEnabled Then
+		    g.DrawingColor = cItemText
+		  Else
+		    g.DrawingColor = cItemDisabledText
+		  End If
+		  g.FontSize = 9
+		  g.Bold = False
+		  Var textX As Double = iconX + kSmallButtonIconSize + kSmallButtonTextPadding
+		  Var textY As Double = by + (bh + g.TextHeight) / 2 - 1
 		  g.DrawText(item.Caption, textX, textY)
 		End Sub
 	#tag EndMethod
@@ -534,6 +624,21 @@ Inherits DesktopCanvas
 	#tag EndConstant
 
 	#tag Constant, Name = kItemGap, Type = Double, Dynamic = False, Default = \"4", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = kSmallButtonHeight, Type = Double, Dynamic = False, Default = \"22", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = kSmallButtonIconSize, Type = Double, Dynamic = False, Default = \"16", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = kSmallButtonMinWidth, Type = Double, Dynamic = False, Default = \"60", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = kSmallButtonTextPadding, Type = Double, Dynamic = False, Default = \"4", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = kSmallRowGap, Type = Double, Dynamic = False, Default = \"2", Scope = Private
 	#tag EndConstant
 
 	#tag Constant, Name = kItemTypeLarge, Type = Double, Dynamic = False, Default = \"0", Scope = Public
