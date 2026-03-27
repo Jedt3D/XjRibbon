@@ -186,6 +186,10 @@ Inherits WebCanvas
 		    End If
 
 		    RaiseEvent CollapseStateChanged(mIsCollapsed)
+
+		    // Move sibling controls below via JS
+		    AdjustSiblingPositions
+
 		    Me.Refresh
 		  End If
 		End Sub
@@ -234,7 +238,7 @@ Inherits WebCanvas
 		  For Each tab As XjRibbonTab In mTabs
 		    If tab.IsContextual And Not tab.IsContextVisible Then Continue
 
-		    Var textW As Double = MeasureTextWidth(tab.Caption, 11, False)
+		    Var textW As Double = MeasureTextWidth(tab.Caption, 13, False)
 		    tab.mBoundsX = tabX
 		    tab.mBoundsY = 0
 		    tab.mBoundsW = textW + kTabPaddingH * 2
@@ -300,7 +304,7 @@ Inherits WebCanvas
 		    End If
 		    groupInnerW = groupInnerW + kGroupPaddingH
 
-		    Var labelW As Double = MeasureTextWidth(group.Caption, 9, False) + kGroupPaddingH * 2
+		    Var labelW As Double = MeasureTextWidth(group.Caption, 11, False) + kGroupPaddingH * 2
 		    group.mBoundsX = groupX
 		    group.mBoundsY = contentY
 		    group.mBoundsW = Max(groupInnerW + kGroupPaddingH, labelW)
@@ -392,11 +396,11 @@ Inherits WebCanvas
 		    End If
 
 		    g.DrawingColor = cTabText
-		    g.FontSize = 11
+		    g.FontSize = 13
 		    g.Bold = False
-		    Var textW As Double = MeasureTextWidth(tab.Caption, 11, False)
+		    Var textW As Double = MeasureTextWidth(tab.Caption, 13, False)
 		    Var textX As Double = tab.mBoundsX + (tab.mBoundsW - textW) / 2
-		    Var textY As Double = tab.mBoundsY + (tab.mBoundsH + MeasureTextHeight(11)) / 2 - 2
+		    Var textY As Double = tab.mBoundsY + (tab.mBoundsH + MeasureTextHeight(13)) / 2 - 2
 		    g.DrawText(tab.Caption, textX, textY)
 		  Next
 
@@ -433,9 +437,9 @@ Inherits WebCanvas
 		    Next
 
 		    g.DrawingColor = cGroupLabelText
-		    g.FontSize = 9
+		    g.FontSize = 11
 		    g.Bold = False
-		    Var labelW As Double = MeasureTextWidth(group.Caption, 9, False)
+		    Var labelW As Double = MeasureTextWidth(group.Caption, 11, False)
 		    Var labelX As Double = group.mBoundsX + (group.mBoundsW - labelW) / 2
 		    Var labelY As Double = group.mBoundsY + group.mBoundsH - 3
 		    g.DrawText(group.Caption, labelX, labelY)
@@ -479,11 +483,11 @@ Inherits WebCanvas
 		    g.FillRoundRectangle(iconX, iconY, iconSize, iconSize, 4)
 
 		    g.DrawingColor = cPlaceholderIconText
-		    g.FontSize = 16
+		    g.FontSize = 19
 		    g.Bold = True
 		    Var letter As String = item.Caption.Left(1)
-		    Var letterW As Double = MeasureTextWidth(letter, 16, True)
-		    g.DrawText(letter, iconX + (iconSize - letterW) / 2, iconY + iconSize / 2 + MeasureTextHeight(16) / 2 - 3)
+		    Var letterW As Double = MeasureTextWidth(letter, 19, True)
+		    g.DrawText(letter, iconX + (iconSize - letterW) / 2, iconY + iconSize / 2 + MeasureTextHeight(19) / 2 - 3)
 		  End If
 
 		  If item.IsEnabled Then
@@ -491,9 +495,9 @@ Inherits WebCanvas
 		  Else
 		    g.DrawingColor = cItemDisabledText
 		  End If
-		  g.FontSize = 9
+		  g.FontSize = 11
 		  g.Bold = False
-		  Var textW As Double = MeasureTextWidth(item.Caption, 9, False)
+		  Var textW As Double = MeasureTextWidth(item.Caption, 11, False)
 		  Var textX As Double = bx + (bw - textW) / 2
 		  Var textY As Double = iconY + iconSize + 12
 		  g.DrawText(item.Caption, textX, textY)
@@ -537,10 +541,10 @@ Inherits WebCanvas
 		  Else
 		    g.DrawingColor = cItemDisabledText
 		  End If
-		  g.FontSize = 9
+		  g.FontSize = 11
 		  g.Bold = False
 		  Var textX As Double = iconX + kSmallButtonIconSize + kSmallButtonTextPadding
-		  Var textY As Double = by + (bh + MeasureTextHeight(9)) / 2 - 1
+		  Var textY As Double = by + (bh + MeasureTextHeight(11)) / 2 - 1
 		  g.DrawText(item.Caption, textX, textY)
 		End Sub
 	#tag EndMethod
@@ -566,6 +570,28 @@ Inherits WebCanvas
 		  g.DrawLine(arrowX, arrowY, midX, arrowY + arrowW / 2)
 		  g.DrawLine(midX, arrowY + arrowW / 2, arrowX + arrowW, arrowY)
 		  g.PenSize = 1
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Sub AdjustSiblingPositions()
+		  // Use JS to move all sibling elements below the ribbon canvas
+		  Var ctrlId As String = Me.ControlID
+		  Var newBottom As Integer = Me.Top + Me.Height
+		  Var js As String = "var ribbon = document.getElementById('" + ctrlId + "');" + _
+		    "if(ribbon && ribbon.parentElement){" + _
+		    "var siblings = ribbon.parentElement.children;" + _
+		    "var ribbonBottom = " + Str(newBottom) + ";" + _
+		    "for(var i=0;i<siblings.length;i++){" + _
+		    "var el = siblings[i];" + _
+		    "if(el === ribbon) continue;" + _
+		    "var elTop = parseInt(el.style.top) || 0;" + _
+		    "if(elTop > " + Str(Me.Top) + "){" + _
+		    "el.style.top = (ribbonBottom + 8) + 'px';" + _
+		    "}" + _
+		    "}" + _
+		    "}"
+		  Me.ExecuteJavaScript(js)
 		End Sub
 	#tag EndMethod
 
@@ -935,58 +961,58 @@ Inherits WebCanvas
 		Private cCollapseChevron As Color
 	#tag EndProperty
 
-	#tag Constant, Name = kTabStripHeight, Type = Double, Dynamic = False, Default = \"24", Scope = Private
+	#tag Constant, Name = kTabStripHeight, Type = Double, Dynamic = False, Default = \"29", Scope = Private
 	#tag EndConstant
 
-	#tag Constant, Name = kTabPaddingH, Type = Double, Dynamic = False, Default = \"16", Scope = Private
+	#tag Constant, Name = kTabPaddingH, Type = Double, Dynamic = False, Default = \"19", Scope = Private
 	#tag EndConstant
 
 	#tag Constant, Name = kTabGap, Type = Double, Dynamic = False, Default = \"2", Scope = Private
 	#tag EndConstant
 
-	#tag Constant, Name = kContentTop, Type = Double, Dynamic = False, Default = \"26", Scope = Private
+	#tag Constant, Name = kContentTop, Type = Double, Dynamic = False, Default = \"31", Scope = Private
 	#tag EndConstant
 
-	#tag Constant, Name = kContentPadding, Type = Double, Dynamic = False, Default = \"4", Scope = Private
+	#tag Constant, Name = kContentPadding, Type = Double, Dynamic = False, Default = \"5", Scope = Private
 	#tag EndConstant
 
-	#tag Constant, Name = kGroupLabelHeight, Type = Double, Dynamic = False, Default = \"16", Scope = Private
+	#tag Constant, Name = kGroupLabelHeight, Type = Double, Dynamic = False, Default = \"19", Scope = Private
 	#tag EndConstant
 
-	#tag Constant, Name = kGroupPaddingH, Type = Double, Dynamic = False, Default = \"8", Scope = Private
+	#tag Constant, Name = kGroupPaddingH, Type = Double, Dynamic = False, Default = \"10", Scope = Private
 	#tag EndConstant
 
-	#tag Constant, Name = kGroupGap, Type = Double, Dynamic = False, Default = \"8", Scope = Private
+	#tag Constant, Name = kGroupGap, Type = Double, Dynamic = False, Default = \"10", Scope = Private
 	#tag EndConstant
 
-	#tag Constant, Name = kLargeButtonWidth, Type = Double, Dynamic = False, Default = \"56", Scope = Private
+	#tag Constant, Name = kLargeButtonWidth, Type = Double, Dynamic = False, Default = \"67", Scope = Private
 	#tag EndConstant
 
-	#tag Constant, Name = kLargeButtonIconSize, Type = Double, Dynamic = False, Default = \"32", Scope = Private
+	#tag Constant, Name = kLargeButtonIconSize, Type = Double, Dynamic = False, Default = \"38", Scope = Private
 	#tag EndConstant
 
-	#tag Constant, Name = kItemGap, Type = Double, Dynamic = False, Default = \"4", Scope = Private
+	#tag Constant, Name = kItemGap, Type = Double, Dynamic = False, Default = \"5", Scope = Private
 	#tag EndConstant
 
-	#tag Constant, Name = kSmallButtonHeight, Type = Double, Dynamic = False, Default = \"22", Scope = Private
+	#tag Constant, Name = kSmallButtonHeight, Type = Double, Dynamic = False, Default = \"26", Scope = Private
 	#tag EndConstant
 
-	#tag Constant, Name = kSmallButtonIconSize, Type = Double, Dynamic = False, Default = \"16", Scope = Private
+	#tag Constant, Name = kSmallButtonIconSize, Type = Double, Dynamic = False, Default = \"19", Scope = Private
 	#tag EndConstant
 
-	#tag Constant, Name = kSmallButtonMinWidth, Type = Double, Dynamic = False, Default = \"60", Scope = Private
+	#tag Constant, Name = kSmallButtonMinWidth, Type = Double, Dynamic = False, Default = \"72", Scope = Private
 	#tag EndConstant
 
-	#tag Constant, Name = kSmallButtonTextPadding, Type = Double, Dynamic = False, Default = \"4", Scope = Private
+	#tag Constant, Name = kSmallButtonTextPadding, Type = Double, Dynamic = False, Default = \"5", Scope = Private
 	#tag EndConstant
 
 	#tag Constant, Name = kSmallRowGap, Type = Double, Dynamic = False, Default = \"2", Scope = Private
 	#tag EndConstant
 
-	#tag Constant, Name = kDropdownArrowSize, Type = Double, Dynamic = False, Default = \"6", Scope = Private
+	#tag Constant, Name = kDropdownArrowSize, Type = Double, Dynamic = False, Default = \"7", Scope = Private
 	#tag EndConstant
 
-	#tag Constant, Name = kCollapseChevronSize, Type = Double, Dynamic = False, Default = \"12", Scope = Private
+	#tag Constant, Name = kCollapseChevronSize, Type = Double, Dynamic = False, Default = \"14", Scope = Private
 	#tag EndConstant
 
 	#tag Constant, Name = kDoubleClickUs, Type = Double, Dynamic = False, Default = \"400000", Scope = Private
