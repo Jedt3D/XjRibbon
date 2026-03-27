@@ -13,7 +13,7 @@ Inherits WebCanvas
 	#tag EndEvent
 
 	#tag Event
-		Sub MouseDown(x As Integer, y As Integer)
+		Sub Pressed(x As Integer, y As Integer)
 		  // Hit-test tab headers
 		  Var hitTab As XjRibbonTab = HitTestTabs(x, y)
 		  If hitTab <> Nil Then
@@ -23,7 +23,6 @@ Inherits WebCanvas
 		        Exit
 		      End If
 		    Next
-		    ClearHoverStates
 		    Me.Refresh
 		    Return
 		  End If
@@ -31,69 +30,7 @@ Inherits WebCanvas
 		  // Hit-test items
 		  Var hitItem As XjRibbonItem = HitTestItems(x, y)
 		  If hitItem <> Nil And hitItem.IsEnabled Then
-		    mPressedItem = hitItem
-		    hitItem.mIsPressed = True
-		    Me.Refresh
-		  End If
-		End Sub
-	#tag EndEvent
-
-	#tag Event
-		Sub MouseUp(x As Integer, y As Integer)
-		  If mPressedItem <> Nil Then
-		    Var hitItem As XjRibbonItem = HitTestItems(x, y)
-		    If hitItem Is mPressedItem And mPressedItem.IsEnabled Then
-		      RaiseEvent ItemPressed(mPressedItem.Tag)
-		    End If
-		    mPressedItem.mIsPressed = False
-		    mPressedItem = Nil
-		    Me.Refresh
-		  End If
-		End Sub
-	#tag EndEvent
-
-	#tag Event
-		Sub MouseMove(x As Integer, y As Integer)
-		  Var needsRefresh As Boolean = False
-
-		  // Simulate MouseExit: check if cursor is outside bounds
-		  If x < 0 Or y < 0 Or x > Me.Width Or y > Me.Height Then
-		    If mHoveredTab <> Nil Or mHoveredItem <> Nil Then
-		      ClearHoverStates
-		      needsRefresh = True
-		    End If
-		    If needsRefresh Then Me.Refresh
-		    Return
-		  End If
-
-		  // Hit-test tab headers
-		  Var hitTab As XjRibbonTab = HitTestTabs(x, y)
-		  If Not (hitTab Is mHoveredTab) Then
-		    If mHoveredTab <> Nil Then
-		      mHoveredTab.mIsHovered = False
-		    End If
-		    mHoveredTab = hitTab
-		    If mHoveredTab <> Nil Then
-		      mHoveredTab.mIsHovered = True
-		    End If
-		    needsRefresh = True
-		  End If
-
-		  // Hit-test items
-		  Var hitItem As XjRibbonItem = HitTestItems(x, y)
-		  If Not (hitItem Is mHoveredItem) Then
-		    If mHoveredItem <> Nil Then
-		      mHoveredItem.mIsHovered = False
-		    End If
-		    mHoveredItem = hitItem
-		    If mHoveredItem <> Nil Then
-		      mHoveredItem.mIsHovered = True
-		    End If
-		    needsRefresh = True
-		  End If
-
-		  If needsRefresh Then
-		    Me.Refresh
+		    RaiseEvent ItemPressed(hitItem.Tag)
 		  End If
 		End Sub
 	#tag EndEvent
@@ -135,10 +72,11 @@ Inherits WebCanvas
 
 	#tag Method, Flags = &h21
 		Private Sub LayoutTabs(g As WebGraphics)
+		  #Pragma Unused g
 		  Var tabX As Double = kTabPaddingH
 
 		  For Each tab As XjRibbonTab In mTabs
-		    Var textW As Double = g.TextWidth(tab.Caption)
+		    Var textW As Double = MeasureTextWidth(tab.Caption, 11, False)
 		    tab.mBoundsX = tabX
 		    tab.mBoundsY = 0
 		    tab.mBoundsW = textW + kTabPaddingH * 2
@@ -171,7 +109,7 @@ Inherits WebCanvas
 		    End If
 		    groupInnerW = groupInnerW + kGroupPaddingH
 
-		    Var labelW As Double = g.TextWidth(group.Caption) + kGroupPaddingH * 2
+		    Var labelW As Double = MeasureTextWidth(group.Caption, 9, False) + kGroupPaddingH * 2
 		    group.mBoundsX = groupX
 		    group.mBoundsY = contentY
 		    group.mBoundsW = Max(groupInnerW + kGroupPaddingH, labelW)
@@ -251,9 +189,9 @@ Inherits WebCanvas
 		    g.DrawingColor = cTabText
 		    g.FontSize = 11
 		    g.Bold = False
-		    Var textW As Double = g.TextWidth(tab.Caption)
+		    Var textW As Double = MeasureTextWidth(tab.Caption, 11, False)
 		    Var textX As Double = tab.mBoundsX + (tab.mBoundsW - textW) / 2
-		    Var textY As Double = tab.mBoundsY + (tab.mBoundsH + g.TextHeight) / 2 - 2
+		    Var textY As Double = tab.mBoundsY + (tab.mBoundsH + MeasureTextHeight(11)) / 2 - 2
 		    g.DrawText(tab.Caption, textX, textY)
 		  Next
 
@@ -285,7 +223,7 @@ Inherits WebCanvas
 		    g.DrawingColor = cGroupLabelText
 		    g.FontSize = 9
 		    g.Bold = False
-		    Var labelW As Double = g.TextWidth(group.Caption)
+		    Var labelW As Double = MeasureTextWidth(group.Caption, 9, False)
 		    Var labelX As Double = group.mBoundsX + (group.mBoundsW - labelW) / 2
 		    Var labelY As Double = group.mBoundsY + group.mBoundsH - 3
 		    g.DrawText(group.Caption, labelX, labelY)
@@ -332,8 +270,8 @@ Inherits WebCanvas
 		    g.FontSize = 16
 		    g.Bold = True
 		    Var letter As String = item.Caption.Left(1)
-		    Var letterW As Double = g.TextWidth(letter)
-		    g.DrawText(letter, iconX + (iconSize - letterW) / 2, iconY + iconSize / 2 + g.TextHeight / 2 - 3)
+		    Var letterW As Double = MeasureTextWidth(letter, 16, True)
+		    g.DrawText(letter, iconX + (iconSize - letterW) / 2, iconY + iconSize / 2 + MeasureTextHeight(16) / 2 - 3)
 		  End If
 
 		  If item.IsEnabled Then
@@ -343,7 +281,7 @@ Inherits WebCanvas
 		  End If
 		  g.FontSize = 9
 		  g.Bold = False
-		  Var textW As Double = g.TextWidth(item.Caption)
+		  Var textW As Double = MeasureTextWidth(item.Caption, 9, False)
 		  Var textX As Double = bx + (bw - textW) / 2
 		  Var textY As Double = iconY + iconSize + 12
 		  g.DrawText(item.Caption, textX, textY)
@@ -380,6 +318,30 @@ Inherits WebCanvas
 	#tag EndMethod
 
 	#tag Method, Flags = &h21
+		Private Function MeasureTextWidth(text As String, fontSize As Double, bold As Boolean) As Double
+		  // WebGraphics has no TextWidth — use a Picture's Graphics to measure
+		  If mMeasurePic = Nil Then
+		    mMeasurePic = New Picture(1, 1)
+		  End If
+		  Var mg As Graphics = mMeasurePic.Graphics
+		  mg.FontSize = fontSize
+		  mg.Bold = bold
+		  Return mg.TextWidth(text)
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Function MeasureTextHeight(fontSize As Double) As Double
+		  If mMeasurePic = Nil Then
+		    mMeasurePic = New Picture(1, 1)
+		  End If
+		  Var mg As Graphics = mMeasurePic.Graphics
+		  mg.FontSize = fontSize
+		  Return mg.TextHeight
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
 		Private Sub ClearHoverStates()
 		  If mHoveredTab <> Nil Then
 		    mHoveredTab.mIsHovered = False
@@ -410,6 +372,10 @@ Inherits WebCanvas
 
 	#tag Property, Flags = &h21
 		Private mHoveredTab As XjRibbonTab
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private mMeasurePic As Picture
 	#tag EndProperty
 
 	#tag Property, Flags = &h21
