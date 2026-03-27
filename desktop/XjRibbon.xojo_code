@@ -13,11 +13,24 @@ Inherits DesktopCanvas
 		    DrawContentArea(g)
 		    DrawGroups(g)
 		  End If
+		  DrawCollapseChevron(g)
 		End Sub
 	#tag EndEvent
 
 	#tag Event
 		Function MouseDown(x As Integer, y As Integer) As Boolean
+		  // Hit-test collapse chevron
+		  If HitTestCollapseChevron(x, y) Then
+		    mIsCollapsed = Not mIsCollapsed
+		    mIsPeeking = False
+		    mLastTabClickTime = 0
+		    mLastTabClickIndex = -1
+		    RaiseEvent CollapseStateChanged(mIsCollapsed)
+		    ClearHoverStates
+		    Me.Refresh
+		    Return True
+		  End If
+
 		  // Hit-test tab headers
 		  Var hitTab As XjRibbonTab = HitTestTabs(x, y)
 		  If hitTab <> Nil Then
@@ -544,6 +557,40 @@ Inherits DesktopCanvas
 	#tag EndMethod
 
 	#tag Method, Flags = &h21
+		Private Sub DrawCollapseChevron(g As Graphics)
+		  Var chevX As Double = g.Width - kCollapseChevronSize - 8
+		  Var chevY As Double = (kTabStripHeight - kCollapseChevronSize) / 2
+		  Var midX As Double = chevX + kCollapseChevronSize / 2
+
+		  g.DrawingColor = cCollapseChevron
+		  g.PenSize = 1.5
+
+		  If mIsCollapsed Then
+		    // Down chevron (v) — "expand"
+		    Var topY As Double = chevY + 2
+		    g.DrawLine(chevX, topY, midX, topY + kCollapseChevronSize / 2)
+		    g.DrawLine(midX, topY + kCollapseChevronSize / 2, chevX + kCollapseChevronSize, topY)
+		  Else
+		    // Up chevron (^) — "collapse"
+		    Var botY As Double = chevY + kCollapseChevronSize - 2
+		    g.DrawLine(chevX, botY, midX, botY - kCollapseChevronSize / 2)
+		    g.DrawLine(midX, botY - kCollapseChevronSize / 2, chevX + kCollapseChevronSize, botY)
+		  End If
+
+		  g.PenSize = 1
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Function HitTestCollapseChevron(x As Double, y As Double) As Boolean
+		  Var chevX As Double = Me.Width - kCollapseChevronSize - 8
+		  Var chevY As Double = (kTabStripHeight - kCollapseChevronSize) / 2
+		  Return x >= chevX - 4 And x <= chevX + kCollapseChevronSize + 4 And _
+		    y >= chevY - 4 And y <= chevY + kCollapseChevronSize + 4
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
 		Private Function HitTestTabs(x As Double, y As Double) As XjRibbonTab
 		  For Each tab As XjRibbonTab In mTabs
 		    If x >= tab.mBoundsX And x < tab.mBoundsX + tab.mBoundsW And _
@@ -605,6 +652,7 @@ Inherits DesktopCanvas
 		    cPlaceholderIcon = Color.RGB(60, 150, 230)
 		    cPlaceholderIconDisabled = Color.RGB(80, 80, 80)
 		    cPlaceholderIconText = Color.RGB(255, 255, 255)
+		    cCollapseChevron = Color.RGB(150, 150, 150)
 		  Else
 		    cBackground = Color.RGB(245, 245, 245)
 		    cContentBackground = Color.RGB(255, 255, 255)
@@ -622,6 +670,7 @@ Inherits DesktopCanvas
 		    cPlaceholderIcon = Color.RGB(0, 120, 212)
 		    cPlaceholderIconDisabled = Color.RGB(180, 180, 180)
 		    cPlaceholderIconText = Color.RGB(255, 255, 255)
+		    cCollapseChevron = Color.RGB(120, 120, 120)
 		  End If
 		End Sub
 	#tag EndMethod
@@ -726,6 +775,10 @@ Inherits DesktopCanvas
 		Private cPlaceholderIconText As Color
 	#tag EndProperty
 
+	#tag Property, Flags = &h21
+		Private cCollapseChevron As Color
+	#tag EndProperty
+
 	#tag Constant, Name = kTabStripHeight, Type = Double, Dynamic = False, Default = \"24", Scope = Private
 	#tag EndConstant
 
@@ -775,6 +828,9 @@ Inherits DesktopCanvas
 	#tag EndConstant
 
 	#tag Constant, Name = kSmallRowGap, Type = Double, Dynamic = False, Default = \"2", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = kCollapseChevronSize, Type = Double, Dynamic = False, Default = \"12", Scope = Private
 	#tag EndConstant
 
 	#tag Constant, Name = kDoubleClickUs, Type = Double, Dynamic = False, Default = \"400000", Scope = Private
