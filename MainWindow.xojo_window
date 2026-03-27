@@ -59,20 +59,24 @@ End
 		  // === Home Tab ===
 		  Var homeTab As XjRibbonTab = XjRibbon1.AddTab("Home")
 
+		  // Clipboard: large Paste + small Cut/Copy (mixed layout demo)
 		  Var clipGroup As XjRibbonGroup = homeTab.AddNewGroup("Clipboard")
-		  Call clipGroup.AddLargeButton("Paste", "clipboard.paste")
-		  Call clipGroup.AddLargeButton("Cut", "clipboard.cut")
-		  Call clipGroup.AddLargeButton("Copy", "clipboard.copy")
+		  Var pasteItem As XjRibbonItem = clipGroup.AddLargeButton("Paste", "clipboard.paste")
+		  pasteItem.TooltipText = "Paste from clipboard (Cmd+V)"
+		  Call clipGroup.AddSmallButton("Cut", "clipboard.cut")
+		  Call clipGroup.AddSmallButton("Copy", "clipboard.copy")
 
+		  // Font: small buttons stacked 3-high
 		  Var fontGroup As XjRibbonGroup = homeTab.AddNewGroup("Font")
-		  Call fontGroup.AddLargeButton("Bold", "font.bold")
-		  Call fontGroup.AddLargeButton("Italic", "font.italic")
-		  Call fontGroup.AddLargeButton("Underline", "font.underline")
+		  Call fontGroup.AddSmallButton("Bold", "font.bold")
+		  Call fontGroup.AddSmallButton("Italic", "font.italic")
+		  Call fontGroup.AddSmallButton("Underline", "font.underline")
 
+		  // Paragraph: small buttons
 		  Var paraGroup As XjRibbonGroup = homeTab.AddNewGroup("Paragraph")
-		  Call paraGroup.AddLargeButton("Left", "para.left")
-		  Call paraGroup.AddLargeButton("Center", "para.center")
-		  Call paraGroup.AddLargeButton("Right", "para.right")
+		  Call paraGroup.AddSmallButton("Left", "para.left")
+		  Call paraGroup.AddSmallButton("Center", "para.center")
+		  Call paraGroup.AddSmallButton("Right", "para.right")
 
 		  // === Insert Tab ===
 		  Var insertTab As XjRibbonTab = XjRibbon1.AddTab("Insert")
@@ -80,9 +84,17 @@ End
 		  Var tableGroup As XjRibbonGroup = insertTab.AddNewGroup("Tables")
 		  Call tableGroup.AddLargeButton("Table", "insert.table")
 
+		  // Illustrations: large buttons + dropdown for Shapes
 		  Var imageGroup As XjRibbonGroup = insertTab.AddNewGroup("Illustrations")
 		  Call imageGroup.AddLargeButton("Picture", "insert.picture")
-		  Call imageGroup.AddLargeButton("Shapes", "insert.shapes")
+
+		  Var shapesBtn As XjRibbonItem = imageGroup.AddDropdownButton("Shapes", "insert.shapes")
+		  shapesBtn.TooltipText = "Insert a shape"
+		  shapesBtn.AddMenuItem("Rectangle", "shapes.rect")
+		  shapesBtn.AddMenuItem("Circle", "shapes.circle")
+		  shapesBtn.AddMenuItem("Arrow", "shapes.arrow")
+		  shapesBtn.AddMenuItem("Line", "shapes.line")
+
 		  Call imageGroup.AddLargeButton("Chart", "insert.chart")
 
 		  // === View Tab ===
@@ -94,8 +106,9 @@ End
 		  Call zoomGroup.AddLargeButton("100%", "view.zoom100")
 
 		  Var showGroup As XjRibbonGroup = viewTab.AddNewGroup("Show")
-		  Call showGroup.AddLargeButton("Ruler", "view.ruler")
-		  Call showGroup.AddLargeButton("Grid", "view.grid")
+		  Call showGroup.AddSmallButton("Ruler", "view.ruler")
+		  Call showGroup.AddSmallButton("Grid", "view.grid")
+		  Call showGroup.AddSmallButton("Guides", "view.guides")
 		End Sub
 	#tag EndEvent
 #tag EndWindowCode
@@ -104,6 +117,11 @@ End
 	#tag Event
 		Sub ItemPressed(tag As String)
 		  MessageBox("Ribbon item pressed: " + tag)
+		End Sub
+	#tag EndEvent
+	#tag Event
+		Sub DropdownMenuAction(itemTag As String, menuItemTag As String)
+		  MessageBox("Dropdown " + itemTag + " selected: " + menuItemTag)
 		End Sub
 	#tag EndEvent
 #tag EndEvents

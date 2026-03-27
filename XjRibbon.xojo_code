@@ -5,6 +5,7 @@ Inherits DesktopCanvas
 		Sub Paint(g As Graphics, areas() As Rect)
 		  #Pragma Unused areas
 
+		  ResolveColors
 		  LayoutTabs(g)
 		  DrawBackground(g)
 		  DrawTabStrip(g)
@@ -47,7 +48,21 @@ Inherits DesktopCanvas
 		  If mPressedItem <> Nil Then
 		    Var hitItem As XjRibbonItem = HitTestItems(x, y)
 		    If hitItem Is mPressedItem And mPressedItem.IsEnabled Then
-		      RaiseEvent ItemPressed(mPressedItem.Tag)
+		      If mPressedItem.ItemType = 2 And mPressedItem.mMenuItems.Count > 0 Then
+		        // Show dropdown popup menu
+		        Var baseMenu As New DesktopMenuItem
+		        For Each mi As DesktopMenuItem In mPressedItem.mMenuItems
+		          Var menuItem As New DesktopMenuItem(mi.Text)
+		          menuItem.Tag = mi.Tag
+		          baseMenu.AddMenu(menuItem)
+		        Next
+		        Var selected As DesktopMenuItem = baseMenu.PopUp
+		        If selected <> Nil Then
+		          RaiseEvent DropdownMenuAction(mPressedItem.Tag, selected.Tag.StringValue)
+		        End If
+		      Else
+		        RaiseEvent ItemPressed(mPressedItem.Tag)
+		      End If
 		    End If
 		    mPressedItem.mIsPressed = False
 		    mPressedItem = Nil
@@ -86,6 +101,21 @@ Inherits DesktopCanvas
 		    needsRefresh = True
 		  End If
 
+		  // Update per-item tooltip
+		  If mHoveredItem <> Nil And mHoveredItem.TooltipText <> "" Then
+		    If Me.Tooltip <> mHoveredItem.TooltipText Then
+		      Me.Tooltip = mHoveredItem.TooltipText
+		    End If
+		  ElseIf mHoveredTab <> Nil Then
+		    If Me.Tooltip <> mHoveredTab.Caption Then
+		      Me.Tooltip = mHoveredTab.Caption
+		    End If
+		  Else
+		    If Me.Tooltip <> "" Then
+		      Me.Tooltip = ""
+		    End If
+		  End If
+
 		  If needsRefresh Then
 		    Me.Refresh
 		  End If
@@ -105,6 +135,10 @@ Inherits DesktopCanvas
 
 	#tag Hook, Flags = &h0
 		Event ItemPressed(tag As String)
+	#tag EndHook
+
+	#tag Hook, Flags = &h0
+		Event DropdownMenuAction(itemTag As String, menuItemTag As String)
 	#tag EndHook
 
 	#tag Method, Flags = &h0
@@ -163,14 +197,47 @@ Inherits DesktopCanvas
 		  For Each group As XjRibbonGroup In activeTab.mGroups
 		    Var itemX As Double = groupX + kGroupPaddingH
 		    Var itemAreaH As Double = contentH - kGroupLabelHeight
+		    Var idx As Integer = 0
 
-		    For Each item As XjRibbonItem In group.mItems
-		      item.mBoundsX = itemX
-		      item.mBoundsY = contentY
-		      item.mBoundsW = kLargeButtonWidth
-		      item.mBoundsH = itemAreaH
-		      itemX = itemX + kLargeButtonWidth + kItemGap
-		    Next
+		    While idx <= group.mItems.LastIndex
+		      Var item As XjRibbonItem = group.mItems(idx)
+
+		      If item.ItemType = 1 Then
+		        // Small button: batch consecutive small buttons (up to 3) into a vertical column
+		        Var batch() As XjRibbonItem
+		        Var maxTextW As Double = 0
+		        While idx <= group.mItems.LastIndex And group.mItems(idx).ItemType = 1 And batch.Count < 3
+		          batch.Add(group.mItems(idx))
+		          g.FontSize = 9
+		          Var tw As Double = g.TextWidth(group.mItems(idx).Caption)
+		          If tw > maxTextW Then maxTextW = tw
+		          idx = idx + 1
+		        Wend
+
+		        Var colWidth As Double = kSmallButtonIconSize + kSmallButtonTextPadding + maxTextW + kSmallButtonTextPadding * 2
+		        If colWidth < kSmallButtonMinWidth Then colWidth = kSmallButtonMinWidth
+
+		        Var totalRowH As Double = batch.Count * kSmallButtonHeight + (batch.Count - 1) * kSmallRowGap
+		        Var startY As Double = contentY + (itemAreaH - totalRowH) / 2
+
+		        For row As Integer = 0 To batch.LastIndex
+		          batch(row).mBoundsX = itemX
+		          batch(row).mBoundsY = startY + row * (kSmallButtonHeight + kSmallRowGap)
+		          batch(row).mBoundsW = colWidth
+		          batch(row).mBoundsH = kSmallButtonHeight
+		        Next
+
+		        itemX = itemX + colWidth + kItemGap
+		      Else
+		        // Large or Dropdown: full height column
+		        item.mBoundsX = itemX
+		        item.mBoundsY = contentY
+		        item.mBoundsW = kLargeButtonWidth
+		        item.mBoundsH = itemAreaH
+		        itemX = itemX + kLargeButtonWidth + kItemGap
+		        idx = idx + 1
+		      End If
+		    Wend
 
 		    Var groupInnerW As Double = itemX - groupX - kGroupPaddingH
 		    If group.mItems.Count > 0 Then
@@ -191,11 +258,11 @@ Inherits DesktopCanvas
 
 	#tag Method, Flags = &h21
 		Private Sub DrawBackground(g As Graphics)
-		  g.DrawingColor = Color.RGB(245, 245, 245)
+		  g.DrawingColor = cBackground
 		  g.FillRectangle(0, 0, g.Width, g.Height)
 
 		  // Bottom border
-		  g.DrawingColor = Color.RGB(210, 210, 210)
+		  g.DrawingColor = cBorder
 		  g.FillRectangle(0, g.Height - 1, g.Width, 1)
 		End Sub
 	#tag EndMethod
@@ -206,21 +273,19 @@ Inherits DesktopCanvas
 		    Var tab As XjRibbonTab = mTabs(i)
 
 		    If i = mActiveTabIndex Then
-		      // Active tab: white background
-		      g.DrawingColor = Color.RGB(255, 255, 255)
+		      g.DrawingColor = cTabActiveBackground
 		      g.FillRectangle(tab.mBoundsX, tab.mBoundsY, tab.mBoundsW, tab.mBoundsH)
 
-		      // Blue accent line at top
-		      g.DrawingColor = Color.RGB(0, 120, 212)
+		      // Accent line at top
+		      g.DrawingColor = cTabAccent
 		      g.FillRectangle(tab.mBoundsX, 0, tab.mBoundsW, 2)
 		    ElseIf tab.mIsHovered Then
-		      // Hovered tab: light blue
-		      g.DrawingColor = Color.RGB(230, 240, 250)
+		      g.DrawingColor = cTabHoverBackground
 		      g.FillRectangle(tab.mBoundsX, tab.mBoundsY, tab.mBoundsW, tab.mBoundsH)
 		    End If
 
 		    // Tab text
-		    g.DrawingColor = Color.RGB(60, 60, 60)
+		    g.DrawingColor = cTabText
 		    g.FontSize = 11
 		    g.Bold = False
 		    Var textW As Double = g.TextWidth(tab.Caption)
@@ -230,15 +295,14 @@ Inherits DesktopCanvas
 		  Next
 
 		  // Tab strip bottom border
-		  g.DrawingColor = Color.RGB(210, 210, 210)
+		  g.DrawingColor = cBorder
 		  g.FillRectangle(0, kTabStripHeight, g.Width, 1)
 		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h21
 		Private Sub DrawContentArea(g As Graphics)
-		  // White content area below tab strip
-		  g.DrawingColor = Color.RGB(255, 255, 255)
+		  g.DrawingColor = cContentBackground
 		  g.FillRectangle(0, kContentTop, g.Width, g.Height - kContentTop - 1)
 		End Sub
 	#tag EndMethod
@@ -252,13 +316,20 @@ Inherits DesktopCanvas
 		  For groupIdx As Integer = 0 To activeTab.mGroups.LastIndex
 		    Var group As XjRibbonGroup = activeTab.mGroups(groupIdx)
 
-		    // Draw items
+		    // Draw items by type
 		    For Each item As XjRibbonItem In group.mItems
-		      DrawLargeButton(g, item)
+		      Select Case item.ItemType
+		      Case 1
+		        DrawSmallButton(g, item)
+		      Case 2
+		        DrawDropdownButton(g, item)
+		      Else
+		        DrawLargeButton(g, item)
+		      End Select
 		    Next
 
 		    // Draw group label
-		    g.DrawingColor = Color.RGB(120, 120, 120)
+		    g.DrawingColor = cGroupLabelText
 		    g.FontSize = 9
 		    g.Bold = False
 		    Var labelW As Double = g.TextWidth(group.Caption)
@@ -268,7 +339,7 @@ Inherits DesktopCanvas
 
 		    // Draw separator on right edge (except for last group)
 		    If groupIdx < activeTab.mGroups.LastIndex Then
-		      g.DrawingColor = Color.RGB(220, 220, 220)
+		      g.DrawingColor = cGroupSeparator
 		      Var sepX As Double = group.mBoundsX + group.mBoundsW + kGroupGap / 2
 		      g.FillRectangle(sepX, group.mBoundsY + 2, 1, group.mBoundsH - kGroupLabelHeight - 4)
 		    End If
@@ -285,38 +356,50 @@ Inherits DesktopCanvas
 
 		  // Background for hover/pressed states
 		  If item.mIsPressed Then
-		    g.DrawingColor = Color.RGB(200, 220, 240)
+		    g.DrawingColor = cItemPressedBackground
 		    g.FillRoundRectangle(bx, by, bw, bh, 4, 4)
 		  ElseIf item.mIsHovered Then
-		    g.DrawingColor = Color.RGB(220, 235, 250)
+		    g.DrawingColor = cItemHoverBackground
 		    g.FillRoundRectangle(bx, by, bw, bh, 4, 4)
 		  End If
 
-		  // Placeholder icon (colored rectangle)
+		  // Icon area
 		  Var iconSize As Double = kLargeButtonIconSize
 		  Var iconX As Double = bx + (bw - iconSize) / 2
 		  Var iconY As Double = by + 6
 
-		  If item.IsEnabled Then
-		    g.DrawingColor = Color.RGB(0, 120, 212)
+		  If item.Icon <> Nil Then
+		    // Draw real icon
+		    If item.IsEnabled Then
+		      g.DrawPicture(item.Icon, iconX, iconY, iconSize, iconSize, 0, 0, item.Icon.Width, item.Icon.Height)
+		    Else
+		      g.Transparency = 60
+		      g.DrawPicture(item.Icon, iconX, iconY, iconSize, iconSize, 0, 0, item.Icon.Width, item.Icon.Height)
+		      g.Transparency = 0
+		    End If
 		  Else
-		    g.DrawingColor = Color.RGB(180, 180, 180)
-		  End If
-		  g.FillRoundRectangle(iconX, iconY, iconSize, iconSize, 4, 4)
+		    // Placeholder icon (colored rectangle)
+		    If item.IsEnabled Then
+		      g.DrawingColor = cPlaceholderIcon
+		    Else
+		      g.DrawingColor = cPlaceholderIconDisabled
+		    End If
+		    g.FillRoundRectangle(iconX, iconY, iconSize, iconSize, 4, 4)
 
-		  // Icon letter (first char of caption as visual hint)
-		  g.DrawingColor = Color.RGB(255, 255, 255)
-		  g.FontSize = 16
-		  g.Bold = True
-		  Var letter As String = item.Caption.Left(1)
-		  Var letterW As Double = g.TextWidth(letter)
-		  g.DrawText(letter, iconX + (iconSize - letterW) / 2, iconY + iconSize / 2 + g.TextHeight / 2 - 3)
+		    // Icon letter (first char of caption as visual hint)
+		    g.DrawingColor = cPlaceholderIconText
+		    g.FontSize = 16
+		    g.Bold = True
+		    Var letter As String = item.Caption.Left(1)
+		    Var letterW As Double = g.TextWidth(letter)
+		    g.DrawText(letter, iconX + (iconSize - letterW) / 2, iconY + iconSize / 2 + g.TextHeight / 2 - 3)
+		  End If
 
 		  // Button text below icon
 		  If item.IsEnabled Then
-		    g.DrawingColor = Color.RGB(60, 60, 60)
+		    g.DrawingColor = cItemText
 		  Else
-		    g.DrawingColor = Color.RGB(160, 160, 160)
+		    g.DrawingColor = cItemDisabledText
 		  End If
 		  g.FontSize = 9
 		  g.Bold = False
@@ -324,6 +407,82 @@ Inherits DesktopCanvas
 		  Var textX As Double = bx + (bw - textW) / 2
 		  Var textY As Double = iconY + iconSize + 12
 		  g.DrawText(item.Caption, textX, textY)
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Sub DrawSmallButton(g As Graphics, item As XjRibbonItem)
+		  Var bx As Double = item.mBoundsX
+		  Var by As Double = item.mBoundsY
+		  Var bw As Double = item.mBoundsW
+		  Var bh As Double = item.mBoundsH
+
+		  // Hover/pressed background
+		  If item.mIsPressed Then
+		    g.DrawingColor = cItemPressedBackground
+		    g.FillRoundRectangle(bx, by, bw, bh, 3, 3)
+		  ElseIf item.mIsHovered Then
+		    g.DrawingColor = cItemHoverBackground
+		    g.FillRoundRectangle(bx, by, bw, bh, 3, 3)
+		  End If
+
+		  // Icon (16x16) on the left
+		  Var iconX As Double = bx + 3
+		  Var iconY As Double = by + (bh - kSmallButtonIconSize) / 2
+
+		  If item.Icon <> Nil Then
+		    If item.IsEnabled Then
+		      g.DrawPicture(item.Icon, iconX, iconY, kSmallButtonIconSize, kSmallButtonIconSize, 0, 0, item.Icon.Width, item.Icon.Height)
+		    Else
+		      g.Transparency = 60
+		      g.DrawPicture(item.Icon, iconX, iconY, kSmallButtonIconSize, kSmallButtonIconSize, 0, 0, item.Icon.Width, item.Icon.Height)
+		      g.Transparency = 0
+		    End If
+		  Else
+		    // Small placeholder square
+		    If item.IsEnabled Then
+		      g.DrawingColor = cPlaceholderIcon
+		    Else
+		      g.DrawingColor = cPlaceholderIconDisabled
+		    End If
+		    g.FillRoundRectangle(iconX, iconY, kSmallButtonIconSize, kSmallButtonIconSize, 2, 2)
+		  End If
+
+		  // Text to the right of icon
+		  If item.IsEnabled Then
+		    g.DrawingColor = cItemText
+		  Else
+		    g.DrawingColor = cItemDisabledText
+		  End If
+		  g.FontSize = 9
+		  g.Bold = False
+		  Var textX As Double = iconX + kSmallButtonIconSize + kSmallButtonTextPadding
+		  Var textY As Double = by + (bh + g.TextHeight) / 2 - 1
+		  g.DrawText(item.Caption, textX, textY)
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Sub DrawDropdownButton(g As Graphics, item As XjRibbonItem)
+		  // Draw the base button like a large button
+		  DrawLargeButton(g, item)
+
+		  // Draw dropdown arrow chevron below the text
+		  Var arrowW As Double = kDropdownArrowSize
+		  Var arrowX As Double = item.mBoundsX + (item.mBoundsW - arrowW) / 2
+		  Var arrowY As Double = item.mBoundsY + item.mBoundsH - 6
+
+		  If item.IsEnabled Then
+		    g.DrawingColor = cItemText
+		  Else
+		    g.DrawingColor = cItemDisabledText
+		  End If
+
+		  Var midX As Double = arrowX + arrowW / 2
+		  g.PenSize = 1.5
+		  g.DrawLine(arrowX, arrowY, midX, arrowY + arrowW / 2)
+		  g.DrawLine(midX, arrowY + arrowW / 2, arrowX + arrowW, arrowY)
+		  g.PenSize = 1
 		End Sub
 	#tag EndMethod
 
@@ -369,6 +528,46 @@ Inherits DesktopCanvas
 		End Sub
 	#tag EndMethod
 
+	#tag Method, Flags = &h21
+		Private Sub ResolveColors()
+		  If Color.IsDarkMode Then
+		    cBackground = Color.RGB(40, 40, 40)
+		    cContentBackground = Color.RGB(50, 50, 50)
+		    cBorder = Color.RGB(70, 70, 70)
+		    cTabText = Color.RGB(220, 220, 220)
+		    cTabActiveBackground = Color.RGB(50, 50, 50)
+		    cTabHoverBackground = Color.RGB(60, 70, 80)
+		    cTabAccent = Color.RGB(60, 150, 230)
+		    cItemText = Color.RGB(220, 220, 220)
+		    cItemDisabledText = Color.RGB(100, 100, 100)
+		    cItemHoverBackground = Color.RGB(70, 80, 95)
+		    cItemPressedBackground = Color.RGB(55, 70, 90)
+		    cGroupLabelText = Color.RGB(150, 150, 150)
+		    cGroupSeparator = Color.RGB(70, 70, 70)
+		    cPlaceholderIcon = Color.RGB(60, 150, 230)
+		    cPlaceholderIconDisabled = Color.RGB(80, 80, 80)
+		    cPlaceholderIconText = Color.RGB(255, 255, 255)
+		  Else
+		    cBackground = Color.RGB(245, 245, 245)
+		    cContentBackground = Color.RGB(255, 255, 255)
+		    cBorder = Color.RGB(210, 210, 210)
+		    cTabText = Color.RGB(60, 60, 60)
+		    cTabActiveBackground = Color.RGB(255, 255, 255)
+		    cTabHoverBackground = Color.RGB(230, 240, 250)
+		    cTabAccent = Color.RGB(0, 120, 212)
+		    cItemText = Color.RGB(60, 60, 60)
+		    cItemDisabledText = Color.RGB(160, 160, 160)
+		    cItemHoverBackground = Color.RGB(220, 235, 250)
+		    cItemPressedBackground = Color.RGB(200, 220, 240)
+		    cGroupLabelText = Color.RGB(120, 120, 120)
+		    cGroupSeparator = Color.RGB(220, 220, 220)
+		    cPlaceholderIcon = Color.RGB(0, 120, 212)
+		    cPlaceholderIconDisabled = Color.RGB(180, 180, 180)
+		    cPlaceholderIconText = Color.RGB(255, 255, 255)
+		  End If
+		End Sub
+	#tag EndMethod
+
 	#tag Property, Flags = &h0
 		mTabs() As XjRibbonTab
 	#tag EndProperty
@@ -387,6 +586,70 @@ Inherits DesktopCanvas
 
 	#tag Property, Flags = &h21
 		Private mHoveredTab As XjRibbonTab
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private cBackground As Color
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private cContentBackground As Color
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private cBorder As Color
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private cTabText As Color
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private cTabActiveBackground As Color
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private cTabHoverBackground As Color
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private cTabAccent As Color
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private cItemText As Color
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private cItemDisabledText As Color
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private cItemHoverBackground As Color
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private cItemPressedBackground As Color
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private cGroupLabelText As Color
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private cGroupSeparator As Color
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private cPlaceholderIcon As Color
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private cPlaceholderIconDisabled As Color
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private cPlaceholderIconText As Color
 	#tag EndProperty
 
 	#tag Constant, Name = kTabStripHeight, Type = Double, Dynamic = False, Default = \"24", Scope = Private
@@ -420,6 +683,33 @@ Inherits DesktopCanvas
 	#tag EndConstant
 
 	#tag Constant, Name = kItemGap, Type = Double, Dynamic = False, Default = \"4", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = kDropdownArrowSize, Type = Double, Dynamic = False, Default = \"6", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = kSmallButtonHeight, Type = Double, Dynamic = False, Default = \"22", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = kSmallButtonIconSize, Type = Double, Dynamic = False, Default = \"16", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = kSmallButtonMinWidth, Type = Double, Dynamic = False, Default = \"60", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = kSmallButtonTextPadding, Type = Double, Dynamic = False, Default = \"4", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = kSmallRowGap, Type = Double, Dynamic = False, Default = \"2", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = kItemTypeLarge, Type = Double, Dynamic = False, Default = \"0", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = kItemTypeSmall, Type = Double, Dynamic = False, Default = \"1", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = kItemTypeDropdown, Type = Double, Dynamic = False, Default = \"2", Scope = Public
 	#tag EndConstant
 
 	#tag ViewBehavior
