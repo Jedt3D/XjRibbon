@@ -51,6 +51,68 @@ Begin DesktopWindow MainWindow
       Visible         =   True
       Width           =   600
    End
+   Begin DesktopButton ShowTableToolsButton
+      AllowAutoDeactivate=   True
+      Bold            =   False
+      Cancel          =   False
+      Caption         =   "Show Table Tools"
+      Default         =   False
+      Enabled         =   True
+      FontName        =   "System"
+      FontSize        =   0.0
+      FontUnit        =   0
+      Height          =   20
+      Index           =   -2147483648
+      Italic          =   False
+      Left            =   20
+      LockBottom      =   False
+      LockedInPosition=   False
+      LockLeft        =   True
+      LockRight       =   False
+      LockTop         =   True
+      MacButtonStyle  =   0
+      Scope           =   0
+      TabIndex        =   1
+      TabPanelIndex   =   0
+      TabStop         =   True
+      Tooltip         =   ""
+      Top             =   140
+      Transparent     =   False
+      Underline       =   False
+      Visible         =   True
+      Width           =   140
+   End
+   Begin DesktopButton ShowPictureToolsButton
+      AllowAutoDeactivate=   True
+      Bold            =   False
+      Cancel          =   False
+      Caption         =   "Show Picture Tools"
+      Default         =   False
+      Enabled         =   True
+      FontName        =   "System"
+      FontSize        =   0.0
+      FontUnit        =   0
+      Height          =   20
+      Index           =   -2147483648
+      Italic          =   False
+      Left            =   170
+      LockBottom      =   False
+      LockedInPosition=   False
+      LockLeft        =   True
+      LockRight       =   False
+      LockTop         =   True
+      MacButtonStyle  =   0
+      Scope           =   0
+      TabIndex        =   2
+      TabPanelIndex   =   0
+      TabStop         =   True
+      Tooltip         =   ""
+      Top             =   140
+      Transparent     =   False
+      Underline       =   False
+      Visible         =   True
+      Width           =   140
+   End
 End
 #tag EndDesktopWindow
 
@@ -110,11 +172,53 @@ End
 		  Call showGroup.AddSmallButton("Ruler", "view.ruler")
 		  Call showGroup.AddSmallButton("Grid", "view.grid")
 		  Call showGroup.AddSmallButton("Guides", "view.guides")
+
+		  // === Contextual Tab: Table Tools ===
+		  Var tableDesign As XjRibbonTab = XjRibbon1.AddContextualTab("Design", "Table Tools", Color.RGB(0, 128, 0))
+		  Var styleGroup As XjRibbonGroup = tableDesign.AddNewGroup("Table Styles")
+		  Call styleGroup.AddLargeButton("Style 1", "table.style1")
+		  Call styleGroup.AddLargeButton("Style 2", "table.style2")
+		  Call styleGroup.AddLargeButton("Style 3", "table.style3")
+
+		  // === Contextual Tab: Picture Tools ===
+		  Var picFormat As XjRibbonTab = XjRibbon1.AddContextualTab("Format", "Picture Tools", Color.RGB(200, 120, 0))
+		  Var adjustGroup As XjRibbonGroup = picFormat.AddNewGroup("Adjust")
+		  Call adjustGroup.AddLargeButton("Brightness", "pic.brightness")
+		  Call adjustGroup.AddLargeButton("Contrast", "pic.contrast")
+		  Call adjustGroup.AddLargeButton("Crop", "pic.crop")
 		End Sub
 	#tag EndEvent
 
 
 #tag EndWindowCode
+
+#tag Events ShowTableToolsButton
+	#tag Event
+		Sub Pressed()
+		  If XjRibbon1.IsContextualTabVisible("Table Tools") Then
+		    XjRibbon1.HideContextualTabs("Table Tools")
+		    Me.Caption = "Show Table Tools"
+		  Else
+		    XjRibbon1.ShowContextualTabs("Table Tools")
+		    Me.Caption = "Hide Table Tools"
+		  End If
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+
+#tag Events ShowPictureToolsButton
+	#tag Event
+		Sub Pressed()
+		  If XjRibbon1.IsContextualTabVisible("Picture Tools") Then
+		    XjRibbon1.HideContextualTabs("Picture Tools")
+		    Me.Caption = "Show Picture Tools"
+		  Else
+		    XjRibbon1.ShowContextualTabs("Picture Tools")
+		    Me.Caption = "Hide Picture Tools"
+		  End If
+		End Sub
+	#tag EndEvent
+#tag EndEvents
 
 #tag Events XjRibbon1
 	#tag Event
