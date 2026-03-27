@@ -76,7 +76,7 @@ Begin DesktopWindow MainWindow
       TabPanelIndex   =   0
       TabStop         =   True
       Tooltip         =   ""
-      Top             =   140
+      Top             =   132
       Transparent     =   False
       Underline       =   False
       Visible         =   True
@@ -107,7 +107,7 @@ Begin DesktopWindow MainWindow
       TabPanelIndex   =   0
       TabStop         =   True
       Tooltip         =   ""
-      Top             =   140
+      Top             =   132
       Transparent     =   False
       Underline       =   False
       Visible         =   True
@@ -229,6 +229,15 @@ End
 	#tag Event
 		Sub DropdownMenuAction(itemTag As String, menuItemTag As String)
 		  MessageBox("Dropdown " + itemTag + " selected: " + menuItemTag)
+		End Sub
+	#tag EndEvent
+	#tag Event
+		Sub CollapseStateChanged(isCollapsed As Boolean)
+		  #Pragma Unused isCollapsed
+		  // Reposition controls below the ribbon
+		  Var newTop As Integer = XjRibbon1.BottomEdge + 10
+		  ShowTableToolsButton.Top = newTop
+		  ShowPictureToolsButton.Top = newTop
 		End Sub
 	#tag EndEvent
 #tag EndEvents
