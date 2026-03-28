@@ -32,7 +32,6 @@ Begin WebPage MainWebPage
    _ImplicitInstance=   False
    _mDesignHeight  =   0
    _mDesignWidth   =   0
-   _mName          =   ""
    _mPanelIndex    =   -1
    Begin XjRibbon XjRibbon1
       ControlID       =   ""
@@ -89,7 +88,7 @@ Begin WebPage MainWebPage
       TabIndex        =   2
       TabStop         =   True
       Tooltip         =   ""
-      Top             =   129
+      Top             =   154
       Visible         =   True
       Width           =   585
       _mDesignHeight  =   0
@@ -119,9 +118,10 @@ Begin WebPage MainWebPage
          Parent          =   "Rectangle1"
          Scope           =   0
          TabIndex        =   0
+         TabPanelIndex   =   0
          TabStop         =   True
          Tooltip         =   ""
-         Top             =   149
+         Top             =   174
          Visible         =   True
          Width           =   100
          _mPanelIndex    =   -1
@@ -150,9 +150,10 @@ Begin WebPage MainWebPage
          Parent          =   "Rectangle1"
          Scope           =   0
          TabIndex        =   3
+         TabPanelIndex   =   0
          TabStop         =   True
          Tooltip         =   ""
-         Top             =   149
+         Top             =   174
          Visible         =   True
          Width           =   100
          _mPanelIndex    =   -1
