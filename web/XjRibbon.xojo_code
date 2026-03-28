@@ -155,7 +155,7 @@ Inherits WebCanvas
 		        Var maxTextW As Double = 0
 		        While idx <= group.mItems.LastIndex And group.mItems(idx).ItemType = 1 And batch.Count < 3
 		          batch.Add(group.mItems(idx))
-		          Var tw As Double = MeasureTextWidth(group.mItems(idx).Caption, 9, False)
+		          Var tw As Double = MeasureTextWidth(group.mItems(idx).Caption, 11, False)
 		          If tw > maxTextW Then maxTextW = tw
 		          idx = idx + 1
 		        Wend
@@ -191,7 +191,7 @@ Inherits WebCanvas
 		    End If
 		    groupInnerW = groupInnerW + kGroupPaddingH
 
-		    Var labelW As Double = MeasureTextWidth(group.Caption, 9, False) + kGroupPaddingH * 2
+		    Var labelW As Double = MeasureTextWidth(group.Caption, 11, False) + kGroupPaddingH * 2
 		    group.mBoundsX = groupX
 		    group.mBoundsY = contentY
 		    group.mBoundsW = Max(groupInnerW + kGroupPaddingH, labelW)
@@ -316,7 +316,7 @@ Inherits WebCanvas
 		    g.DrawingColor = cGroupLabelText
 		    g.FontSize = 9
 		    g.Bold = False
-		    Var labelW As Double = MeasureTextWidth(group.Caption, 9, False)
+		    Var labelW As Double = MeasureTextWidth(group.Caption, 11, False)
 		    Var labelX As Double = group.mBoundsX + (group.mBoundsW - labelW) / 2
 		    Var labelY As Double = group.mBoundsY + group.mBoundsH - 3
 		    g.DrawText(group.Caption, labelX, labelY)
@@ -383,7 +383,7 @@ Inherits WebCanvas
 		  End If
 		  g.FontSize = 9
 		  g.Bold = False
-		  Var textW As Double = MeasureTextWidth(item.Caption, 9, False)
+		  Var textW As Double = MeasureTextWidth(item.Caption, 11, False)
 		  Var textX As Double = bx + (bw - textW) / 2
 		  Var textY As Double = iconY + iconSize + 12
 		  g.DrawText(item.Caption, textX, textY)
