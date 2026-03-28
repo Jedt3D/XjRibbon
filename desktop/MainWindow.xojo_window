@@ -121,7 +121,8 @@ End
 		Sub Opening()
 		  // === Home Tab ===
 		  Var homeTab As XjRibbonTab = XjRibbon1.AddTab("Home")
-		  
+		  homeTab.KeyTip = "H"
+
 		  // Clipboard: large Paste + small Cut/Copy (mixed layout demo)
 		  Var clipGroup As XjRibbonGroup = homeTab.AddNewGroup("Clipboard")
 		  Var pasteItem As XjRibbonItem = clipGroup.AddLargeButton("Paste", "clipboard.paste")
@@ -129,11 +130,14 @@ End
 		  Call clipGroup.AddSmallButton("Cut", "clipboard.cut")
 		  Call clipGroup.AddSmallButton("Copy", "clipboard.copy")
 		  
-		  // Font: small buttons stacked 3-high
+		  // Font: small toggle buttons stacked 3-high
 		  Var fontGroup As XjRibbonGroup = homeTab.AddNewGroup("Font")
-		  Call fontGroup.AddSmallButton("Bold", "font.bold")
-		  Call fontGroup.AddSmallButton("Italic", "font.italic")
-		  Call fontGroup.AddSmallButton("Underline", "font.underline")
+		  Var boldItem As XjRibbonItem = fontGroup.AddSmallButton("Bold", "font.bold")
+		  boldItem.IsToggle = True
+		  Var italicItem As XjRibbonItem = fontGroup.AddSmallButton("Italic", "font.italic")
+		  italicItem.IsToggle = True
+		  Var underlineItem As XjRibbonItem = fontGroup.AddSmallButton("Underline", "font.underline")
+		  underlineItem.IsToggle = True
 		  
 		  // Paragraph: small buttons
 		  Var paraGroup As XjRibbonGroup = homeTab.AddNewGroup("Paragraph")
@@ -143,6 +147,7 @@ End
 		  
 		  // === Insert Tab ===
 		  Var insertTab As XjRibbonTab = XjRibbon1.AddTab("Insert")
+		  insertTab.KeyTip = "N"
 		  
 		  Var tableGroup As XjRibbonGroup = insertTab.AddNewGroup("Tables")
 		  Call tableGroup.AddLargeButton("Table", "insert.table")
@@ -162,6 +167,7 @@ End
 		  
 		  // === View Tab ===
 		  Var viewTab As XjRibbonTab = XjRibbon1.AddTab("View")
+		  viewTab.KeyTip = "W"
 		  
 		  Var zoomGroup As XjRibbonGroup = viewTab.AddNewGroup("Zoom")
 		  Call zoomGroup.AddLargeButton("Zoom In", "view.zoomin")
@@ -169,9 +175,12 @@ End
 		  Call zoomGroup.AddLargeButton("100%", "view.zoom100")
 		  
 		  Var showGroup As XjRibbonGroup = viewTab.AddNewGroup("Show")
-		  Call showGroup.AddSmallButton("Ruler", "view.ruler")
-		  Call showGroup.AddSmallButton("Grid", "view.grid")
-		  Call showGroup.AddSmallButton("Guides", "view.guides")
+		  Var rulerItem As XjRibbonItem = showGroup.AddSmallButton("Ruler", "view.ruler")
+		  rulerItem.IsToggle = True
+		  Var gridItem As XjRibbonItem = showGroup.AddSmallButton("Grid", "view.grid")
+		  gridItem.IsToggle = True
+		  Var guidesItem As XjRibbonItem = showGroup.AddSmallButton("Guides", "view.guides")
+		  guidesItem.IsToggle = True
 
 		  // === Contextual Tab: Table Tools ===
 		  Var tableDesign As XjRibbonTab = XjRibbon1.AddContextualTab("Design", "Table Tools", Color.RGB(0, 128, 0))
@@ -223,7 +232,12 @@ End
 #tag Events XjRibbon1
 	#tag Event
 		Sub ItemPressed(tag As String)
-		  MessageBox("Ribbon item pressed: " + tag)
+		  If tag.BeginsWith("font.") Or tag.BeginsWith("view.ruler") Or tag.BeginsWith("view.grid") Or tag.BeginsWith("view.guides") Then
+		    Var state As Boolean = XjRibbon1.GetToggleState(tag)
+		    MessageBox(tag + " toggled: " + If(state, "ON", "OFF"))
+		  Else
+		    MessageBox("Ribbon item pressed: " + tag)
+		  End If
 		End Sub
 	#tag EndEvent
 	#tag Event

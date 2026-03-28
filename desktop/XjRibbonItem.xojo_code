@@ -33,6 +33,18 @@ Protected Class XjRibbonItem
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
+		IsToggle As Boolean = False
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		IsToggleActive As Boolean = False
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		KeyTip As String
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
 		mMenuItems() As DesktopMenuItem
 	#tag EndProperty
 

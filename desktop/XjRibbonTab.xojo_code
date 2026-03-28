@@ -59,5 +59,9 @@ Protected Class XjRibbonTab
 		IsContextVisible As Boolean = False
 	#tag EndProperty
 
+	#tag Property, Flags = &h0
+		KeyTip As String
+	#tag EndProperty
+
 End Class
 #tag EndClass
