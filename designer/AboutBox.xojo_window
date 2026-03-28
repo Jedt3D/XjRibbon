@@ -26,6 +26,7 @@ Begin DesktopWindow AboutBox
    Visible         =   True
    Width           =   276
    Begin DesktopImageViewer AppIcon
+      Active          =   False
       AllowAutoDeactivate=   True
       AllowTabStop    =   True
       Enabled         =   True
@@ -39,6 +40,7 @@ Begin DesktopWindow AboutBox
       LockLeft        =   True
       LockRight       =   False
       LockTop         =   True
+      PanelIndex      =   0
       Scope           =   0
       TabIndex        =   0
       TabPanelIndex   =   0
@@ -47,6 +49,10 @@ Begin DesktopWindow AboutBox
       Transparent     =   False
       Visible         =   True
       Width           =   150
+      _mIndex         =   0
+      _mInitialParent =   ""
+      _mName          =   ""
+      _mPanelIndex    =   0
    End
    Begin DesktopLabel CopyrightLabel
       AllowAutoDeactivate=   True
@@ -70,7 +76,7 @@ Begin DesktopWindow AboutBox
       TabIndex        =   1
       TabPanelIndex   =   0
       TabStop         =   True
-      Text            =   "XjRibbon Designer\nversion 0.4.0\n\nCopyright\nWorajedt Sitthidumrong\n2026\nsjedt@3ddaily.com"
+      Text            =   "XjRibbon Designer\nversion 0.5.0\n\nCopyright\nWorajedt Sitthidumrong\n2026\nsjedt@3ddaily.com"
       TextAlignment   =   2
       TextColor       =   &c000000
       Tooltip         =   ""
@@ -103,5 +109,7 @@ End
 		  Return True
 		End Function
 	#tag EndEvent
+
+
 #tag EndWindowCode
 

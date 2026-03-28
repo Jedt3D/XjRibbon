@@ -15,7 +15,6 @@ Inherits DesktopApplication
 		#Tag Instance, Platform = Linux, Language = Default, Definition  = \"Ctrl+Q"
 	#tag EndConstant
 
-
 	#tag ViewBehavior
 		#tag ViewProperty
 			Name="Name"
