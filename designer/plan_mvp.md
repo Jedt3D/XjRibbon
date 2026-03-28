@@ -264,7 +264,7 @@ Wire Edit menu to operate on focused listbox (row-level) or textfield (text-leve
 - [x] HelpAbout handler in App class for when no window focused
 - [x] RibbonFileType.xojo_filetypeset with UTI com.worajedt.ribbondesigner
 - [x] Open/Save dialogs use registered RibbonFileType.Ribbon
-- [x] App.OpenDocument event: double-click .ribbon file in Finder opens it
+- [x] App.DocumentOpened event: double-click .ribbon file in Finder opens it
 - [x] UniqueVarName: prevent duplicate variable names in code gen (fontGroup → fontGroup2)
 - [x] App icon light/dark images included (IDE configuration needed for build)
 - [x] Version 1.0.0 across StatusBar, AboutBox, project, code gen header
