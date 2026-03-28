@@ -173,10 +173,10 @@ Begin Menu MainMenuBar
       AutoEnabled = True
       AutoEnable = True
       Visible = True
-      Begin DesktopMenuItem HelpAbout
+      Begin DesktopApplicationMenuItem HelpAbout
          SpecialMenu = 0
          Index = -2147483648
-         Text = "About"
+         Text = "About Ribbon Designer"
          ShortcutKey = "/"
          Shortcut = "Cmd+Shift+/"
          MenuModifier = True

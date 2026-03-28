@@ -1,0 +1,19 @@
+#tag FileTypeSet
+	#tag FileType
+		CodeName=Ribbon
+		DocIcon=Designer.xojo_resources;&h0
+		Extension=ribbon
+		Flags=&h5
+		MacCreator=
+		MacType=
+		Name=XjRibbon Designer
+		UTI=com.worajedt.ribbondesigner
+		UTIConformsTo=public.text,public.data
+		Description=
+		MimeType=application/json
+		Imported=False
+		HandlerRank=&h9
+		UTIPhysicalType=public.data
+	#tag EndFileType
+
+#tag EndFileTypeSet

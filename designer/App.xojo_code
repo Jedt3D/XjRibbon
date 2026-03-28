@@ -1,6 +1,32 @@
 #tag Class
 Protected Class App
 Inherits DesktopApplication
+	#tag Event
+		Sub DocumentOpened(item As FolderItem)
+		  // Handle double-click on .ribbon file in Finder
+		  If item <> Nil And item.Exists Then
+		    Var tis As TextInputStream = TextInputStream.Open(item)
+		    Var json As String = tis.ReadAll
+		    tis.Close
+		    
+		    MainWindow.LoadFromJSON(json)
+		    MainWindow.mCurrentFile = item
+		    MainWindow.mIsDirty = False
+		    MainWindow.UpdateTitle
+		  End If
+		End Sub
+	#tag EndEvent
+
+
+	#tag MenuHandler
+		Function HelpAbout() As Boolean Handles HelpAbout.Action
+		  Var about As New AboutBox
+		  about.ShowModal
+		  Return True
+		End Function
+	#tag EndMenuHandler
+
+
 	#tag Constant, Name = kEditClear, Type = String, Dynamic = False, Default = \"&Delete", Scope = Public
 		#Tag Instance, Platform = Windows, Language = Default, Definition  = \"&Delete"
 		#Tag Instance, Platform = Linux, Language = Default, Definition  = \"&Delete"
@@ -14,6 +40,7 @@ Inherits DesktopApplication
 		#Tag Instance, Platform = Mac OS, Language = Default, Definition  = \"Cmd+Q"
 		#Tag Instance, Platform = Linux, Language = Default, Definition  = \"Ctrl+Q"
 	#tag EndConstant
+
 
 	#tag ViewBehavior
 		#tag ViewProperty

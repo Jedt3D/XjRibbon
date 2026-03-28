@@ -93,7 +93,7 @@ Begin DesktopWindow MainWindow
       RequiresSelection=   False
       RowSelectionType=   0
       Scope           =   0
-      TabIndex        =   5
+      TabIndex        =   1
       TabPanelIndex   =   0
       TabStop         =   True
       Tooltip         =   ""
@@ -115,7 +115,7 @@ Begin DesktopWindow MainWindow
       FontName        =   "System"
       FontSize        =   0.0
       FontUnit        =   0
-      Height          =   20
+      Height          =   22
       Index           =   -2147483648
       Italic          =   False
       Left            =   664
@@ -124,9 +124,9 @@ Begin DesktopWindow MainWindow
       LockLeft        =   False
       LockRight       =   True
       LockTop         =   True
-      MacButtonStyle  =   0
+      MacButtonStyle  =   1
       Scope           =   0
-      TabIndex        =   4
+      TabIndex        =   7
       TabPanelIndex   =   0
       TabStop         =   True
       Tooltip         =   "Paste the source code to your XjRibbon instance's Opening Event"
@@ -155,7 +155,7 @@ Begin DesktopWindow MainWindow
       LockTop         =   True
       Scope           =   0
       SelectedRowIndex=   -1
-      TabIndex        =   2
+      TabIndex        =   4
       TabPanelIndex   =   0
       TabStop         =   True
       Tooltip         =   ""
@@ -184,7 +184,7 @@ Begin DesktopWindow MainWindow
       Multiline       =   False
       Scope           =   0
       Selectable      =   False
-      TabIndex        =   1
+      TabIndex        =   3
       TabPanelIndex   =   0
       TabStop         =   True
       Text            =   "Add"
@@ -216,10 +216,10 @@ Begin DesktopWindow MainWindow
       Multiline       =   False
       Scope           =   0
       Selectable      =   False
-      TabIndex        =   7
+      TabIndex        =   2
       TabPanelIndex   =   0
       TabStop         =   True
-      Text            =   "XjToolbar Designer version 0.6.0"
+      Text            =   "XjToolbar Designer version 1.0.0"
       TextAlignment   =   0
       TextColor       =   &c000000
       Tooltip         =   ""
@@ -247,7 +247,7 @@ Begin DesktopWindow MainWindow
       LockRight       =   True
       LockTop         =   True
       Scope           =   0
-      TabIndex        =   6
+      TabIndex        =   5
       TabPanelIndex   =   0
       TabStop         =   True
       Tooltip         =   ""
@@ -284,7 +284,7 @@ Begin DesktopWindow MainWindow
          Password        =   False
          ReadOnly        =   False
          Scope           =   0
-         TabIndex        =   1
+         TabIndex        =   7
          TabPanelIndex   =   0
          TabStop         =   True
          Text            =   ""
@@ -351,7 +351,7 @@ Begin DesktopWindow MainWindow
          Multiline       =   False
          Scope           =   0
          Selectable      =   False
-         TabIndex        =   2
+         TabIndex        =   1
          TabPanelIndex   =   0
          TabStop         =   True
          Text            =   "Tag"
@@ -384,7 +384,7 @@ Begin DesktopWindow MainWindow
          Multiline       =   False
          Scope           =   0
          Selectable      =   False
-         TabIndex        =   4
+         TabIndex        =   2
          TabPanelIndex   =   0
          TabStop         =   True
          Text            =   "Item Type"
@@ -417,7 +417,7 @@ Begin DesktopWindow MainWindow
          Multiline       =   False
          Scope           =   0
          Selectable      =   False
-         TabIndex        =   7
+         TabIndex        =   3
          TabPanelIndex   =   0
          TabStop         =   True
          Text            =   "Tooltip Text"
@@ -449,7 +449,7 @@ Begin DesktopWindow MainWindow
          LockRight       =   False
          LockTop         =   True
          Scope           =   0
-         TabIndex        =   6
+         TabIndex        =   10
          TabPanelIndex   =   0
          TabStop         =   True
          Tooltip         =   ""
@@ -489,7 +489,7 @@ Begin DesktopWindow MainWindow
          Password        =   False
          ReadOnly        =   False
          Scope           =   0
-         TabIndex        =   3
+         TabIndex        =   8
          TabPanelIndex   =   0
          TabStop         =   True
          Text            =   ""
@@ -531,7 +531,7 @@ Begin DesktopWindow MainWindow
          Password        =   False
          ReadOnly        =   False
          Scope           =   0
-         TabIndex        =   8
+         TabIndex        =   11
          TabPanelIndex   =   0
          TabStop         =   True
          Text            =   ""
@@ -565,7 +565,7 @@ Begin DesktopWindow MainWindow
          Multiline       =   False
          Scope           =   0
          Selectable      =   False
-         TabIndex        =   9
+         TabIndex        =   4
          TabPanelIndex   =   0
          TabStop         =   True
          Text            =   "Resource Name"
@@ -606,7 +606,7 @@ Begin DesktopWindow MainWindow
          Password        =   False
          ReadOnly        =   False
          Scope           =   0
-         TabIndex        =   10
+         TabIndex        =   12
          TabPanelIndex   =   0
          TabStop         =   True
          Text            =   ""
@@ -640,7 +640,7 @@ Begin DesktopWindow MainWindow
          Multiline       =   False
          Scope           =   0
          Selectable      =   False
-         TabIndex        =   11
+         TabIndex        =   5
          TabPanelIndex   =   0
          TabStop         =   True
          Text            =   "Menu Item"
@@ -690,7 +690,7 @@ Begin DesktopWindow MainWindow
          RequiresSelection=   False
          RowSelectionType=   0
          Scope           =   0
-         TabIndex        =   13
+         TabIndex        =   6
          TabPanelIndex   =   0
          TabStop         =   True
          Tooltip         =   ""
@@ -702,29 +702,17 @@ Begin DesktopWindow MainWindow
          _ScrollOffset   =   0
          _ScrollWidth    =   -1
       End
-      Begin DesktopBevelButton AddMenuItem
-         Active          =   False
+      Begin DesktopButton AddMenuItem
          AllowAutoDeactivate=   True
-         AllowFocus      =   True
-         AllowTabStop    =   True
-         BackgroundColor =   &c00000000
-         BevelStyle      =   0
          Bold            =   False
-         ButtonStyle     =   0
+         Cancel          =   False
          Caption         =   "Add Menu Item"
-         CaptionAlignment=   3
-         CaptionDelta    =   0
-         CaptionPosition =   1
+         Default         =   False
          Enabled         =   True
          FontName        =   "System"
          FontSize        =   0.0
          FontUnit        =   0
-         HasBackgroundColor=   False
          Height          =   22
-         Icon            =   0
-         IconAlignment   =   0
-         IconDeltaX      =   0
-         IconDeltaY      =   0
          Index           =   -2147483648
          InitialParent   =   "GroupBox1"
          Italic          =   False
@@ -734,23 +722,17 @@ Begin DesktopWindow MainWindow
          LockLeft        =   True
          LockRight       =   False
          LockTop         =   True
-         MenuStyle       =   0
-         PanelIndex      =   0
+         MacButtonStyle  =   1
          Scope           =   0
-         TabIndex        =   12
+         TabIndex        =   13
          TabPanelIndex   =   0
-         TextColor       =   &c00000000
+         TabStop         =   True
          Tooltip         =   ""
          Top             =   280
          Transparent     =   False
          Underline       =   False
-         Value           =   False
          Visible         =   True
          Width           =   123
-         _mIndex         =   0
-         _mInitialParent =   ""
-         _mName          =   ""
-         _mPanelIndex    =   0
       End
       Begin DesktopTextField ItemTypeField
          AllowAutoDeactivate=   True
@@ -780,7 +762,7 @@ Begin DesktopWindow MainWindow
          Password        =   False
          ReadOnly        =   True
          Scope           =   0
-         TabIndex        =   5
+         TabIndex        =   9
          TabPanelIndex   =   0
          TabStop         =   True
          Text            =   ""
@@ -810,12 +792,12 @@ Begin DesktopWindow MainWindow
       Left            =   476
       LockBottom      =   False
       LockedInPosition=   False
-      LockLeft        =   True
-      LockRight       =   False
+      LockLeft        =   False
+      LockRight       =   True
       LockTop         =   True
       Scope           =   0
       SelectedIndex   =   0
-      TabIndex        =   3
+      TabIndex        =   6
       TabPanelIndex   =   0
       TabStop         =   True
       Tooltip         =   ""
@@ -841,7 +823,7 @@ End
 		  // Center-align the Dropdown column and Type column
 		  RibbonStructure.ColumnAlignmentAt(1) = DesktopListBox.Alignments.Center
 		  RibbonStructure.ColumnAlignmentAt(2) = DesktopListBox.Alignments.Center
-
+		  
 		  UpdateTitle
 		  SetInspectorState("none")
 		  LoadSampleRibbon
@@ -970,6 +952,92 @@ End
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Sub CascadeTagUpdate(row As Integer)
+		  // Cascade tag regeneration when a row's caption changes
+		  Var d As Dictionary = Dictionary(RibbonStructure.RowTagAt(row))
+		  If d = Nil Then Return
+		  
+		  Var rowType As String = d.Value("type")
+		  Var newCaption As String = d.Value("caption")
+		  
+		  If rowType = "large" Or rowType = "small" Then
+		    // Item: update its own tag + cascade to menu items
+		    Var groupCaption As String = ""
+		    For p As Integer = row - 1 DownTo 0
+		      Var pd As Dictionary = Dictionary(RibbonStructure.RowTagAt(p))
+		      If pd <> Nil And pd.Value("type") = "group" Then
+		        groupCaption = pd.Value("caption")
+		        Exit
+		      End If
+		    Next
+		    If groupCaption <> "" Then
+		      Var newTag As String = GenerateTag(groupCaption, newCaption)
+		      d.Value("tag") = newTag
+		      mUpdatingInspector = True
+		      TagField.Text = newTag
+		      mUpdatingInspector = False
+		      
+		      // Cascade to menu items
+		      Var miPrefix As String = newCaption.Lowercase.ReplaceAll(" ", "")
+		      Var miList() As Dictionary = d.Lookup("menuItems", Nil)
+		      If miList <> Nil Then
+		        For Each mi As Dictionary In miList
+		          mi.Value("tag") = miPrefix + "." + mi.Value("caption").StringValue.Lowercase.ReplaceAll(" ", "")
+		        Next
+		        If MenuItems.Enabled Then
+		          mUpdatingInspector = True
+		          PopulateInspector(row)
+		          mUpdatingInspector = False
+		        End If
+		      End If
+		    End If
+		    
+		  ElseIf rowType = "group" Then
+		    // Group: cascade to all child item tags + their menu items
+		    For i As Integer = row + 1 To RibbonStructure.RowCount - 1
+		      Var cd As Dictionary = Dictionary(RibbonStructure.RowTagAt(i))
+		      If cd = Nil Then Continue
+		      Var ct As String = cd.Value("type")
+		      If ct = "tab" Or ct = "group" Then Exit
+		      If ct = "large" Or ct = "small" Then
+		        Var itemCaption As String = cd.Value("caption")
+		        cd.Value("tag") = GenerateTag(newCaption, itemCaption)
+		        Var miPrefix As String = itemCaption.Lowercase.ReplaceAll(" ", "")
+		        Var miList() As Dictionary = cd.Lookup("menuItems", Nil)
+		        If miList <> Nil Then
+		          For Each mi As Dictionary In miList
+		            mi.Value("tag") = miPrefix + "." + mi.Value("caption").StringValue.Lowercase.ReplaceAll(" ", "")
+		          Next
+		        End If
+		      End If
+		    Next
+		    
+		  ElseIf rowType = "tab" Then
+		    // Tab: cascade through all items using their group captions
+		    Var currentGroupCaption As String = ""
+		    For i As Integer = row + 1 To RibbonStructure.RowCount - 1
+		      Var cd As Dictionary = Dictionary(RibbonStructure.RowTagAt(i))
+		      If cd = Nil Then Continue
+		      Var ct As String = cd.Value("type")
+		      If ct = "tab" Then Exit
+		      If ct = "group" Then currentGroupCaption = cd.Value("caption")
+		      If (ct = "large" Or ct = "small") And currentGroupCaption <> "" Then
+		        Var itemCaption As String = cd.Value("caption")
+		        cd.Value("tag") = GenerateTag(currentGroupCaption, itemCaption)
+		        Var miPrefix As String = itemCaption.Lowercase.ReplaceAll(" ", "")
+		        Var miList() As Dictionary = cd.Lookup("menuItems", Nil)
+		        If miList <> Nil Then
+		          For Each mi As Dictionary In miList
+		            mi.Value("tag") = miPrefix + "." + mi.Value("caption").StringValue.Lowercase.ReplaceAll(" ", "")
+		          Next
+		        End If
+		      End If
+		    Next
+		  End If
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Sub DeleteSelectedRow()
 		  Var row As Integer = RibbonStructure.SelectedRowIndex
 		  If row < 0 Then Return
@@ -1032,89 +1100,105 @@ End
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Sub CascadeTagUpdate(row As Integer)
-		  // Cascade tag regeneration when a row's caption changes
-		  Var d As Dictionary = Dictionary(RibbonStructure.RowTagAt(row))
-		  If d = Nil Then Return
-
-		  Var rowType As String = d.Value("type")
-		  Var newCaption As String = d.Value("caption")
-
-		  If rowType = "large" Or rowType = "small" Then
-		    // Item: update its own tag + cascade to menu items
-		    Var groupCaption As String = ""
-		    For p As Integer = row - 1 DownTo 0
-		      Var pd As Dictionary = Dictionary(RibbonStructure.RowTagAt(p))
-		      If pd <> Nil And pd.Value("type") = "group" Then
-		        groupCaption = pd.Value("caption")
-		        Exit
-		      End If
-		    Next
-		    If groupCaption <> "" Then
-		      Var newTag As String = GenerateTag(groupCaption, newCaption)
-		      d.Value("tag") = newTag
-		      mUpdatingInspector = True
-		      TagField.Text = newTag
-		      mUpdatingInspector = False
-
-		      // Cascade to menu items
-		      Var miPrefix As String = newCaption.Lowercase.ReplaceAll(" ", "")
-		      Var miList() As Dictionary = d.Lookup("menuItems", Nil)
-		      If miList <> Nil Then
-		        For Each mi As Dictionary In miList
-		          mi.Value("tag") = miPrefix + "." + mi.Value("caption").StringValue.Lowercase.ReplaceAll(" ", "")
-		        Next
-		        If MenuItems.Enabled Then
-		          mUpdatingInspector = True
-		          PopulateInspector(row)
-		          mUpdatingInspector = False
-		        End If
-		      End If
+		Function GenerateCode() As String
+		  Var eol As String = EndOfLine
+		  Var code As String = ""
+		  Var eventName As String = "Opening"
+		  If ProjectType.SelectedIndex = 1 Then eventName = "Shown"
+		  Var usedNames As New Dictionary // track variable names to avoid duplicates
+		  
+		  code = code + "// Generated by XjRibbon Designer v1.0.0" + eol
+		  code = code + "// Paste into your XjRibbon's " + eventName + "() event" + eol + eol
+		  
+		  Var i As Integer = 0
+		  While i < RibbonStructure.RowCount
+		    Var d As Dictionary = Dictionary(RibbonStructure.RowTagAt(i))
+		    If d = Nil Or d.Value("type") <> "tab" Then
+		      i = i + 1
+		      Continue
 		    End If
-
-		  ElseIf rowType = "group" Then
-		    // Group: cascade to all child item tags + their menu items
-		    For i As Integer = row + 1 To RibbonStructure.RowCount - 1
-		      Var cd As Dictionary = Dictionary(RibbonStructure.RowTagAt(i))
-		      If cd = Nil Then Continue
-		      Var ct As String = cd.Value("type")
-		      If ct = "tab" Or ct = "group" Then Exit
-		      If ct = "large" Or ct = "small" Then
-		        Var itemCaption As String = cd.Value("caption")
-		        cd.Value("tag") = GenerateTag(newCaption, itemCaption)
-		        Var miPrefix As String = itemCaption.Lowercase.ReplaceAll(" ", "")
-		        Var miList() As Dictionary = cd.Lookup("menuItems", Nil)
-		        If miList <> Nil Then
-		          For Each mi As Dictionary In miList
-		            mi.Value("tag") = miPrefix + "." + mi.Value("caption").StringValue.Lowercase.ReplaceAll(" ", "")
-		          Next
-		        End If
+		    
+		    Var tabCaption As String = d.Value("caption")
+		    Var tabVar As String = UniqueVarName(SanitizeVarName(tabCaption) + "Tab", usedNames)
+		    code = code + "// === " + tabCaption + " ===" + eol
+		    code = code + "Var " + tabVar + " As XjRibbonTab = Me.AddTab(""" + tabCaption + """)" + eol + eol
+		    
+		    Var j As Integer = i + 1
+		    While j < RibbonStructure.RowCount
+		      Var gd As Dictionary = Dictionary(RibbonStructure.RowTagAt(j))
+		      If gd = Nil Then
+		        j = j + 1
+		        Continue
 		      End If
-		    Next
-
-		  ElseIf rowType = "tab" Then
-		    // Tab: cascade through all items using their group captions
-		    Var currentGroupCaption As String = ""
-		    For i As Integer = row + 1 To RibbonStructure.RowCount - 1
-		      Var cd As Dictionary = Dictionary(RibbonStructure.RowTagAt(i))
-		      If cd = Nil Then Continue
-		      Var ct As String = cd.Value("type")
-		      If ct = "tab" Then Exit
-		      If ct = "group" Then currentGroupCaption = cd.Value("caption")
-		      If (ct = "large" Or ct = "small") And currentGroupCaption <> "" Then
-		        Var itemCaption As String = cd.Value("caption")
-		        cd.Value("tag") = GenerateTag(currentGroupCaption, itemCaption)
-		        Var miPrefix As String = itemCaption.Lowercase.ReplaceAll(" ", "")
-		        Var miList() As Dictionary = cd.Lookup("menuItems", Nil)
-		        If miList <> Nil Then
-		          For Each mi As Dictionary In miList
-		            mi.Value("tag") = miPrefix + "." + mi.Value("caption").StringValue.Lowercase.ReplaceAll(" ", "")
-		          Next
-		        End If
+		      If gd.Value("type") = "tab" Then Exit
+		      
+		      If gd.Value("type") = "group" Then
+		        Var grpCaption As String = gd.Value("caption")
+		        Var grpVar As String = UniqueVarName(SanitizeVarName(grpCaption) + "Group", usedNames)
+		        code = code + "Var " + grpVar + " As XjRibbonGroup = " + tabVar + ".AddNewGroup(""" + grpCaption + """)" + eol
+		        
+		        Var k As Integer = j + 1
+		        While k < RibbonStructure.RowCount
+		          Var id As Dictionary = Dictionary(RibbonStructure.RowTagAt(k))
+		          If id = Nil Then
+		            k = k + 1
+		            Continue
+		          End If
+		          Var it As String = id.Value("type")
+		          If it = "tab" Or it = "group" Then Exit
+		          
+		          If it = "large" Or it = "small" Then
+		            Var cap As String = id.Value("caption")
+		            Var tag As String = id.Lookup("tag", "")
+		            Var tip As String = id.Lookup("tooltipText", "")
+		            Var enabled As Boolean = id.Lookup("isEnabled", True)
+		            Var miList() As Dictionary = id.Lookup("menuItems", Nil)
+		            Var hasMI As Boolean = (miList <> Nil And miList.Count > 0)
+		            Var isDropdown As Boolean = (it = "large" And hasMI)
+		            Var hasExtras As Boolean = (tip <> "" Or Not enabled Or isDropdown)
+		            Var itemVar As String = UniqueVarName(SanitizeVarName(cap) + "Item", usedNames)
+		            
+		            If isDropdown Then
+		              code = code + "Var " + itemVar + " As XjRibbonItem = " + grpVar + ".AddDropdownButton(""" + cap + """, """ + tag + """)" + eol
+		            ElseIf hasExtras Then
+		              If it = "large" Then
+		                code = code + "Var " + itemVar + " As XjRibbonItem = " + grpVar + ".AddLargeButton(""" + cap + """, """ + tag + """)" + eol
+		              Else
+		                code = code + "Var " + itemVar + " As XjRibbonItem = " + grpVar + ".AddSmallButton(""" + cap + """, """ + tag + """)" + eol
+		              End If
+		            Else
+		              If it = "large" Then
+		                code = code + "Call " + grpVar + ".AddLargeButton(""" + cap + """, """ + tag + """)" + eol
+		              Else
+		                code = code + "Call " + grpVar + ".AddSmallButton(""" + cap + """, """ + tag + """)" + eol
+		              End If
+		            End If
+		            
+		            If tip <> "" Then
+		              code = code + itemVar + ".TooltipText = """ + tip + """" + eol
+		            End If
+		            If Not enabled Then
+		              code = code + itemVar + ".IsEnabled = False" + eol
+		            End If
+		            If isDropdown Then
+		              For Each mi As Dictionary In miList
+		                code = code + itemVar + ".AddMenuItem(""" + mi.Value("caption").StringValue + """, """ + mi.Value("tag").StringValue + """)" + eol
+		              Next
+		            End If
+		          End If
+		          k = k + 1
+		        Wend
+		        code = code + eol
+		        j = k
+		      Else
+		        j = j + 1
 		      End If
-		    Next
-		  End If
-		End Sub
+		    Wend
+		    i = j
+		  Wend
+		  
+		  Return code
+		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
@@ -1286,13 +1370,9 @@ End
 	#tag Method, Flags = &h0
 		Sub OpenProject()
 		  If Not PromptSaveIfDirty Then Return
-		  
-		  Var ft As New FileType
-		  ft.Name = "Ribbon File"
-		  ft.Extensions = "ribbon"
-		  
+
 		  Var dlg As New OpenFileDialog
-		  dlg.Filter = ft
+		  dlg.Filter = RibbonFileType.Ribbon
 		  
 		  Var f As FolderItem = dlg.ShowModal(Self)
 		  If f = Nil Then Return
@@ -1391,13 +1471,54 @@ End
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Function UniqueVarName(baseName As String, usedNames As Dictionary) As String
+		  // Append counter if name already used: fontGroup → fontGroup2
+		  If Not usedNames.HasKey(baseName) Then
+		    usedNames.Value(baseName) = 1
+		    Return baseName
+		  End If
+		  Var count As Integer = usedNames.Value(baseName) + 1
+		  usedNames.Value(baseName) = count
+		  Return baseName + count.ToString
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function SanitizeVarName(caption As String) As String
+		  Var result As String = ""
+		  Var capitalizeNext As Boolean = False
+		  For Each c As String In caption.Characters
+		    If c >= "a" And c <= "z" Then
+		      If capitalizeNext Then
+		        result = result + c.Uppercase
+		        capitalizeNext = False
+		      Else
+		        result = result + c
+		      End If
+		    ElseIf c >= "A" And c <= "Z" Then
+		      If result = "" Then
+		        result = result + c.Lowercase
+		      Else
+		        result = result + c
+		      End If
+		      capitalizeNext = False
+		    ElseIf c >= "0" And c <= "9" Then
+		      If result = "" Then result = "the"
+		      result = result + c
+		      capitalizeNext = False
+		    ElseIf c = " " Or c = "-" Or c = "_" Then
+		      capitalizeNext = True
+		    End If
+		  Next
+		  If result = "" Then result = "item"
+		  Return result
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Sub SaveAsToFile()
-		  Var ft As New FileType
-		  ft.Name = "Ribbon File"
-		  ft.Extensions = "ribbon"
-		  
 		  Var dlg As New SaveFileDialog
-		  dlg.Filter = ft
+		  dlg.Filter = RibbonFileType.Ribbon
 		  dlg.SuggestedFileName = "Untitled.ribbon"
 		  If mCurrentFile <> Nil Then
 		    dlg.SuggestedFileName = mCurrentFile.Name
@@ -1531,175 +1652,20 @@ End
 	#tag EndMethod
 
 
-	#tag Property, Flags = &h21
-		Private mCurrentFile As FolderItem
+	#tag Property, Flags = &h0
+		mCurrentFile As FolderItem
 	#tag EndProperty
 
-	#tag Property, Flags = &h21
-		Private mIsDirty As Boolean
+	#tag Property, Flags = &h0
+		mIsDirty As Boolean
 	#tag EndProperty
 
 	#tag Property, Flags = &h21
 		Private mUpdatingInspector As Boolean
 	#tag EndProperty
 
-	#tag Method, Flags = &h0
-		Function GenerateCode() As String
-		  Var eol As String = EndOfLine
-		  Var code As String = ""
-		  Var eventName As String = "Opening"
-		  If ProjectType.SelectedIndex = 1 Then eventName = "Shown"
-
-		  code = code + "// Generated by XjRibbon Designer v0.6.0" + eol
-		  code = code + "// Paste into your XjRibbon's " + eventName + "() event" + eol + eol
-
-		  Var i As Integer = 0
-		  While i < RibbonStructure.RowCount
-		    Var d As Dictionary = Dictionary(RibbonStructure.RowTagAt(i))
-		    If d = Nil Or d.Value("type") <> "tab" Then
-		      i = i + 1
-		      Continue
-		    End If
-
-		    Var tabCaption As String = d.Value("caption")
-		    Var tabVar As String = SanitizeVarName(tabCaption) + "Tab"
-		    code = code + "// === " + tabCaption + " ===" + eol
-		    code = code + "Var " + tabVar + " As XjRibbonTab = Me.AddTab(""" + tabCaption + """)" + eol + eol
-
-		    Var j As Integer = i + 1
-		    While j < RibbonStructure.RowCount
-		      Var gd As Dictionary = Dictionary(RibbonStructure.RowTagAt(j))
-		      If gd = Nil Then
-		        j = j + 1
-		        Continue
-		      End If
-		      If gd.Value("type") = "tab" Then Exit
-
-		      If gd.Value("type") = "group" Then
-		        Var grpCaption As String = gd.Value("caption")
-		        Var grpVar As String = SanitizeVarName(grpCaption) + "Group"
-		        code = code + "Var " + grpVar + " As XjRibbonGroup = " + tabVar + ".AddNewGroup(""" + grpCaption + """)" + eol
-
-		        Var k As Integer = j + 1
-		        While k < RibbonStructure.RowCount
-		          Var id As Dictionary = Dictionary(RibbonStructure.RowTagAt(k))
-		          If id = Nil Then
-		            k = k + 1
-		            Continue
-		          End If
-		          Var it As String = id.Value("type")
-		          If it = "tab" Or it = "group" Then Exit
-
-		          If it = "large" Or it = "small" Then
-		            Var cap As String = id.Value("caption")
-		            Var tag As String = id.Lookup("tag", "")
-		            Var tip As String = id.Lookup("tooltipText", "")
-		            Var enabled As Boolean = id.Lookup("isEnabled", True)
-		            Var miList() As Dictionary = id.Lookup("menuItems", Nil)
-		            Var hasMI As Boolean = (miList <> Nil And miList.Count > 0)
-		            Var isDropdown As Boolean = (it = "large" And hasMI)
-		            Var hasExtras As Boolean = (tip <> "" Or Not enabled Or isDropdown)
-		            Var itemVar As String = SanitizeVarName(cap) + "Item"
-
-		            If isDropdown Then
-		              code = code + "Var " + itemVar + " As XjRibbonItem = " + grpVar + ".AddDropdownButton(""" + cap + """, """ + tag + """)" + eol
-		            ElseIf hasExtras Then
-		              If it = "large" Then
-		                code = code + "Var " + itemVar + " As XjRibbonItem = " + grpVar + ".AddLargeButton(""" + cap + """, """ + tag + """)" + eol
-		              Else
-		                code = code + "Var " + itemVar + " As XjRibbonItem = " + grpVar + ".AddSmallButton(""" + cap + """, """ + tag + """)" + eol
-		              End If
-		            Else
-		              If it = "large" Then
-		                code = code + "Call " + grpVar + ".AddLargeButton(""" + cap + """, """ + tag + """)" + eol
-		              Else
-		                code = code + "Call " + grpVar + ".AddSmallButton(""" + cap + """, """ + tag + """)" + eol
-		              End If
-		            End If
-
-		            If tip <> "" Then
-		              code = code + itemVar + ".TooltipText = """ + tip + """" + eol
-		            End If
-		            If Not enabled Then
-		              code = code + itemVar + ".IsEnabled = False" + eol
-		            End If
-		            If isDropdown Then
-		              For Each mi As Dictionary In miList
-		                code = code + itemVar + ".AddMenuItem(""" + mi.Value("caption").StringValue + """, """ + mi.Value("tag").StringValue + """)" + eol
-		              Next
-		            End If
-		          End If
-		          k = k + 1
-		        Wend
-		        code = code + eol
-		        j = k
-		      Else
-		        j = j + 1
-		      End If
-		    Wend
-		    i = j
-		  Wend
-
-		  Return code
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
-		Function SanitizeVarName(caption As String) As String
-		  Var result As String = ""
-		  Var capitalizeNext As Boolean = False
-		  For Each c As String In caption.Characters
-		    If c >= "a" And c <= "z" Then
-		      If capitalizeNext Then
-		        result = result + c.Uppercase
-		        capitalizeNext = False
-		      Else
-		        result = result + c
-		      End If
-		    ElseIf c >= "A" And c <= "Z" Then
-		      If result = "" Then
-		        result = result + c.Lowercase
-		      Else
-		        result = result + c
-		      End If
-		      capitalizeNext = False
-		    ElseIf c >= "0" And c <= "9" Then
-		      If result = "" Then result = "the"
-		      result = result + c
-		      capitalizeNext = False
-		    ElseIf c = " " Or c = "-" Or c = "_" Then
-		      capitalizeNext = True
-		    End If
-		  Next
-		  If result = "" Then result = "item"
-		  Return result
-		End Function
-	#tag EndMethod
 
 #tag EndWindowCode
-
-#tag Events CopyToolbarCode
-	#tag Event
-		Sub Pressed()
-		  // Save first if dirty
-		  If mIsDirty Then
-		    If mCurrentFile = Nil Then
-		      SaveAsToFile
-		      If mCurrentFile = Nil Then Return
-		    Else
-		      SaveToFile
-		    End If
-		  End If
-
-		  Var code As String = GenerateCode
-		  Var cb As New Clipboard
-		  cb.Text = code
-		  cb.Close
-
-		  StatusBar.Text = "Code copied to clipboard! Paste into your XjRibbon's " + If(ProjectType.SelectedIndex = 0, "Opening", "Shown") + "() event."
-		End Sub
-	#tag EndEvent
-#tag EndEvents
 
 #tag Events RibbonStructure
 	#tag Event
@@ -1724,19 +1690,41 @@ End
 		    Var d As Dictionary = Dictionary(Me.RowTagAt(row))
 		    If d <> Nil Then
 		      d.Value("caption") = Me.CellTextAt(row, 0)
-
+		      
 		      // Sync inspector if this row is still selected
 		      If Me.SelectedRowIndex = row Then
 		        mUpdatingInspector = True
 		        CaptionField.Text = d.Value("caption")
 		        mUpdatingInspector = False
 		      End If
-
+		      
 		      // Cascade tag updates (same as inspector edit)
 		      CascadeTagUpdate(row)
 		      MarkDirty
 		    End If
 		  End If
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events CopyToolbarCode
+	#tag Event
+		Sub Pressed()
+		  // Save first if dirty
+		  If mIsDirty Then
+		    If mCurrentFile = Nil Then
+		      SaveAsToFile
+		      If mCurrentFile = Nil Then Return
+		    Else
+		      SaveToFile
+		    End If
+		  End If
+		  
+		  Var code As String = GenerateCode
+		  Var cb As New Clipboard
+		  cb.Text = code
+		  cb.Close
+		  
+		  StatusBar.Text = "Code copied to clipboard! Paste into your XjRibbon's " + If(ProjectType.SelectedIndex = 0, "Opening", "Shown") + "() event."
 		End Sub
 	#tag EndEvent
 #tag EndEvents
