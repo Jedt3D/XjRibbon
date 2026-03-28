@@ -3,12 +3,19 @@ Protected Class XjRibbon
 Inherits WebCanvas
 	#tag Event
 		Sub Paint(g As WebGraphics)
+		  If mExpandedHeight = 0 Then
+		    mExpandedHeight = Me.Height
+		  End If
+
 		  ResolveColors
 		  LayoutTabs(g)
 		  DrawBackground(g)
 		  DrawTabStrip(g)
-		  DrawContentArea(g)
-		  DrawGroups(g)
+		  If Not mIsCollapsed Then
+		    DrawContentArea(g)
+		    DrawGroups(g)
+		  End If
+		  DrawCollapseChevron(g)
 
 		  If Not mMouseTrackingInjected Then
 		    InjectMouseTracking
@@ -19,15 +26,40 @@ Inherits WebCanvas
 
 	#tag Event
 		Sub Pressed(x As Integer, y As Integer)
+		  // Hit-test collapse chevron
+		  If HitTestCollapseChevron(x, y) Then
+		    mLastTabClickTime = 0
+		    mLastTabClickIndex = -1
+		    ClearHoverStates
+		    SetCollapsed(Not mIsCollapsed)
+		    Return
+		  End If
+
 		  // Hit-test tab headers
 		  Var hitTab As XjRibbonTab = HitTestTabs(x, y)
 		  If hitTab <> Nil Then
+		    Var tabIdx As Integer = -1
 		    For i As Integer = 0 To mTabs.LastIndex
 		      If mTabs(i) Is hitTab Then
-		        mActiveTabIndex = i
+		        tabIdx = i
 		        Exit
 		      End If
 		    Next
+
+		    // Double-click detection: toggle collapse
+		    Var now As Double = Microseconds
+		    If tabIdx = mLastTabClickIndex And (now - mLastTabClickTime) < kDoubleClickUs Then
+		      mLastTabClickTime = 0
+		      mLastTabClickIndex = -1
+		      ClearHoverStates
+		      SetCollapsed(Not mIsCollapsed)
+		      Return
+		    End If
+
+		    // Single click: switch tab
+		    mActiveTabIndex = tabIdx
+		    mLastTabClickTime = now
+		    mLastTabClickIndex = tabIdx
 		    Me.Refresh
 		    Return
 		  End If
@@ -36,7 +68,6 @@ Inherits WebCanvas
 		  Var hitItem As XjRibbonItem = HitTestItems(x, y)
 		  If hitItem <> Nil And hitItem.IsEnabled Then
 		    If hitItem.ItemType = 2 And hitItem.mMenuItems.Count > 0 Then
-		      // Dropdown: show a JavaScript-based popup menu
 		      mDropdownPendingItem = hitItem
 		      ShowDropdownMenu(hitItem, x, y)
 		    Else
@@ -58,6 +89,10 @@ Inherits WebCanvas
 		Event DropdownMenuAction(itemTag As String, menuItemTag As String)
 	#tag EndHook
 
+	#tag Hook, Flags = &h0
+		Event CollapseStateChanged(isCollapsed As Boolean)
+	#tag EndHook
+
 	#tag Method, Flags = &h0
 		Function AddTab(caption As String) As XjRibbonTab
 		  Var tab As New XjRibbonTab
@@ -69,8 +104,118 @@ Inherits WebCanvas
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Function AddContextualTab(caption As String, contextGroup As String, accentColor As Color) As XjRibbonTab
+		  Var tab As New XjRibbonTab
+		  tab.Caption = caption
+		  tab.IsContextual = True
+		  tab.ContextGroup = contextGroup
+		  tab.ContextAccentColor = accentColor
+		  tab.IsContextVisible = False
+		  mTabs.Add(tab)
+		  Return tab
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub ShowContextualTabs(contextGroup As String)
+		  For Each tab As XjRibbonTab In mTabs
+		    If tab.IsContextual And tab.ContextGroup = contextGroup Then
+		      tab.IsContextVisible = True
+		    End If
+		  Next
+		  Me.Refresh
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub HideContextualTabs(contextGroup As String)
+		  For Each tab As XjRibbonTab In mTabs
+		    If tab.IsContextual And tab.ContextGroup = contextGroup Then
+		      tab.IsContextVisible = False
+		    End If
+		  Next
+		  EnsureValidActiveTab
+		  Me.Refresh
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub HideAllContextualTabs()
+		  For Each tab As XjRibbonTab In mTabs
+		    If tab.IsContextual Then
+		      tab.IsContextVisible = False
+		    End If
+		  Next
+		  EnsureValidActiveTab
+		  Me.Refresh
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function IsContextualTabVisible(contextGroup As String) As Boolean
+		  For Each tab As XjRibbonTab In mTabs
+		    If tab.IsContextual And tab.ContextGroup = contextGroup And tab.IsContextVisible Then
+		      Return True
+		    End If
+		  Next
+		  Return False
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Sub EnsureValidActiveTab()
+		  If mActiveTabIndex >= 0 And mActiveTabIndex < mTabs.Count Then
+		    Var tab As XjRibbonTab = mTabs(mActiveTabIndex)
+		    If Not tab.IsContextual Or tab.IsContextVisible Then Return
+		  End If
+		  For i As Integer = 0 To mTabs.LastIndex
+		    If Not mTabs(i).IsContextual Then
+		      mActiveTabIndex = i
+		      Return
+		    End If
+		  Next
+		  mActiveTabIndex = 0
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub SetCollapsed(value As Boolean)
+		  If mIsCollapsed <> value Then
+		    mIsCollapsed = value
+
+		    If mIsCollapsed Then
+		      Me.Height = CType(kTabStripHeight + 2, Integer)
+		    Else
+		      Me.Height = CType(mExpandedHeight, Integer)
+		    End If
+
+		    RaiseEvent CollapseStateChanged(mIsCollapsed)
+
+		    // Move sibling controls below via JS
+		    AdjustSiblingPositions
+
+		    Me.Refresh
+		  End If
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function IsCollapsed() As Boolean
+		  Return mIsCollapsed
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function BottomEdge() As Integer
+		  Return Me.Top + Me.Height
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Sub SelectTab(index As Integer)
 		  If index >= 0 And index < mTabs.Count Then
+		    Var tab As XjRibbonTab = mTabs(index)
+		    If tab.IsContextual And Not tab.IsContextVisible Then Return
 		    mActiveTabIndex = index
 		    ClearHoverStates
 		    Me.Refresh
@@ -126,7 +271,9 @@ Inherits WebCanvas
 		  Var tabX As Double = kTabPaddingH
 
 		  For Each tab As XjRibbonTab In mTabs
-		    Var textW As Double = MeasureTextWidth(tab.Caption, 11, False)
+		    If tab.IsContextual And Not tab.IsContextVisible Then Continue
+
+		    Var textW As Double = MeasureTextWidth(tab.Caption, 13, False)
 		    tab.mBoundsX = tabX
 		    tab.mBoundsY = 0
 		    tab.mBoundsW = textW + kTabPaddingH * 2
@@ -134,6 +281,7 @@ Inherits WebCanvas
 		    tabX = tabX + tab.mBoundsW + kTabGap
 		  Next
 
+		  If mIsCollapsed Then Return
 		  If mActiveTabIndex < 0 Or mActiveTabIndex >= mTabs.Count Then Return
 
 		  Var activeTab As XjRibbonTab = mTabs(mActiveTabIndex)
@@ -155,7 +303,7 @@ Inherits WebCanvas
 		        Var maxTextW As Double = 0
 		        While idx <= group.mItems.LastIndex And group.mItems(idx).ItemType = 1 And batch.Count < 3
 		          batch.Add(group.mItems(idx))
-		          Var tw As Double = MeasureTextWidth(group.mItems(idx).Caption, 11, False)
+		          Var tw As Double = MeasureTextWidth(group.mItems(idx).Caption, 9, False)
 		          If tw > maxTextW Then maxTextW = tw
 		          idx = idx + 1
 		        Wend
@@ -221,6 +369,7 @@ Inherits WebCanvas
 		    cPlaceholderIcon = Color.RGB(60, 150, 230)
 		    cPlaceholderIconDisabled = Color.RGB(80, 80, 80)
 		    cPlaceholderIconText = Color.RGB(255, 255, 255)
+		    cCollapseChevron = Color.RGB(150, 150, 150)
 		    cToggleActiveBackground = Color.RGB(55, 70, 90)
 		    cToggleActiveHoverBackground = Color.RGB(65, 80, 100)
 		  Else
@@ -240,6 +389,7 @@ Inherits WebCanvas
 		    cPlaceholderIcon = Color.RGB(0, 120, 212)
 		    cPlaceholderIconDisabled = Color.RGB(180, 180, 180)
 		    cPlaceholderIconText = Color.RGB(255, 255, 255)
+		    cCollapseChevron = Color.RGB(120, 120, 120)
 		    cToggleActiveBackground = Color.RGB(200, 220, 240)
 		    cToggleActiveHoverBackground = Color.RGB(185, 210, 235)
 		  End If
@@ -261,11 +411,23 @@ Inherits WebCanvas
 		  For i As Integer = 0 To mTabs.LastIndex
 		    Var tab As XjRibbonTab = mTabs(i)
 
+		    If tab.IsContextual And Not tab.IsContextVisible Then Continue
+
+		    // Contextual tab tint and accent
+		    If tab.IsContextual And tab.IsContextVisible Then
+		      g.DrawingColor = tab.ContextAccentColor
+		      g.FillRectangle(tab.mBoundsX, 0, tab.mBoundsW, 3)
+		    End If
+
 		    If i = mActiveTabIndex Then
 		      g.DrawingColor = cTabActiveBackground
 		      g.FillRectangle(tab.mBoundsX, tab.mBoundsY, tab.mBoundsW, tab.mBoundsH)
 
-		      g.DrawingColor = cTabAccent
+		      If tab.IsContextual Then
+		        g.DrawingColor = tab.ContextAccentColor
+		      Else
+		        g.DrawingColor = cTabAccent
+		      End If
 		      g.FillRectangle(tab.mBoundsX, 0, tab.mBoundsW, 2)
 		    ElseIf tab.mIsHovered Then
 		      g.DrawingColor = cTabHoverBackground
@@ -273,11 +435,11 @@ Inherits WebCanvas
 		    End If
 
 		    g.DrawingColor = cTabText
-		    g.FontSize = 11
+		    g.FontSize = 13
 		    g.Bold = False
-		    Var textW As Double = MeasureTextWidth(tab.Caption, 11, False)
+		    Var textW As Double = MeasureTextWidth(tab.Caption, 13, False)
 		    Var textX As Double = tab.mBoundsX + (tab.mBoundsW - textW) / 2
-		    Var textY As Double = tab.mBoundsY + (tab.mBoundsH + MeasureTextHeight(11)) / 2 - 2
+		    Var textY As Double = tab.mBoundsY + (tab.mBoundsH + MeasureTextHeight(13)) / 2 - 2
 		    g.DrawText(tab.Caption, textX, textY)
 		  Next
 
@@ -314,7 +476,7 @@ Inherits WebCanvas
 		    Next
 
 		    g.DrawingColor = cGroupLabelText
-		    g.FontSize = 9
+		    g.FontSize = 11
 		    g.Bold = False
 		    Var labelW As Double = MeasureTextWidth(group.Caption, 11, False)
 		    Var labelX As Double = group.mBoundsX + (group.mBoundsW - labelW) / 2
@@ -369,11 +531,11 @@ Inherits WebCanvas
 		    g.FillRoundRectangle(iconX, iconY, iconSize, iconSize, 4)
 
 		    g.DrawingColor = cPlaceholderIconText
-		    g.FontSize = 16
+		    g.FontSize = 19
 		    g.Bold = True
 		    Var letter As String = item.Caption.Left(1)
-		    Var letterW As Double = MeasureTextWidth(letter, 16, True)
-		    g.DrawText(letter, iconX + (iconSize - letterW) / 2, iconY + iconSize / 2 + MeasureTextHeight(16) / 2 - 3)
+		    Var letterW As Double = MeasureTextWidth(letter, 19, True)
+		    g.DrawText(letter, iconX + (iconSize - letterW) / 2, iconY + iconSize / 2 + MeasureTextHeight(19) / 2 - 3)
 		  End If
 
 		  If item.IsEnabled Then
@@ -381,7 +543,7 @@ Inherits WebCanvas
 		  Else
 		    g.DrawingColor = cItemDisabledText
 		  End If
-		  g.FontSize = 9
+		  g.FontSize = 11
 		  g.Bold = False
 		  Var textW As Double = MeasureTextWidth(item.Caption, 11, False)
 		  Var textX As Double = bx + (bw - textW) / 2
@@ -436,10 +598,10 @@ Inherits WebCanvas
 		  Else
 		    g.DrawingColor = cItemDisabledText
 		  End If
-		  g.FontSize = 9
+		  g.FontSize = 11
 		  g.Bold = False
 		  Var textX As Double = iconX + kSmallButtonIconSize + kSmallButtonTextPadding
-		  Var textY As Double = by + (bh + MeasureTextHeight(9)) / 2 - 1
+		  Var textY As Double = by + (bh + MeasureTextHeight(11)) / 2 - 1
 		  g.DrawText(item.Caption, textX, textY)
 		End Sub
 	#tag EndMethod
@@ -469,8 +631,63 @@ Inherits WebCanvas
 	#tag EndMethod
 
 	#tag Method, Flags = &h21
+		Private Sub AdjustSiblingPositions()
+		  // Use JS to move all sibling elements below the ribbon canvas
+		  Var ctrlId As String = Me.ControlID
+		  Var newBottom As Integer = Me.Top + Me.Height
+		  Var js As String = "var ribbon = document.getElementById('" + ctrlId + "');" + _
+		    "if(ribbon && ribbon.parentElement){" + _
+		    "var siblings = ribbon.parentElement.children;" + _
+		    "var ribbonBottom = " + Str(newBottom) + ";" + _
+		    "for(var i=0;i<siblings.length;i++){" + _
+		    "var el = siblings[i];" + _
+		    "if(el === ribbon) continue;" + _
+		    "var elTop = parseInt(el.style.top) || 0;" + _
+		    "if(elTop > " + Str(Me.Top) + "){" + _
+		    "el.style.top = (ribbonBottom + 8) + 'px';" + _
+		    "}" + _
+		    "}" + _
+		    "}"
+		  Me.ExecuteJavaScript(js)
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Sub DrawCollapseChevron(g As WebGraphics)
+		  Var chevX As Double = g.Width - kCollapseChevronSize - 8
+		  Var chevY As Double = (kTabStripHeight - kCollapseChevronSize) / 2
+		  Var midX As Double = chevX + kCollapseChevronSize / 2
+
+		  g.DrawingColor = cCollapseChevron
+		  g.PenSize = 1.5
+
+		  If mIsCollapsed Then
+		    Var topY As Double = chevY + 2
+		    g.DrawLine(chevX, topY, midX, topY + kCollapseChevronSize / 2)
+		    g.DrawLine(midX, topY + kCollapseChevronSize / 2, chevX + kCollapseChevronSize, topY)
+		  Else
+		    Var botY As Double = chevY + kCollapseChevronSize - 2
+		    g.DrawLine(chevX, botY, midX, botY - kCollapseChevronSize / 2)
+		    g.DrawLine(midX, botY - kCollapseChevronSize / 2, chevX + kCollapseChevronSize, botY)
+		  End If
+
+		  g.PenSize = 1
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Function HitTestCollapseChevron(x As Double, y As Double) As Boolean
+		  Var chevX As Double = Me.Width - kCollapseChevronSize - 8
+		  Var chevY As Double = (kTabStripHeight - kCollapseChevronSize) / 2
+		  Return x >= chevX - 4 And x <= chevX + kCollapseChevronSize + 4 And _
+		    y >= chevY - 4 And y <= chevY + kCollapseChevronSize + 4
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
 		Private Function HitTestTabs(x As Double, y As Double) As XjRibbonTab
 		  For Each tab As XjRibbonTab In mTabs
+		    If tab.IsContextual And Not tab.IsContextVisible Then Continue
 		    If x >= tab.mBoundsX And x < tab.mBoundsX + tab.mBoundsW And _
 		      y >= tab.mBoundsY And y < tab.mBoundsY + tab.mBoundsH Then
 		      Return tab
@@ -482,6 +699,7 @@ Inherits WebCanvas
 
 	#tag Method, Flags = &h21
 		Private Function HitTestItems(x As Double, y As Double) As XjRibbonItem
+		  If mIsCollapsed Then Return Nil
 		  If mActiveTabIndex < 0 Or mActiveTabIndex >= mTabs.Count Then Return Nil
 
 		  Var activeTab As XjRibbonTab = mTabs(mActiveTabIndex)
@@ -701,6 +919,22 @@ Inherits WebCanvas
 	#tag EndProperty
 
 	#tag Property, Flags = &h21
+		Private mIsCollapsed As Boolean = False
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private mLastTabClickTime As Double = 0
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private mLastTabClickIndex As Integer = -1
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private mExpandedHeight As Double = 0
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
 		Private mMeasurePic As Picture
 	#tag EndProperty
 
@@ -781,6 +1015,10 @@ Inherits WebCanvas
 	#tag EndProperty
 
 	#tag Property, Flags = &h21
+		Private cCollapseChevron As Color
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
 		Private cToggleActiveBackground As Color
 	#tag EndProperty
 
@@ -788,55 +1026,61 @@ Inherits WebCanvas
 		Private cToggleActiveHoverBackground As Color
 	#tag EndProperty
 
-	#tag Constant, Name = kTabStripHeight, Type = Double, Dynamic = False, Default = \"24", Scope = Private
+	#tag Constant, Name = kTabStripHeight, Type = Double, Dynamic = False, Default = \"29", Scope = Private
 	#tag EndConstant
 
-	#tag Constant, Name = kTabPaddingH, Type = Double, Dynamic = False, Default = \"16", Scope = Private
+	#tag Constant, Name = kTabPaddingH, Type = Double, Dynamic = False, Default = \"19", Scope = Private
 	#tag EndConstant
 
 	#tag Constant, Name = kTabGap, Type = Double, Dynamic = False, Default = \"2", Scope = Private
 	#tag EndConstant
 
-	#tag Constant, Name = kContentTop, Type = Double, Dynamic = False, Default = \"26", Scope = Private
+	#tag Constant, Name = kContentTop, Type = Double, Dynamic = False, Default = \"31", Scope = Private
 	#tag EndConstant
 
-	#tag Constant, Name = kContentPadding, Type = Double, Dynamic = False, Default = \"4", Scope = Private
+	#tag Constant, Name = kContentPadding, Type = Double, Dynamic = False, Default = \"5", Scope = Private
 	#tag EndConstant
 
-	#tag Constant, Name = kGroupLabelHeight, Type = Double, Dynamic = False, Default = \"16", Scope = Private
+	#tag Constant, Name = kGroupLabelHeight, Type = Double, Dynamic = False, Default = \"19", Scope = Private
 	#tag EndConstant
 
-	#tag Constant, Name = kGroupPaddingH, Type = Double, Dynamic = False, Default = \"8", Scope = Private
+	#tag Constant, Name = kGroupPaddingH, Type = Double, Dynamic = False, Default = \"10", Scope = Private
 	#tag EndConstant
 
-	#tag Constant, Name = kGroupGap, Type = Double, Dynamic = False, Default = \"8", Scope = Private
+	#tag Constant, Name = kGroupGap, Type = Double, Dynamic = False, Default = \"10", Scope = Private
 	#tag EndConstant
 
-	#tag Constant, Name = kLargeButtonWidth, Type = Double, Dynamic = False, Default = \"56", Scope = Private
+	#tag Constant, Name = kLargeButtonWidth, Type = Double, Dynamic = False, Default = \"67", Scope = Private
 	#tag EndConstant
 
-	#tag Constant, Name = kLargeButtonIconSize, Type = Double, Dynamic = False, Default = \"32", Scope = Private
+	#tag Constant, Name = kLargeButtonIconSize, Type = Double, Dynamic = False, Default = \"38", Scope = Private
 	#tag EndConstant
 
-	#tag Constant, Name = kItemGap, Type = Double, Dynamic = False, Default = \"4", Scope = Private
+	#tag Constant, Name = kItemGap, Type = Double, Dynamic = False, Default = \"5", Scope = Private
 	#tag EndConstant
 
-	#tag Constant, Name = kSmallButtonHeight, Type = Double, Dynamic = False, Default = \"22", Scope = Private
+	#tag Constant, Name = kSmallButtonHeight, Type = Double, Dynamic = False, Default = \"26", Scope = Private
 	#tag EndConstant
 
-	#tag Constant, Name = kSmallButtonIconSize, Type = Double, Dynamic = False, Default = \"16", Scope = Private
+	#tag Constant, Name = kSmallButtonIconSize, Type = Double, Dynamic = False, Default = \"19", Scope = Private
 	#tag EndConstant
 
-	#tag Constant, Name = kSmallButtonMinWidth, Type = Double, Dynamic = False, Default = \"60", Scope = Private
+	#tag Constant, Name = kSmallButtonMinWidth, Type = Double, Dynamic = False, Default = \"72", Scope = Private
 	#tag EndConstant
 
-	#tag Constant, Name = kSmallButtonTextPadding, Type = Double, Dynamic = False, Default = \"4", Scope = Private
+	#tag Constant, Name = kSmallButtonTextPadding, Type = Double, Dynamic = False, Default = \"5", Scope = Private
 	#tag EndConstant
 
 	#tag Constant, Name = kSmallRowGap, Type = Double, Dynamic = False, Default = \"2", Scope = Private
 	#tag EndConstant
 
-	#tag Constant, Name = kDropdownArrowSize, Type = Double, Dynamic = False, Default = \"6", Scope = Private
+	#tag Constant, Name = kDropdownArrowSize, Type = Double, Dynamic = False, Default = \"7", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = kCollapseChevronSize, Type = Double, Dynamic = False, Default = \"14", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = kDoubleClickUs, Type = Double, Dynamic = False, Default = \"400000", Scope = Private
 	#tag EndConstant
 
 	#tag ViewBehavior
