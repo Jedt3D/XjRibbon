@@ -303,7 +303,7 @@ Inherits WebCanvas
 		        Var maxTextW As Double = 0
 		        While idx <= group.mItems.LastIndex And group.mItems(idx).ItemType = 1 And batch.Count < 3
 		          batch.Add(group.mItems(idx))
-		          Var tw As Double = MeasureTextWidth(group.mItems(idx).Caption, 9, False)
+		          Var tw As Double = MeasureTextWidth(group.mItems(idx).Caption, 11, False)
 		          If tw > maxTextW Then maxTextW = tw
 		          idx = idx + 1
 		        Wend

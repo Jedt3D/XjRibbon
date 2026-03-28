@@ -1,0 +1,286 @@
+# XjRibbon Designer — MVP Plan
+
+## Goal
+A standalone Xojo Desktop app that lets users visually design an XjRibbon toolbar
+hierarchy, then copy the generated Xojo source code to paste into their XjRibbon's
+`Opening()` (desktop) or `Shown()` (web) event.
+
+## Branch
+`feature/designer-mvp` — isolated from `desktop/` and `web/` work.
+
+---
+
+## Current Window Layout (designed in Xojo IDE)
+
+### Top Bar (left to right)
+- `ProjectName` (Label) — shows `"filename" Structure` (or `"Untitled" Structure`)
+- `Label2` "Add" + `NewItem` (PopupMenu) — `-- select item -- | Ribbon Tab | Ribbon Group | Ribbon Large Button | Ribbon Small Button`
+- `ProjectType` (RadioGroup) — Desktop / Web (determines generated event name)
+- `CopyToolbarCode` (Button) — generates and copies code to clipboard
+
+### Main Area
+- **Left**: `RibbonStructure` (DesktopListBox) — expandable hierarchical tree
+  - Column 0: Caption
+  - Column 1: Type (`Tab`, `Group`, `Large Button`, `Small Button`)
+  - AllowExpandableRows, AllowRowDragging, AllowRowReordering = True
+- **Right**: `GroupBox1` "Inspector" — flat panel, enable/disable fields by row type
+
+### Inspector Controls (inside GroupBox1)
+| Control            | Label               | Maps to           | Enabled for           |
+|--------------------|---------------------|--------------------|-----------------------|
+| CaptionField       | Label4 "Caption"    | Caption            | Tab, Group, Item      |
+| TagField           | Label5 "Tag"        | Tag                | Item only             |
+| ItemTypeField      | Label6 "Item Type"  | Type (readonly)    | Item only             |
+| IsEnabled          | "Is Enabled?"       | IsEnabled          | Item only             |
+| TooltipTextField   | Label8 "Tooltip"    | TooltipText        | Item only             |
+| Label10 + ResourceNameField | "Resource Name" | *(deferred — icon)* | *(always disabled)* |
+| Label11 + AddMenuItem + MenuItems | "Menu Item" | Dropdown menu items | Large Button only |
+
+### Bottom
+- `StatusBar` (Label) — `"XjToolbar Designer version X.Y.Z"` — bumped each phase
+
+### AboutBox Window (already designed in IDE)
+- `AppIcon` (ImageViewer) — app icon
+- `CopyrightLabel` (Label) — shows app name, version, copyright
+- Closes via: close button, Esc key, click anywhere on the window
+- Triggered from Help > About menu
+- Version number in CopyrightLabel must be updated alongside StatusBar each phase
+
+---
+
+## Hierarchy Rules
+
+```
+Tab "Home"              ← depth 0 (root row)
+  ├─ Group "Clipboard"  ← depth 1 (child of Tab)
+  │  ├─ Large Button    ← depth 2 (child of Group)
+  │  └─ Small Button    ← depth 2 (child of Group)
+  └─ Group "Font"       ← depth 1
+Tab "Insert"            ← depth 0
+```
+
+### Add Validation (NewItem popup change)
+| Adding              | Requires selection at  | Hint if wrong                              |
+|---------------------|------------------------|--------------------------------------------|
+| Ribbon Tab          | (none — always root)   | —                                          |
+| Ribbon Group        | depth 0 (Tab)          | "Select a Tab to add a Group inside it"    |
+| Ribbon Large Button | depth 1 (Group)        | "Select a Group to add a Button inside it" |
+| Ribbon Small Button | depth 1 (Group)        | "Select a Group to add a Button inside it" |
+
+---
+
+## Row Interactions
+
+### Both RibbonStructure and MenuItems listboxes:
+- **Add**: NewItem popup (skip index 0), or AddMenuItem button
+- **Rename**: Double-click cell to edit inline (CellAction)
+- **Reorder**: Drag and drop (AllowRowDragging + AllowRowReordering already set)
+- **Delete**: Forward-DEL (Mac) / Backspace or Delete (Windows)
+
+### Edit Menu integration (applies to focused listbox):
+- **Cut** (Cmd+X): Copy row data internally, then delete row + children
+- **Copy** (Cmd+C): Copy row data to internal clipboard (Dictionary/JSONItem)
+- **Paste** (Cmd+V): Insert copied row after selection (same depth level)
+- **Delete**: Remove selected row + children
+- **Select All** (Cmd+A): Select text in focused TextField, or no-op on ListBox
+
+### Undo (Cmd+Z):
+Snapshot-based approach — simple and reliable for a designer tool:
+- Before each edit, push a full JSON snapshot of the ribbon state onto an undo stack
+- Undo = pop previous snapshot, rebuild ListBox from it
+- Ribbon structures are small, so snapshot overhead is negligible
+- Complexity: moderate — mainly wiring up snapshot capture points
+- Scope: Phase 6 (Polish) — implement if time permits, otherwise defer to post-v1.0
+
+---
+
+## Data Model (JSON, .ribbon extension)
+
+```json
+{
+  "version": "1.0",
+  "projectType": "desktop",
+  "tabs": [
+    {
+      "caption": "Home",
+      "groups": [
+        {
+          "caption": "Clipboard",
+          "items": [
+            {
+              "caption": "Paste",
+              "tag": "clipboard.paste",
+              "itemType": "large",
+              "isEnabled": true,
+              "tooltipText": "Paste from clipboard",
+              "menuItems": [
+                { "caption": "Paste Special", "tag": "clipboard.pastespecial" }
+              ]
+            },
+            {
+              "caption": "Cut",
+              "tag": "clipboard.cut",
+              "itemType": "small",
+              "isEnabled": true,
+              "tooltipText": "",
+              "menuItems": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+```
+
+### Code Generation Logic
+- `itemType = "large"` with no menuItems → `AddLargeButton(caption, tag)`
+- `itemType = "large"` with menuItems → `AddDropdownButton(caption, tag)` + `AddMenuItem()` calls
+- `itemType = "small"` → `AddSmallButton(caption, tag)`
+- If tooltipText not empty → `item.TooltipText = "..."`
+- If isEnabled = false → `item.IsEnabled = False`
+- Event wrapper: `Opening()` when ProjectType = Desktop, `Shown()` when ProjectType = Web
+
+### Generated Code Example
+```xojo
+// Generated by XjRibbon Designer v1.0.0
+// Paste into your XjRibbon's Opening() event
+
+// === Home ===
+Var homeTab As XjRibbonTab = Me.AddTab("Home")
+
+Var clipboardGroup As XjRibbonGroup = homeTab.AddNewGroup("Clipboard")
+Var pasteItem As XjRibbonItem = clipboardGroup.AddDropdownButton("Paste", "clipboard.paste")
+pasteItem.TooltipText = "Paste from clipboard"
+pasteItem.AddMenuItem("Paste Special", "clipboard.pastespecial")
+Call clipboardGroup.AddSmallButton("Cut", "clipboard.cut")
+Call clipboardGroup.AddSmallButton("Copy", "clipboard.copy")
+```
+
+---
+
+## Menu Bar (already designed in IDE)
+
+### File Menu
+| Menu Item     | Name         | Shortcut      | Phase |
+|---------------|-------------|---------------|-------|
+| New           | `NewItem`*  | Cmd+N         | 4     |
+| Open          | `OpenItem`  | Cmd+O         | 4     |
+| Save          | `SaveItem`  | Cmd+S         | 4     |
+| Save As...    | `SaveAsItem`| Cmd+Shift+S   | 4     |
+| Quit          | `FileQuit`  | Cmd+Q         | done  |
+
+*NOTE: `NewItem` menu conflicts with `NewItem` PopupMenu control — rename menu to `FileNew` before wiring.
+
+### Edit Menu
+| Menu Item     | Name           | Shortcut | Phase |
+|---------------|---------------|----------|-------|
+| Undo          | `EditUndo`    | Cmd+Z    | 6     |
+| Cut           | `EditCut`     | Cmd+X    | 6     |
+| Copy          | `EditCopy`    | Cmd+C    | 6     |
+| Paste         | `EditPaste`   | Cmd+V    | 6     |
+| Delete        | `EditClear`   | Del      | 6     |
+| Select All    | `EditSelectAll`| Cmd+A   | 6     |
+
+Wire Edit menu to operate on focused listbox (row-level) or textfield (text-level).
+
+### Help Menu
+| Menu Item     | Name         | Shortcut       | Phase |
+|---------------|-------------|----------------|-------|
+| About         | `HelpAbout` | Cmd+Shift+/    | done  |
+
+---
+
+## Implementation Phases
+
+### Phase 1 — Tab Level (v0.2.0) ✅
+- [x] NewItem popup: add Tab at root via `AddExpandableRow`
+- [x] RowTag stores Dictionary: `{"type": "tab", "caption": "New Tab"}`
+- [x] SelectionChanged → enable only CaptionField; disable all other inspector fields
+- [x] CaptionField TextChanged → update RowTag + listbox cell
+- [x] Double-click cell → inline edit (CellTypeAt = TextField + CellAction), sync to RowTag + CaptionField
+- [x] Delete key (KeyDown: Chr(127) / Chr(8)) → remove selected Tab row + all children
+- [x] ProjectName label → `"Untitled" Structure`
+- [x] AboutBox: KeyDown Esc + MouseDown click anywhere to close
+- [x] Help > About menu handler wired → shows AboutBox modal
+- [x] StatusBar → v0.2.0, AboutBox → v0.2.0
+- [x] Git: commit da49d7f + tag v0.2.0-designer
+
+### Phase 2 — Group Level (v0.3.0) ✅
+- [x] NewItem popup: add Group as child of selected Tab via `AddExpandableRowAt(insertAt, text, 1)`
+- [x] Validation: if no Tab selected → StatusBar hint
+- [x] `FindLastChildRow()` helper to find correct insertion position
+- [x] RowTag Dictionary: `{"type": "group", "caption": "New Group"}`
+- [x] SelectionChanged → enable only CaptionField for Group rows
+- [x] Double-click cell → inline edit, sync to RowTag + CaptionField
+- [x] Delete key → remove Group row + all child items
+- [x] StatusBar → v0.3.0, AboutBox → v0.3.0
+- [x] Git: commit 80d5d51 + tag v0.3.0-designer
+
+### Phase 3 — Item Level + Dropdown Menu (v0.4.0) ← CURRENT
+- [x] NewItem popup: add Large/Small Button as child of Group via `AddRowAt(insertAt, text, 2)`
+- [x] Validation: if no Group selected → StatusBar hint
+- [x] RowTag Dictionary: `{"type": "large/small", "caption", "tag", "isEnabled", "tooltipText", "menuItems": []}`
+- [x] SelectionChanged → enable all Item fields; disable MenuItems section for Small Buttons
+- [x] CaptionField, TagField, IsEnabled, TooltipTextField → update RowTag on change
+- [x] ItemTypeField → readonly, shows "Large Button" or "Small Button"
+- [x] PopulateInspector loads MenuItems from RowTag; clears item fields for tab/group
+- [x] MenuItems listbox: AddMenuItem adds row, double-click cells to rename, DEL to delete
+- [x] `SyncMenuItemsToRowTag()` syncs MenuItems listbox back to RowTag after every change
+- [x] Delete key on RibbonStructure → remove Item row
+- [x] StatusBar → v0.4.0, AboutBox → v0.4.0
+- [x] Git: commit d6bf360 + tag v0.4.0-designer
+
+### Phase 4 — Save / Load (v0.5.0) ✅
+- [x] Rename PopupMenu `NewItem` → `AddItemPopup` to avoid menu name conflict
+- [x] Wire File menu handlers: FileNew, OpenItem, SaveItem, SaveAsItem
+- [x] BuildJSON from ListBox hierarchy + LoadFromJSON rebuild
+- [x] `.ribbon` file type filter via inline FileType (later upgraded to FileTypeSet)
+- [x] Dirty tracking: `mIsDirty` flag, `*` in title, `MarkDirty` on all edits
+- [x] CancelClosing prompt "Save changes?" on close/new/open
+- [x] ProjectName label → `"filename" Structure`, window title updates
+- [x] Sample ribbon (Home/Insert/View) loaded on launch
+- [x] Auto-tag generation: `GenerateTag(groupCaption, itemCaption)` on add + rename
+- [x] CascadeTagUpdate: renaming group/tab/item propagates tags to descendants + menu items
+- [x] Sibling add: FindParentOfType allows adding items without re-selecting parent
+- [x] 3rd column "Dropdown" shows menu item count, center-aligned
+- [x] Replaced AddExpandableRow with AddRow/AddRowAt (no collapse/expand issues)
+- [x] Git: commit d65cb80 + tag v0.5.0-designer
+
+### Phase 5 — Code Generation (v0.6.0) ✅
+- [x] CopyToolbarCode button → GenerateCode builds valid Xojo source
+- [x] Variable names: SanitizeVarName (camelCase) + suffix (Tab/Group/Item)
+- [x] `Call` prefix when item has no extra properties
+- [x] Dropdown buttons → AddDropdownButton + AddMenuItem calls
+- [x] TooltipText, IsEnabled = False emitted when set
+- [x] Comment: `Opening()` for Desktop, `Shown()` for Web based on ProjectType
+- [x] Save before copy: prompt Save As if new, auto-save if existing
+- [x] Clipboard.Text = code, StatusBar feedback
+- [x] Git: commit 9c675c8 + tag v0.6.0-designer
+
+### Phase 6 — Polish (v1.0.0) ✅
+- [x] AboutBox icon: AppIconLightSketch / AppIconDarkSketch based on Color.IsDarkMode
+- [x] About in macOS Application menu via `DesktopApplicationMenuItem` (lesson learned)
+- [x] HelpAbout handler in App class for when no window focused
+- [x] RibbonFileType.xojo_filetypeset with UTI com.worajedt.ribbondesigner
+- [x] Open/Save dialogs use registered RibbonFileType.Ribbon
+- [x] App.DocumentOpened event: double-click .ribbon file in Finder opens it
+- [x] UniqueVarName: prevent duplicate variable names in code gen (fontGroup → fontGroup2)
+- [x] App icon light/dark images included (IDE configuration needed for build)
+- [x] Version 1.0.0 across StatusBar, AboutBox, project, code gen header
+- [x] Git: commit + tag v1.0.0-designer
+
+---
+
+## Deferred to post-v1.0
+- Edit menu wiring: Cut/Copy/Paste for listbox rows (internal clipboard)
+- Undo/Redo (snapshot-based)
+- Edge cases: duplicate tag warnings
+- Resource Name controls (icon support)
+- Dark mode app icon in built binary (requires IDE icon editor configuration)
+
+## Out of Scope (future)
+- Live preview of the ribbon in the designer window
+- Icon picker / icon resource name assignment
+- Export to web/ variant code differences (currently same API)
+- Drag items between groups/tabs (cross-parent moves)
