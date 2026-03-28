@@ -33,6 +33,14 @@ Protected Class XjRibbonItem
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
+		IsToggle As Boolean = False
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		IsToggleActive As Boolean = False
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
 		mMenuItems() As WebMenuItem
 	#tag EndProperty
 
