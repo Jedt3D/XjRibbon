@@ -71,7 +71,11 @@ Inherits WebCanvas
 		      mDropdownPendingItem = hitItem
 		      ShowDropdownMenu(hitItem, x, y)
 		    Else
+		      If hitItem.IsToggle Then
+		        hitItem.IsToggleActive = Not hitItem.IsToggleActive
+		      End If
 		      RaiseEvent ItemPressed(hitItem.Tag)
+		      Me.Refresh
 		    End If
 		  End If
 		End Sub
@@ -230,6 +234,37 @@ Inherits WebCanvas
 		End Sub
 	#tag EndMethod
 
+	#tag Method, Flags = &h0
+		Function GetToggleState(tag As String) As Boolean
+		  Var item As XjRibbonItem = FindItemByTag(tag)
+		  If item <> Nil Then Return item.IsToggleActive
+		  Return False
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub SetToggleState(tag As String, value As Boolean)
+		  Var item As XjRibbonItem = FindItemByTag(tag)
+		  If item <> Nil Then
+		    item.IsToggleActive = value
+		    Me.Refresh
+		  End If
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Function FindItemByTag(tag As String) As XjRibbonItem
+		  For Each tab As XjRibbonTab In mTabs
+		    For Each group As XjRibbonGroup In tab.mGroups
+		      For Each item As XjRibbonItem In group.mItems
+		        If item.Tag = tag Then Return item
+		      Next
+		    Next
+		  Next
+		  Return Nil
+		End Function
+	#tag EndMethod
+
 	#tag Method, Flags = &h21
 		Private Sub LayoutTabs(g As WebGraphics)
 		  #Pragma Unused g
@@ -268,7 +303,7 @@ Inherits WebCanvas
 		        Var maxTextW As Double = 0
 		        While idx <= group.mItems.LastIndex And group.mItems(idx).ItemType = 1 And batch.Count < 3
 		          batch.Add(group.mItems(idx))
-		          Var tw As Double = MeasureTextWidth(group.mItems(idx).Caption, 9, False)
+		          Var tw As Double = MeasureTextWidth(group.mItems(idx).Caption, 11, False)
 		          If tw > maxTextW Then maxTextW = tw
 		          idx = idx + 1
 		        Wend
@@ -335,6 +370,8 @@ Inherits WebCanvas
 		    cPlaceholderIconDisabled = Color.RGB(80, 80, 80)
 		    cPlaceholderIconText = Color.RGB(255, 255, 255)
 		    cCollapseChevron = Color.RGB(150, 150, 150)
+		    cToggleActiveBackground = Color.RGB(55, 70, 90)
+		    cToggleActiveHoverBackground = Color.RGB(65, 80, 100)
 		  Else
 		    cBackground = Color.RGB(245, 245, 245)
 		    cContentBackground = Color.RGB(255, 255, 255)
@@ -353,6 +390,8 @@ Inherits WebCanvas
 		    cPlaceholderIconDisabled = Color.RGB(180, 180, 180)
 		    cPlaceholderIconText = Color.RGB(255, 255, 255)
 		    cCollapseChevron = Color.RGB(120, 120, 120)
+		    cToggleActiveBackground = Color.RGB(200, 220, 240)
+		    cToggleActiveHoverBackground = Color.RGB(185, 210, 235)
 		  End If
 		End Sub
 	#tag EndMethod
@@ -463,6 +502,15 @@ Inherits WebCanvas
 		  If item.mIsPressed Then
 		    g.DrawingColor = cItemPressedBackground
 		    g.FillRoundRectangle(bx, by, bw, bh, 4)
+		  ElseIf item.IsToggle And item.IsToggleActive Then
+		    If item.mIsHovered Then
+		      g.DrawingColor = cToggleActiveHoverBackground
+		    Else
+		      g.DrawingColor = cToggleActiveBackground
+		    End If
+		    g.FillRoundRectangle(bx, by, bw, bh, 4)
+		    g.DrawingColor = cBorder
+		    g.DrawRoundRectangle(bx + 0.5, by + 0.5, bw - 1, bh - 1, 4)
 		  ElseIf item.mIsHovered Then
 		    g.DrawingColor = cItemHoverBackground
 		    g.FillRoundRectangle(bx, by, bw, bh, 4)
@@ -511,10 +559,19 @@ Inherits WebCanvas
 		  Var bw As Double = item.mBoundsW
 		  Var bh As Double = item.mBoundsH
 
-		  // Hover/pressed background
+		  // Hover/pressed/toggle background
 		  If item.mIsPressed Then
 		    g.DrawingColor = cItemPressedBackground
 		    g.FillRoundRectangle(bx, by, bw, bh, 3)
+		  ElseIf item.IsToggle And item.IsToggleActive Then
+		    If item.mIsHovered Then
+		      g.DrawingColor = cToggleActiveHoverBackground
+		    Else
+		      g.DrawingColor = cToggleActiveBackground
+		    End If
+		    g.FillRoundRectangle(bx, by, bw, bh, 3)
+		    g.DrawingColor = cBorder
+		    g.DrawRoundRectangle(bx + 0.5, by + 0.5, bw - 1, bh - 1, 3)
 		  ElseIf item.mIsHovered Then
 		    g.DrawingColor = cItemHoverBackground
 		    g.FillRoundRectangle(bx, by, bw, bh, 3)
@@ -959,6 +1016,14 @@ Inherits WebCanvas
 
 	#tag Property, Flags = &h21
 		Private cCollapseChevron As Color
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private cToggleActiveBackground As Color
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private cToggleActiveHoverBackground As Color
 	#tag EndProperty
 
 	#tag Constant, Name = kTabStripHeight, Type = Double, Dynamic = False, Default = \"29", Scope = Private
