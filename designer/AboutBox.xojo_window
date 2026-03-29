@@ -10,7 +10,7 @@ Begin DesktopWindow AboutBox
    HasFullScreenButton=   False
    HasMaximizeButton=   False
    HasMinimizeButton=   False
-   HasTitleBar     =   False
+   HasTitleBar     =   True
    Height          =   377
    ImplicitInstance=   True
    MacProcID       =   0
@@ -22,7 +22,7 @@ Begin DesktopWindow AboutBox
    MinimumWidth    =   64
    Resizeable      =   False
    Title           =   "About"
-   Type            =   2
+   Type            =   1
    Visible         =   True
    Width           =   276
    Begin DesktopImageViewer AppIcon
@@ -91,16 +91,6 @@ End
 
 #tag WindowCode
 	#tag Event
-		Sub Opening()
-		  If Color.IsDarkMode Then
-		    AppIcon.Image = AppIconDarkSketch
-		  Else
-		    AppIcon.Image = AppIconLightSketch
-		  End If
-		End Sub
-	#tag EndEvent
-
-	#tag Event
 		Function KeyDown(key As String) As Boolean
 		  // Close on Escape key
 		  If key = Chr(27) Then
@@ -118,6 +108,16 @@ End
 		  Self.Close
 		  Return True
 		End Function
+	#tag EndEvent
+
+	#tag Event
+		Sub Opening()
+		  If Color.IsDarkMode Then
+		    AppIcon.Image = AppIconDarkSketch
+		  Else
+		    AppIcon.Image = AppIconLightSketch
+		  End If
+		End Sub
 	#tag EndEvent
 
 
