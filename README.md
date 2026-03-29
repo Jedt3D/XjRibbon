@@ -17,7 +17,7 @@ A Microsoft Office-style ribbon toolbar component for **Xojo 2025**, supporting 
 - **Keyboard navigation** with KeyTip badges (Desktop only)
 - **Visual Designer** for building ribbon structures and generating code
 
-![Screenshot](/Users/worajedt/Xojo Projects/XjRibbon/screenshot.jpg)
+![Screenshot](screenshot.jpg)
 
 ## Project Structure
 
