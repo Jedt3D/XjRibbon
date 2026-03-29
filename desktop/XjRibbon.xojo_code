@@ -353,7 +353,7 @@ Inherits DesktopCanvas
 		        Var maxTextW As Double = 0
 		        While idx <= group.mItems.LastIndex And group.mItems(idx).ItemType = 1 And batch.Count < 3
 		          batch.Add(group.mItems(idx))
-		          g.FontSize = 9
+		          g.FontSize = 11
 		          Var tw As Double = g.TextWidth(group.mItems(idx).Caption)
 		          If tw > maxTextW Then maxTextW = tw
 		          idx = idx + 1
@@ -427,7 +427,7 @@ Inherits DesktopCanvas
 		      g.FillRectangle(tab.mBoundsX, tab.mBoundsY, tab.mBoundsW, tab.mBoundsH)
 		    End If
 		    g.DrawingColor = cTabText
-		    g.FontSize = 11
+		    g.FontSize = 13
 		    g.Bold = False
 		    Var textW As Double = g.TextWidth(tab.Caption)
 		    Var textX As Double = tab.mBoundsX + (tab.mBoundsW - textW) / 2
@@ -463,7 +463,7 @@ Inherits DesktopCanvas
 		      End Select
 		    Next
 		    g.DrawingColor = cGroupLabelText
-		    g.FontSize = 9
+		    g.FontSize = 11
 		    g.Bold = False
 		    Var labelW As Double = g.TextWidth(group.Caption)
 		    g.DrawText(group.Caption, group.mBoundsX + (group.mBoundsW - labelW) / 2, group.mBoundsY + group.mBoundsH - 3)
@@ -516,7 +516,7 @@ Inherits DesktopCanvas
 		    End If
 		    g.FillRoundRectangle(iconX, iconY, iconSize, iconSize, 4, 4)
 		    g.DrawingColor = cPlaceholderIconText
-		    g.FontSize = 16
+		    g.FontSize = 18
 		    g.Bold = True
 		    Var letter As String = item.Caption.Left(1)
 		    Var letterW As Double = g.TextWidth(letter)
@@ -527,7 +527,7 @@ Inherits DesktopCanvas
 		  Else
 		    g.DrawingColor = cItemDisabledText
 		  End If
-		  g.FontSize = 9
+		  g.FontSize = 11
 		  g.Bold = False
 		  Var textW As Double = g.TextWidth(item.Caption)
 		  g.DrawText(item.Caption, bx + (bw - textW) / 2, iconY + iconSize + 12)
@@ -579,7 +579,7 @@ Inherits DesktopCanvas
 		  Else
 		    g.DrawingColor = cItemDisabledText
 		  End If
-		  g.FontSize = 9
+		  g.FontSize = 11
 		  g.Bold = False
 		  g.DrawText(item.Caption, iconX + kSmallButtonIconSize + kSmallButtonTextPadding, by + (bh + g.TextHeight) / 2 - 1)
 		End Sub
@@ -652,7 +652,7 @@ Inherits DesktopCanvas
 
 	#tag Method, Flags = &h21
 		Private Sub DrawKeyTipBadge(g As Graphics, letter As String, cx As Double, cy As Double)
-		  g.FontSize = 9
+		  g.FontSize = 11
 		  g.Bold = True
 		  Var tw As Double = g.TextWidth(letter)
 		  Var badgeW As Double = tw + 8
