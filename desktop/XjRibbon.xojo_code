@@ -369,6 +369,35 @@ Inherits DesktopCanvas
 		          batch(row).mBoundsH = kSmallButtonHeight
 		        Next
 		        itemX = itemX + colWidth + kItemGap
+		      ElseIf item.ItemType = 3 Then
+		        // CheckBox column batch (same 3-per-column stacking, different colWidth formula)
+		        Var cbBatch() As XjRibbonItem
+		        Var cbMaxTextW As Double = 0
+		        While idx <= group.mItems.LastIndex And group.mItems(idx).ItemType = 3 And cbBatch.Count < 3
+		          cbBatch.Add(group.mItems(idx))
+		          g.FontSize = 11
+		          Var cbTw As Double = g.TextWidth(group.mItems(idx).Caption)
+		          If cbTw > cbMaxTextW Then cbMaxTextW = cbTw
+		          idx = idx + 1
+		        Wend
+		        Var cbGlyph As Double = 13
+		        Var cbColWidth As Double = cbGlyph + kSmallButtonTextPadding + cbMaxTextW + kSmallButtonTextPadding * 2
+		        If cbColWidth < kSmallButtonMinWidth Then cbColWidth = kSmallButtonMinWidth
+		        Var cbTotalH As Double = cbBatch.Count * kSmallButtonHeight + (cbBatch.Count - 1) * kSmallRowGap
+		        Var cbStartY As Double = contentY + (itemAreaH - cbTotalH) / 2
+		        For row As Integer = 0 To cbBatch.LastIndex
+		          cbBatch(row).mBoundsX = itemX
+		          cbBatch(row).mBoundsY = cbStartY + row * (kSmallButtonHeight + kSmallRowGap)
+		          cbBatch(row).mBoundsW = cbColWidth
+		          cbBatch(row).mBoundsH = kSmallButtonHeight
+		        Next
+		        itemX = itemX + cbColWidth + kItemGap
+		      ElseIf item.ItemType = 4 Then
+		        // Separator: visual column gap, no bounds needed, no draw
+		        item.mBoundsW = 0
+		        item.mBoundsH = 0
+		        itemX = itemX + kItemGap
+		        idx = idx + 1
 		      Else
 		        item.mBoundsX = itemX
 		        item.mBoundsY = contentY
