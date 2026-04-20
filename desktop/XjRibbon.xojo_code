@@ -58,7 +58,7 @@ Inherits DesktopCanvas
 		  If hitItem <> Nil And hitItem.IsEnabled Then
 		    mPressedItem = hitItem
 		    If hitItem.ItemType = 2 And hitItem.IsSplitButton Then
-		      mPressedOnArrow = x >= hitItem.mBoundsX + hitItem.mBoundsW * 0.80
+		      mPressedOnArrow = x >= hitItem.mBoundsX + hitItem.mBoundsW - kArrowZoneWidth
 		    Else
 		      mPressedOnArrow = False
 		    End If
@@ -412,9 +412,19 @@ Inherits DesktopCanvas
 		      Else
 		        item.mBoundsX = itemX
 		        item.mBoundsY = contentY
-		        item.mBoundsW = kLargeButtonWidth
+		        // Auto-expand width to fit caption; add fixed arrow zone for SplitButtons
+		        g.FontSize = 11
+		        g.Bold = False
+		        Var captionLinesLayout() As String = item.Caption.Split(Chr(10))
+		        Var maxCapW As Double = 0
+		        For Each cl As String In captionLinesLayout
+		          maxCapW = Max(maxCapW, g.TextWidth(cl))
+		        Next
+		        Var btnW As Double = Max(kLargeButtonWidth, maxCapW + 16)
+		        If item.IsSplitButton Then btnW = btnW + kArrowZoneWidth
+		        item.mBoundsW = btnW
 		        item.mBoundsH = itemAreaH
-		        itemX = itemX + kLargeButtonWidth + kItemGap
+		        itemX = itemX + btnW + kItemGap
 		        idx = idx + 1
 		      End If
 		    Wend
@@ -573,8 +583,18 @@ Inherits DesktopCanvas
 		  End If
 		  g.FontSize = 11
 		  g.Bold = False
-		  Var textW As Double = g.TextWidth(item.Caption)
-		  g.DrawText(item.Caption, bx + (bw - textW) / 2, iconY + iconSize + 12)
+		  Var captionLines() As String = item.Caption.Split(Chr(10))
+		  If captionLines.Count > 1 Then
+		    Var drawBodyW As Double = If(item.IsSplitButton, bw - kArrowZoneWidth, bw)
+		    Var line1W As Double = g.TextWidth(captionLines(0))
+		    Var line2W As Double = g.TextWidth(captionLines(1))
+		    g.DrawText(captionLines(0), bx + (drawBodyW - line1W) / 2, iconY + iconSize + 7)
+		    g.DrawText(captionLines(1), bx + (drawBodyW - line2W) / 2, iconY + iconSize + 19)
+		  Else
+		    Var drawBodyW As Double = If(item.IsSplitButton, bw - kArrowZoneWidth, bw)
+		    Var textW As Double = g.TextWidth(item.Caption)
+		    g.DrawText(item.Caption, bx + (drawBodyW - textW) / 2, iconY + iconSize + 12)
+		  End If
 		End Sub
 	#tag EndMethod
 
@@ -635,14 +655,13 @@ Inherits DesktopCanvas
 		  Var arrowW As Double = kDropdownArrowSize
 
 		  If item.IsSplitButton Then
-		    // Draw vertical separator line at 80% of button width
-		    Var sepX As Double = item.mBoundsX + item.mBoundsW * 0.80
+		    // Separator at fixed kArrowZoneWidth from right edge (not percentage)
+		    Var sepX As Double = item.mBoundsX + item.mBoundsW - kArrowZoneWidth
 		    g.DrawingColor = cBorder
 		    g.FillRectangle(sepX, item.mBoundsY + 4, 1, item.mBoundsH - 8)
-		    // Draw chevron centered in the 20% arrow zone only
+		    // Chevron centered in fixed arrow zone
 		    Var arrowZoneX As Double = sepX
-		    Var arrowZoneW As Double = item.mBoundsW * 0.20
-		    Var arrowX As Double = arrowZoneX + (arrowZoneW - arrowW) / 2
+		    Var arrowX As Double = arrowZoneX + (kArrowZoneWidth - arrowW) / 2
 		    Var arrowY As Double = item.mBoundsY + item.mBoundsH - 6
 		    If item.IsEnabled Then
 		      g.DrawingColor = cItemText
@@ -1396,6 +1415,8 @@ Inherits DesktopCanvas
 	#tag Constant, Name = kItemGap, Type = Double, Dynamic = False, Default = \"4", Scope = Private
 	#tag EndConstant
 	#tag Constant, Name = kDropdownArrowSize, Type = Double, Dynamic = False, Default = \"6", Scope = Private
+	#tag EndConstant
+	#tag Constant, Name = kArrowZoneWidth, Type = Double, Dynamic = False, Default = \"20", Scope = Private
 	#tag EndConstant
 	#tag Constant, Name = kSmallButtonHeight, Type = Double, Dynamic = False, Default = \"22", Scope = Private
 	#tag EndConstant
