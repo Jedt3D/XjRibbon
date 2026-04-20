@@ -960,7 +960,7 @@ End
 		  Var rowType As String = d.Value("type")
 		  Var newCaption As String = d.Value("caption")
 		  
-		  If rowType = "large" Or rowType = "small" Then
+		  If rowType = "large" Or rowType = "small" Or rowType = "splitbutton" Or rowType = "toggle" Or rowType = "checkbox" Then
 		    // Item: update its own tag + cascade to menu items
 		    Var groupCaption As String = ""
 		    For p As Integer = row - 1 DownTo 0
@@ -999,7 +999,7 @@ End
 		      If cd = Nil Then Continue
 		      Var ct As String = cd.Value("type")
 		      If ct = "tab" Or ct = "group" Then Exit
-		      If ct = "large" Or ct = "small" Then
+		      If ct = "large" Or ct = "small" Or ct = "splitbutton" Or ct = "toggle" Or ct = "checkbox" Then
 		        Var itemCaption As String = cd.Value("caption")
 		        cd.Value("tag") = GenerateTag(newCaption, itemCaption)
 		        Var miPrefix As String = itemCaption.Lowercase.ReplaceAll(" ", "")
@@ -1021,7 +1021,7 @@ End
 		      Var ct As String = cd.Value("type")
 		      If ct = "tab" Then Exit
 		      If ct = "group" Then currentGroupCaption = cd.Value("caption")
-		      If (ct = "large" Or ct = "small") And currentGroupCaption <> "" Then
+		      If (ct = "large" Or ct = "small" Or ct = "splitbutton" Or ct = "toggle" Or ct = "checkbox") And currentGroupCaption <> "" Then
 		        Var itemCaption As String = cd.Value("caption")
 		        cd.Value("tag") = GenerateTag(currentGroupCaption, itemCaption)
 		        Var miPrefix As String = itemCaption.Lowercase.ReplaceAll(" ", "")
@@ -1625,7 +1625,7 @@ End
 		  // Update the Dropdown column (col 2) with menu item count
 		  Var d As Dictionary = Dictionary(RibbonStructure.RowTagAt(row))
 		  If d = Nil Then Return
-		  If d.Value("type") <> "large" Then
+		  If d.Value("type") <> "large" And d.Value("type") <> "splitbutton" Then
 		    RibbonStructure.CellTextAt(row, 2) = ""
 		    Return
 		  End If
