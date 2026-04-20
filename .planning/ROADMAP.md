@@ -62,10 +62,19 @@ XjRibbonGroup.AddSeparator()
 **Goal:** Add SplitButton, Toggle Button, and CheckBox item types to the designer — including inspector panels, JSON schema, and code generator support.
 **Status:** Planned
 **Depends on:** Phase 5
+**Plans:** 5 plans
+
+Plans:
+- [ ] 06-01-PLAN.md — AddItemPopup + SelectionChanged new types + CascadeTagUpdate + UpdateDropdownColumn
+- [ ] 06-02-PLAN.md — IsToggleActive control + SetInspectorState + PopulateInspector + ValueChanged event
+- [ ] 06-03-PLAN.md — BuildJSON isToggleActive emission + LoadFromJSON Select Case fix + isToggleActive parse
+- [ ] 06-04-PLAN.md — GenerateCode Select Case restructure with splitbutton, toggle, checkbox cases
+- [ ] 06-05-PLAN.md — Version bump to 2.0.0 in all 4 locations
 
 #### Files to Modify
 
 - `designer/MainWindow.xojo_window` — update `AddItemPopup`, `PopulateInspector`, `GenerateCode`
+- `designer/AboutBox.xojo_window` — update `CopyrightLabel` version string
 - `.ribbon` JSON schema — extend `itemType` to include `"splitbutton"`, `"toggle"`, `"checkbox"`
 
 #### New JSON Schema Fields
