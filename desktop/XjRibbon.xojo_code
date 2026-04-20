@@ -57,6 +57,11 @@ Inherits DesktopCanvas
 		  Var hitItem As XjRibbonItem = HitTestItems(x, y)
 		  If hitItem <> Nil And hitItem.IsEnabled Then
 		    mPressedItem = hitItem
+		    If hitItem.ItemType = 2 And hitItem.IsSplitButton Then
+		      mPressedOnArrow = x >= hitItem.mBoundsX + hitItem.mBoundsW * 0.80
+		    Else
+		      mPressedOnArrow = False
+		    End If
 		    hitItem.mIsPressed = True
 		    Me.Refresh
 		    Return True
@@ -73,14 +78,20 @@ Inherits DesktopCanvas
 		    Var hitItem As XjRibbonItem = HitTestItems(x, y)
 		    If hitItem Is pressed And pressed.IsEnabled Then
 		      If pressed.ItemType = 2 And pressed.mMenuItems.Count > 0 Then
-		        Var baseMenu As New DesktopMenuItem
-		        For Each mi As DesktopMenuItem In pressed.mMenuItems
-		          Var menuItem As New DesktopMenuItem(mi.Text)
-		          menuItem.Tag = mi.Tag
-		          baseMenu.AddMenu(menuItem)
-		        Next
-		        Var selected As DesktopMenuItem = baseMenu.PopUp
-		        If selected <> Nil Then RaiseEvent DropdownMenuAction(pressed.Tag, selected.Tag.StringValue)
+		        If pressed.IsSplitButton And Not mPressedOnArrow Then
+		          // SplitButton body click — fire ItemPressed (no menu)
+		          RaiseEvent ItemPressed(pressed.Tag)
+		        Else
+		          // Arrow click or plain dropdown — open popup menu
+		          Var baseMenu As New DesktopMenuItem
+		          For Each mi As DesktopMenuItem In pressed.mMenuItems
+		            Var menuItem As New DesktopMenuItem(mi.Text)
+		            menuItem.Tag = mi.Tag
+		            baseMenu.AddMenu(menuItem)
+		          Next
+		          Var selected As DesktopMenuItem = baseMenu.PopUp
+		          If selected <> Nil Then RaiseEvent DropdownMenuAction(pressed.Tag, selected.Tag.StringValue)
+		        End If
 		      Else
 		        If pressed.IsToggle Then pressed.IsToggleActive = Not pressed.IsToggleActive
 		        RaiseEvent ItemPressed(pressed.Tag)
@@ -622,18 +633,42 @@ Inherits DesktopCanvas
 		Private Sub DrawDropdownButton(g As Graphics, item As XjRibbonItem)
 		  DrawLargeButton(g, item)
 		  Var arrowW As Double = kDropdownArrowSize
-		  Var arrowX As Double = item.mBoundsX + (item.mBoundsW - arrowW) / 2
-		  Var arrowY As Double = item.mBoundsY + item.mBoundsH - 6
-		  If item.IsEnabled Then
-		    g.DrawingColor = cItemText
+
+		  If item.IsSplitButton Then
+		    // Draw vertical separator line at 80% of button width
+		    Var sepX As Double = item.mBoundsX + item.mBoundsW * 0.80
+		    g.DrawingColor = cBorder
+		    g.FillRectangle(sepX, item.mBoundsY + 4, 1, item.mBoundsH - 8)
+		    // Draw chevron centered in the 20% arrow zone only
+		    Var arrowZoneX As Double = sepX
+		    Var arrowZoneW As Double = item.mBoundsW * 0.20
+		    Var arrowX As Double = arrowZoneX + (arrowZoneW - arrowW) / 2
+		    Var arrowY As Double = item.mBoundsY + item.mBoundsH - 6
+		    If item.IsEnabled Then
+		      g.DrawingColor = cItemText
+		    Else
+		      g.DrawingColor = cItemDisabledText
+		    End If
+		    Var midX As Double = arrowX + arrowW / 2
+		    g.PenSize = 1.5
+		    g.DrawLine(arrowX, arrowY, midX, arrowY + arrowW / 2)
+		    g.DrawLine(midX, arrowY + arrowW / 2, arrowX + arrowW, arrowY)
+		    g.PenSize = 1
 		  Else
-		    g.DrawingColor = cItemDisabledText
+		    // Plain dropdown: chevron centered in full button width (unchanged)
+		    Var arrowX As Double = item.mBoundsX + (item.mBoundsW - arrowW) / 2
+		    Var arrowY As Double = item.mBoundsY + item.mBoundsH - 6
+		    If item.IsEnabled Then
+		      g.DrawingColor = cItemText
+		    Else
+		      g.DrawingColor = cItemDisabledText
+		    End If
+		    Var midX As Double = arrowX + arrowW / 2
+		    g.PenSize = 1.5
+		    g.DrawLine(arrowX, arrowY, midX, arrowY + arrowW / 2)
+		    g.DrawLine(midX, arrowY + arrowW / 2, arrowX + arrowW, arrowY)
+		    g.PenSize = 1
 		  End If
-		  Var midX As Double = arrowX + arrowW / 2
-		  g.PenSize = 1.5
-		  g.DrawLine(arrowX, arrowY, midX, arrowY + arrowW / 2)
-		  g.DrawLine(midX, arrowY + arrowW / 2, arrowX + arrowW, arrowY)
-		  g.PenSize = 1
 		End Sub
 	#tag EndMethod
 
