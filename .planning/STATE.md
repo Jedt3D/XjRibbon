@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Full Control Set + Release
 status: unknown
-last_updated: "2026-04-20T18:23:28.202Z"
+last_updated: "2026-04-20T18:30:00.000Z"
 progress:
   total_phases: 8
   completed_phases: 1
   total_plans: 9
-  completed_plans: 7
-  percent: 78
+  completed_plans: 9
+  percent: 100
 ---
 
 milestone: v1.0
@@ -49,6 +49,7 @@ See: .planning/PROJECT.md (updated 2026-04-20)
 - Group caption font settled at 10pt after iterating 11pt (too large) and 9pt (too small)
 - IsToggleActive placed at Top=248 (same row as ResourceNameField) — always-disabled ResourceNameField creates no functional conflict
 - CheckBox inspector excludes IsEnabled and Tooltip controls — gated on hasIsEnabled not isItem per DEV_PLAN spec
+- GenerateCode Select Case pattern chosen over ElseIf chain — toggle Case always uses Var form since .IsToggle = True requires item reference; checkbox Var/Call split on isActive value
 
 ## Technical Context
 
@@ -73,4 +74,4 @@ See: .planning/PROJECT.md (updated 2026-04-20)
 
 ## Last Activity
 
-2026-04-20T18:22:30Z — Completed 06-03-PLAN.md. BuildJSON now emits isToggleActive for toggle/checkbox types; LoadFromJSON Select Case replaces binary If/Else for all 5 item types with correct col-1 labels; isToggleActive parsed from JSON into row Dictionary (commits 44c7fc2, 7866193). REQ-602, REQ-603 complete.
+2026-04-20T18:30:00Z — Completed 06-04-PLAN.md. GenerateCode item dispatch restructured from If/End If to Select Case with Case blocks for all 5 item types: splitbutton (AddSplitButton + menu loop), toggle (AddLargeButton + .IsToggle = True + conditional .IsToggleActive = True), checkbox (conditional Var/Call form of AddCheckBox). Case "large","small" unchanged — no regression. Commit d08dd44. REQ-607 complete.

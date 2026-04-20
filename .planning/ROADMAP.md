@@ -13,7 +13,7 @@ Ship a complete MS Office–style ribbon library for Xojo covering every control
 - [x] **Phase 3: Desktop Collapse** — Ribbon collapse, contextual tabs
 - [x] **Phase 4: Desktop Keyboard** — Toggle buttons, keyboard navigation (KeyTips)
 - [x] **Phase 5: Desktop Complete Control Set** — SplitButton, CheckBox item, Separator item
-- [ ] **Phase 6: Designer v2.0** — New control types in designer + code gen
+- [ ] **Phase 6: Designer v2.0** — New control types in designer + code gen (4/5 plans complete)
 - [ ] **Phase 7: Web Phase 5** — CheckBox, SplitButton, Separator parity on Web
 - [ ] **Phase 8: Library v1.0 Release** — Package, README, distribution
 
@@ -60,15 +60,15 @@ XjRibbonGroup.AddSeparator()
 ### Phase 6: Designer v2.0
 
 **Goal:** Add SplitButton, Toggle Button, and CheckBox item types to the designer — including inspector panels, JSON schema, and code generator support.
-**Status:** Planned
+**Status:** In Progress (4/5 plans complete)
 **Depends on:** Phase 5
 **Plans:** 5 plans
 
 Plans:
-- [ ] 06-01-PLAN.md — AddItemPopup + SelectionChanged new types + CascadeTagUpdate + UpdateDropdownColumn
-- [ ] 06-02-PLAN.md — IsToggleActive control + SetInspectorState + PopulateInspector + ValueChanged event
-- [ ] 06-03-PLAN.md — BuildJSON isToggleActive emission + LoadFromJSON Select Case fix + isToggleActive parse
-- [ ] 06-04-PLAN.md — GenerateCode Select Case restructure with splitbutton, toggle, checkbox cases
+- [x] 06-01-PLAN.md — AddItemPopup + SelectionChanged new types + CascadeTagUpdate + UpdateDropdownColumn
+- [x] 06-02-PLAN.md — IsToggleActive control + SetInspectorState + PopulateInspector + ValueChanged event
+- [x] 06-03-PLAN.md — BuildJSON isToggleActive emission + LoadFromJSON Select Case fix + isToggleActive parse
+- [x] 06-04-PLAN.md — GenerateCode Select Case restructure with splitbutton, toggle, checkbox cases
 - [ ] 06-05-PLAN.md — Version bump to 2.0.0 in all 4 locations
 
 #### Files to Modify
