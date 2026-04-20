@@ -63,6 +63,19 @@ Protected Class XjRibbonGroup
 		End Function
 	#tag EndMethod
 
+	#tag Method, Flags = &h0
+		Function AddCheckBox(caption As String, tag As String, initialState As Boolean = False) As XjRibbonItem
+		  Var item As New XjRibbonItem
+		  item.Caption = caption
+		  item.Tag = tag
+		  item.ItemType = 3
+		  item.IsToggle = True
+		  item.IsToggleActive = initialState
+		  mItems.Add(item)
+		  Return item
+		End Function
+	#tag EndMethod
+
 	#tag Property, Flags = &h0
 		Caption As String
 	#tag EndProperty
