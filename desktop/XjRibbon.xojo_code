@@ -590,7 +590,7 @@ Inherits DesktopCanvas
 		  Var th As Double = g.TextHeight
 		  Var captionLines() As String = item.Caption.Split(Chr(10))
 		  If captionLines.Count > 1 Then
-		    Var lineGap As Double = 3
+		    Var lineGap As Double = 1
 		    Var blockH As Double = th * 2 + lineGap
 		    Var blockTop As Double = belowY + Max(0, (belowH - blockH) / 2)
 		    Var line1W As Double = g.TextWidth(captionLines(0))
