@@ -47,7 +47,7 @@
 : Inspector for CheckBox: Caption, Tag, Default Checked, Tooltip (no MenuItems)
 - [x] REQ-607
 : Code generator handles `"splitbutton"`, `"toggle"`, `"checkbox"` cases
-- [ ] REQ-608: Version bumped to 2.0.0 in StatusBar and AboutBox
+- [x] REQ-608: Version bumped to 2.0.0 in StatusBar and AboutBox
 
 ## Phase 7: Web Phase 5 — Control Set Parity
 
