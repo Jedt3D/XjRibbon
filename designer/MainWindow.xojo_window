@@ -1396,7 +1396,7 @@ End
 
 	#tag Method, Flags = &h0
 		Sub LoadSampleRibbon()
-		  // Load a sample ribbon to demonstrate the designer
+		  // Load a sample ribbon demonstrating all control types (v2.0)
 		  Var json As String = "{""version"":""2.0"",""projectType"":""desktop"",""tabs"":[" _
 		  + "{""caption"":""Home"",""groups"":[" _
 		  + "{""caption"":""Clipboard"",""items"":[" _
@@ -1405,9 +1405,9 @@ End
 		  + "{""caption"":""Copy"",""tag"":""clipboard.copy"",""itemType"":""small"",""isEnabled"":true,""tooltipText"":"""",""menuItems"":[]}" _
 		  + "]}," _
 		  + "{""caption"":""Font"",""items"":[" _
-		  + "{""caption"":""Bold"",""tag"":""font.bold"",""itemType"":""small"",""isEnabled"":true,""tooltipText"":"""",""menuItems"":[]}," _
-		  + "{""caption"":""Italic"",""tag"":""font.italic"",""itemType"":""small"",""isEnabled"":true,""tooltipText"":"""",""menuItems"":[]}," _
-		  + "{""caption"":""Underline"",""tag"":""font.underline"",""itemType"":""small"",""isEnabled"":true,""tooltipText"":"""",""menuItems"":[]}" _
+		  + "{""caption"":""Bold"",""tag"":""font.bold"",""itemType"":""toggle"",""isEnabled"":true,""tooltipText"":"""",""isToggleActive"":false}," _
+		  + "{""caption"":""Italic"",""tag"":""font.italic"",""itemType"":""toggle"",""isEnabled"":true,""tooltipText"":"""",""isToggleActive"":false}," _
+		  + "{""caption"":""Underline"",""tag"":""font.underline"",""itemType"":""toggle"",""isEnabled"":true,""tooltipText"":"""",""isToggleActive"":false}" _
 		  + "]}," _
 		  + "{""caption"":""Paragraph"",""items"":[" _
 		  + "{""caption"":""Left"",""tag"":""para.left"",""itemType"":""small"",""isEnabled"":true,""tooltipText"":"""",""menuItems"":[]}," _
@@ -1435,6 +1435,16 @@ End
 		  + "{""caption"":""Ruler"",""tag"":""view.ruler"",""itemType"":""small"",""isEnabled"":true,""tooltipText"":"""",""menuItems"":[]}," _
 		  + "{""caption"":""Grid"",""tag"":""view.grid"",""itemType"":""small"",""isEnabled"":true,""tooltipText"":"""",""menuItems"":[]}," _
 		  + "{""caption"":""Guides"",""tag"":""view.guides"",""itemType"":""small"",""isEnabled"":true,""tooltipText"":"""",""menuItems"":[]}" _
+		  + "]}," _
+		  + "{""caption"":""Show/hide"",""items"":[" _
+		  + "{""caption"":""Item check boxes"",""tag"":""view.checkboxes"",""itemType"":""checkbox"",""isToggleActive"":false}," _
+		  + "{""caption"":""File name extensions"",""tag"":""view.extensions"",""itemType"":""checkbox"",""isToggleActive"":false}," _
+		  + "{""caption"":""Hidden items"",""tag"":""view.hidden"",""itemType"":""checkbox"",""isToggleActive"":true}," _
+		  + "{""caption"":"""",""tag"":"""",""itemType"":""separator""}," _
+		  + "{""caption"":""Hide selected"",""tag"":""view.hide_selected"",""itemType"":""small"",""isEnabled"":true,""tooltipText"":"""",""menuItems"":[]}" _
+		  + "]}," _
+		  + "{""caption"":""Panes"",""items"":[" _
+		  + "{""caption"":""Navigation" + Chr(10) + "pane"",""tag"":""view.nav_pane"",""itemType"":""splitbutton"",""isEnabled"":true,""tooltipText"":"""",""menuItems"":[{""caption"":""Navigation pane"",""tag"":""view.nav_pane.toggle""},{""caption"":""Expand to open folder"",""tag"":""view.nav_pane.expand""},{""caption"":""Show all folders"",""tag"":""view.nav_pane.allfolders""}]}" _
 		  + "]}" _
 		  + "]}" _
 		  + "]}"
