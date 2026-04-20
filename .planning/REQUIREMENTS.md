@@ -3,17 +3,28 @@
 ## Phase 5: Desktop Phase 5 — Complete Control Set
 
 - [ ] REQ-501: Add `IsSplitButton As Boolean` property to `XjRibbonItem` (default `False`)
-- [ ] REQ-502: SplitButton hit-test separates body (≥80% width) vs arrow area (≤20% width)
-- [ ] REQ-503: SplitButton body click fires `RaiseEvent ItemPressed(tag)` (no menu)
-- [ ] REQ-504: SplitButton arrow click opens popup menu → `RaiseEvent DropdownMenuAction(itemTag, menuItemTag)`
-- [ ] REQ-505: SplitButton draws thin vertical separator line at 80% width; chevron in 20% area only
-- [ ] REQ-506: Add `kItemTypeCheckBox = 3` constant to `XjRibbon`
-- [ ] REQ-507: CheckBox draws 13×13 rounded-rect glyph (unfilled = unchecked, blue + checkmark = checked)
-- [ ] REQ-508: CheckBox layout: `[13px glyph] [4px gap] [text]` — no icon slot, no icon background
-- [ ] REQ-509: CheckBox stacks in columns of 3 (same as small button in `LayoutGroupItems`)
-- [ ] REQ-510: CheckBox click flips `IsToggleActive`, raises `ItemPressed`
-- [ ] REQ-511: Add `kItemTypeSeparator = 4` constant to `XjRibbon`
-- [ ] REQ-512: Separator causes `LayoutGroupItems` to start a new sub-column (bump groupX); no render, no interaction
+- [x] REQ-502
+: SplitButton hit-test separates body (≥80% width) vs arrow area (≤20% width)
+- [x] REQ-503
+: SplitButton body click fires `RaiseEvent ItemPressed(tag)` (no menu)
+- [x] REQ-504
+: SplitButton arrow click opens popup menu → `RaiseEvent DropdownMenuAction(itemTag, menuItemTag)`
+- [x] REQ-505
+: SplitButton draws thin vertical separator line at 80% width; chevron in 20% area only
+- [x] REQ-506
+: Add `kItemTypeCheckBox = 3` constant to `XjRibbon`
+- [x] REQ-507
+: CheckBox draws 13×13 rounded-rect glyph (unfilled = unchecked, blue + checkmark = checked)
+- [x] REQ-508
+: CheckBox layout: `[13px glyph] [4px gap] [text]` — no icon slot, no icon background
+- [x] REQ-509
+: CheckBox stacks in columns of 3 (same as small button in `LayoutGroupItems`)
+- [x] REQ-510
+: CheckBox click flips `IsToggleActive`, raises `ItemPressed`
+- [x] REQ-511
+: Add `kItemTypeSeparator = 4` constant to `XjRibbon`
+- [x] REQ-512
+: Separator causes `LayoutGroupItems` to start a new sub-column (bump groupX); no render, no interaction
 - [x] REQ-513: `XjRibbonGroup.AddSplitButton(caption, tag)` — sets ItemType=2, IsSplitButton=True
 - [x] REQ-514: `XjRibbonGroup.AddCheckBox(caption, tag, initialState)` — sets ItemType=3, IsToggle=True, IsToggleActive=initialState
 - [x] REQ-515: `XjRibbonGroup.AddSeparator()` — sets ItemType=4

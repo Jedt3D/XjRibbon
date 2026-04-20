@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Full Control Set + Release
 status: unknown
-last_updated: "2026-04-20T12:52:00Z"
+last_updated: "2026-04-20T13:01:11.655Z"
 progress:
   total_phases: 8
   completed_phases: 0
   total_plans: 4
-  completed_plans: 2
-  percent: 50
+  completed_plans: 3
+  percent: 75
 ---
 
 milestone: v1.0
@@ -31,7 +31,7 @@ See: .planning/PROJECT.md (updated 2026-04-20)
 | 2 | Desktop Polish | ✓ Complete | — |
 | 3 | Desktop Collapse | ✓ Complete | — |
 | 4 | Desktop Keyboard | ✓ Complete | — |
-| **5** | **Desktop Complete Control Set** | **In Progress (2/4)** | 4 |
+| **5** | **Desktop Complete Control Set** | **In Progress (3/4)** | 4 |
 | 6 | Designer v2.0 | Planned | 0 |
 | 7 | Web Phase 5 | Planned | 0 |
 | 8 | Library v1.0 Release | Planned | 0 |
@@ -43,6 +43,8 @@ See: .planning/PROJECT.md (updated 2026-04-20)
 - `kItemTypeSeparator=4` — zero-width item, column boundary only, no interaction
 - Web keyboard navigation (Phase 4 equivalent) — deliberately deferred; web is mouse-driven
 - Web rendering applies 120% scaling throughout; uses single-corner `FillRoundRectangle`
+- `mPressedOnArrow` placed on canvas not XjRibbonItem — transient interaction state, avoids polluting item data model
+- Case 4 explicit in DrawGroups prevents Separator triggering DrawLargeButton render artifact
 
 ## Technical Context
 
@@ -67,4 +69,4 @@ See: .planning/PROJECT.md (updated 2026-04-20)
 
 ## Last Activity
 
-2026-04-20T12:52:00Z — Completed 05-02-PLAN.md. AddSplitButton, AddCheckBox, AddSeparator factory methods added to XjRibbonGroup (commits 74f2fde, 09fdc3f, d9befdc). Phase 5 plan 2/4 done.
+2026-04-20T13:01:11Z — Completed 05-03-PLAN.md. All canvas changes applied to XjRibbon.xojo_code: constants kItemTypeCheckBox/kItemTypeSeparator, mPressedOnArrow property, DrawCheckBoxItem method, DrawGroups Case 3/4 dispatch, LayoutTabs CheckBox batch + Separator branch, DrawDropdownButton SplitButton separator, MouseDown/MouseUp SplitButton dispatch (commits 69d6ad9, b17e2f0, e67e430, 19d8995). Phase 5 plan 3/4 done.
