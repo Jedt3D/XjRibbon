@@ -1440,19 +1440,27 @@ End
 		  
 		  CaptionField.Text = d.Value("caption")
 		  
-		  If rowType = "large" Or rowType = "small" Then
+		  If rowType = "large" Or rowType = "small" Or rowType = "splitbutton" Or rowType = "toggle" Or rowType = "checkbox" Then
 		    TagField.Text = d.Lookup("tag", "")
-		    If rowType = "large" Then
+		    Select Case rowType
+		    Case "large"
 		      ItemTypeField.Text = "Large Button"
-		    Else
+		    Case "small"
 		      ItemTypeField.Text = "Small Button"
-		    End If
+		    Case "splitbutton"
+		      ItemTypeField.Text = "Split Button"
+		    Case "toggle"
+		      ItemTypeField.Text = "Toggle Button"
+		    Case "checkbox"
+		      ItemTypeField.Text = "CheckBox"
+		    End Select
 		    IsEnabled.Value = d.Lookup("isEnabled", True)
 		    TooltipTextField.Text = d.Lookup("tooltipText", "")
-		    
-		    // Load menu items for large buttons
+		    IsToggleActive.Value = d.Lookup("isToggleActive", False)
+
+		    // Load menu items for large and splitbutton
 		    MenuItems.RemoveAllRows
-		    If rowType = "large" Then
+		    If rowType = "large" Or rowType = "splitbutton" Then
 		      Var items() As Dictionary = d.Lookup("menuItems", Nil)
 		      If items <> Nil Then
 		        For Each mi As Dictionary In items
@@ -1467,6 +1475,7 @@ End
 		    TagField.Text = ""
 		    ItemTypeField.Text = ""
 		    IsEnabled.Value = False
+		    IsToggleActive.Value = False
 		    TooltipTextField.Text = ""
 		    MenuItems.RemoveAllRows
 		  End If
@@ -1586,42 +1595,55 @@ End
 		  // "tab" or "group" = only Caption enabled
 		  // "large" = all item fields + menu items enabled
 		  // "small" = all item fields enabled, menu items disabled
+		  // "splitbutton" = all item fields + menu items enabled (same as large)
+		  // "toggle" = all item fields + IsToggleActive enabled; no menu items
+		  // "checkbox" = Tag, ItemType, IsToggleActive only; no IsEnabled/Tooltip/MenuItems
 		  // "none" = all disabled
-		  
+
 		  Var isTab As Boolean = (rowType = "tab")
 		  Var isGroup As Boolean = (rowType = "group")
-		  Var isItem As Boolean = (rowType = "large" Or rowType = "small")
-		  Var isLarge As Boolean = (rowType = "large")
+		  Var isItem As Boolean = (rowType = "large" Or rowType = "small" Or rowType = "splitbutton" Or rowType = "toggle" Or rowType = "checkbox")
+		  Var isLarge As Boolean = (rowType = "large" Or rowType = "splitbutton")
+		  Var hasToggleState As Boolean = (rowType = "toggle" Or rowType = "checkbox")
+		  Var hasIsEnabled As Boolean = (rowType = "large" Or rowType = "small" Or rowType = "splitbutton" Or rowType = "toggle")
 		  Var anythingSelected As Boolean = (rowType <> "none")
-		  
+
 		  // Caption enabled for all types
 		  CaptionField.Enabled = anythingSelected
 		  Label4.Enabled = anythingSelected
-		  
-		  // Tag, ItemType, IsEnabled, Tooltip — item only
+
+		  // Tag, ItemType — all item types
 		  TagField.Enabled = isItem
 		  Label5.Enabled = isItem
 		  ItemTypeField.Enabled = isItem
 		  Label6.Enabled = isItem
-		  IsEnabled.Enabled = isItem
-		  TooltipTextField.Enabled = isItem
-		  Label8.Enabled = isItem
-		  
+
+		  // IsEnabled — large, small, splitbutton, toggle only (not checkbox per spec)
+		  IsEnabled.Enabled = hasIsEnabled
+
+		  // Tooltip — same as IsEnabled (not shown for checkbox)
+		  TooltipTextField.Enabled = hasIsEnabled
+		  Label8.Enabled = hasIsEnabled
+
+		  // IsToggleActive (Default Active?) — toggle and checkbox only
+		  IsToggleActive.Enabled = hasToggleState
+
 		  // Resource Name — always disabled (deferred)
 		  ResourceNameField.Enabled = False
 		  Label10.Enabled = False
-		  
-		  // Menu Items — large button only
+
+		  // Menu Items — large and splitbutton only
 		  MenuItems.Enabled = isLarge
 		  AddMenuItem.Enabled = isLarge
 		  Label11.Enabled = isLarge
-		  
+
 		  // Clear fields when nothing selected
 		  If Not anythingSelected Then
 		    CaptionField.Text = ""
 		    TagField.Text = ""
 		    ItemTypeField.Text = ""
 		    IsEnabled.Value = False
+		    IsToggleActive.Value = False
 		    TooltipTextField.Text = ""
 		    ResourceNameField.Text = ""
 		    MenuItems.RemoveAllRows
@@ -2000,6 +2022,22 @@ End
 		  If d = Nil Then Return
 		  
 		  d.Value("isEnabled") = Me.Value
+		  MarkDirty
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events IsToggleActive
+	#tag Event
+		Sub ValueChanged()
+		  If mUpdatingInspector Then Return
+
+		  Var row As Integer = RibbonStructure.SelectedRowIndex
+		  If row < 0 Then Return
+
+		  Var d As Dictionary = Dictionary(RibbonStructure.RowTagAt(row))
+		  If d = Nil Then Return
+
+		  d.Value("isToggleActive") = Me.Value
 		  MarkDirty
 		End Sub
 	#tag EndEvent
