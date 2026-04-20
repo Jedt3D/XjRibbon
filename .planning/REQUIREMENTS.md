@@ -14,9 +14,9 @@
 - [ ] REQ-510: CheckBox click flips `IsToggleActive`, raises `ItemPressed`
 - [ ] REQ-511: Add `kItemTypeSeparator = 4` constant to `XjRibbon`
 - [ ] REQ-512: Separator causes `LayoutGroupItems` to start a new sub-column (bump groupX); no render, no interaction
-- [ ] REQ-513: `XjRibbonGroup.AddSplitButton(caption, tag)` — sets ItemType=2, IsSplitButton=True
-- [ ] REQ-514: `XjRibbonGroup.AddCheckBox(caption, tag, initialState)` — sets ItemType=3, IsToggle=True, IsToggleActive=initialState
-- [ ] REQ-515: `XjRibbonGroup.AddSeparator()` — sets ItemType=4
+- [x] REQ-513: `XjRibbonGroup.AddSplitButton(caption, tag)` — sets ItemType=2, IsSplitButton=True
+- [x] REQ-514: `XjRibbonGroup.AddCheckBox(caption, tag, initialState)` — sets ItemType=3, IsToggle=True, IsToggleActive=initialState
+- [x] REQ-515: `XjRibbonGroup.AddSeparator()` — sets ItemType=4
 - [ ] REQ-516: Demo window updated with "Show/hide" group (3 checkboxes + separator + small button) and "Panes" group (SplitButton with menu items)
 
 ## Phase 6: Designer v2.0 — New Control Types
