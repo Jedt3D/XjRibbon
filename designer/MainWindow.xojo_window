@@ -946,7 +946,11 @@ End
 		            itemObj.Value("itemType") = id.Value("type")
 		            itemObj.Value("isEnabled") = id.Lookup("isEnabled", True)
 		            itemObj.Value("tooltipText") = id.Lookup("tooltipText", "")
-		            
+
+		            If id.Value("type") = "toggle" Or id.Value("type") = "checkbox" Then
+		              itemObj.Value("isToggleActive") = id.Lookup("isToggleActive", False)
+		            End If
+
 		            Var menuItemsArr As New JSONItem("[]")
 		            Var miList() As Dictionary = id.Lookup("menuItems", Nil)
 		            If miList <> Nil Then
