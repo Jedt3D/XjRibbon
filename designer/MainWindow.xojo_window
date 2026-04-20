@@ -461,6 +461,37 @@ Begin DesktopWindow MainWindow
          VisualState     =   0
          Width           =   182
       End
+      Begin DesktopCheckBox IsToggleActive
+         AllowAutoDeactivate=   True
+         Bold            =   False
+         Caption         =   "Default Active?"
+         Enabled         =   False
+         FontName        =   "System"
+         FontSize        =   0.0
+         FontUnit        =   0
+         Height          =   20
+         Index           =   -2147483648
+         InitialParent   =   "GroupBox1"
+         Italic          =   False
+         Left            =   598
+         LockBottom      =   False
+         LockedInPosition=   False
+         LockLeft        =   True
+         LockRight       =   False
+         LockTop         =   True
+         Scope           =   0
+         TabIndex        =   14
+         TabPanelIndex   =   0
+         TabStop         =   True
+         Tooltip         =   ""
+         Top             =   248
+         Transparent     =   False
+         Underline       =   False
+         Value           =   False
+         Visible         =   True
+         VisualState     =   0
+         Width           =   182
+      End
       Begin DesktopTextField TagField
          AllowAutoDeactivate=   True
          AllowFocusRing  =   True
