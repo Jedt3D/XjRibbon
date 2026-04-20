@@ -1182,7 +1182,8 @@ End
 		          Var it As String = id.Value("type")
 		          If it = "tab" Or it = "group" Then Exit
 		          
-		          If it = "large" Or it = "small" Then
+		          Select Case it
+		          Case "large", "small"
 		            Var cap As String = id.Value("caption")
 		            Var tag As String = id.Lookup("tag", "")
 		            Var tip As String = id.Lookup("tooltipText", "")
@@ -1220,7 +1221,58 @@ End
 		                code = code + itemVar + ".AddMenuItem(""" + mi.Value("caption").StringValue + """, """ + mi.Value("tag").StringValue + """)" + eol
 		              Next
 		            End If
-		          End If
+		            
+		          Case "splitbutton"
+		            Var cap As String = id.Value("caption")
+		            Var tag As String = id.Lookup("tag", "")
+		            Var tip As String = id.Lookup("tooltipText", "")
+		            Var enabled As Boolean = id.Lookup("isEnabled", True)
+		            Var miList() As Dictionary = id.Lookup("menuItems", Nil)
+		            Var itemVar As String = UniqueVarName(SanitizeVarName(cap) + "Item", usedNames)
+		            code = code + "Var " + itemVar + " As XjRibbonItem = " + grpVar + ".AddSplitButton(""" + cap + """, """ + tag + """)" + eol
+		            If tip <> "" Then
+		              code = code + itemVar + ".TooltipText = """ + tip + """" + eol
+		            End If
+		            If Not enabled Then
+		              code = code + itemVar + ".IsEnabled = False" + eol
+		            End If
+		            If miList <> Nil Then
+		              For Each mi As Dictionary In miList
+		                code = code + itemVar + ".AddMenuItem(""" + mi.Value("caption").StringValue + """, """ + mi.Value("tag").StringValue + """)" + eol
+		              Next
+		            End If
+		            
+		          Case "toggle"
+		            Var cap As String = id.Value("caption")
+		            Var tag As String = id.Lookup("tag", "")
+		            Var tip As String = id.Lookup("tooltipText", "")
+		            Var enabled As Boolean = id.Lookup("isEnabled", True)
+		            Var isActive As Boolean = id.Lookup("isToggleActive", False)
+		            Var itemVar As String = UniqueVarName(SanitizeVarName(cap) + "Item", usedNames)
+		            code = code + "Var " + itemVar + " As XjRibbonItem = " + grpVar + ".AddLargeButton(""" + cap + """, """ + tag + """)" + eol
+		            code = code + itemVar + ".IsToggle = True" + eol
+		            If isActive Then
+		              code = code + itemVar + ".IsToggleActive = True" + eol
+		            End If
+		            If tip <> "" Then
+		              code = code + itemVar + ".TooltipText = """ + tip + """" + eol
+		            End If
+		            If Not enabled Then
+		              code = code + itemVar + ".IsEnabled = False" + eol
+		            End If
+		            
+		          Case "checkbox"
+		            Var cap As String = id.Value("caption")
+		            Var tag As String = id.Lookup("tag", "")
+		            Var isActive As Boolean = id.Lookup("isToggleActive", False)
+		            If isActive Then
+		              Var itemVar As String = UniqueVarName(SanitizeVarName(cap) + "Item", usedNames)
+		              code = code + "Var " + itemVar + " As XjRibbonItem = " + grpVar + ".AddCheckBox(""" + cap + """, """ + tag + """, True)" + eol
+		            Else
+		              code = code + "Call " + grpVar + ".AddCheckBox(""" + cap + """, """ + tag + """)" + eol
+		            End If
+		            
+		          End Select
 		          k = k + 1
 		        Wend
 		        code = code + eol
