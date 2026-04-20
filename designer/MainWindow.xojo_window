@@ -1297,11 +1297,20 @@ End
 		        RibbonStructure.AddRowAt(iInsertAt, itemObj.Value("caption"), 2)
 		        Var itemRow As Integer = RibbonStructure.LastAddedRowIndex
 		        Var iType As String = itemObj.Value("itemType")
-		        If iType = "large" Then
+		        Select Case iType
+		        Case "large"
 		          RibbonStructure.CellTextAt(itemRow, 1) = "Large Button"
-		        Else
+		        Case "small"
 		          RibbonStructure.CellTextAt(itemRow, 1) = "Small Button"
-		        End If
+		        Case "splitbutton"
+		          RibbonStructure.CellTextAt(itemRow, 1) = "Split Button"
+		        Case "toggle"
+		          RibbonStructure.CellTextAt(itemRow, 1) = "Toggle Button"
+		        Case "checkbox"
+		          RibbonStructure.CellTextAt(itemRow, 1) = "CheckBox"
+		        Else
+		          RibbonStructure.CellTextAt(itemRow, 1) = iType
+		        End Select
 		        RibbonStructure.CellTypeAt(itemRow, 0) = DesktopListBox.CellTypes.TextField
 		        
 		        Var id As New Dictionary
@@ -1310,6 +1319,7 @@ End
 		        id.Value("tag") = itemObj.Lookup("tag", "")
 		        id.Value("isEnabled") = itemObj.Lookup("isEnabled", True)
 		        id.Value("tooltipText") = itemObj.Lookup("tooltipText", "")
+		        id.Value("isToggleActive") = itemObj.Lookup("isToggleActive", False)
 		        
 		        Var miArr() As Dictionary
 		        Var menuItemsJSON As JSONItem = itemObj.Lookup("menuItems", Nil)
