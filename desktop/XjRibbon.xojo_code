@@ -517,7 +517,7 @@ Inherits DesktopCanvas
 		      End Select
 		    Next
 		    g.DrawingColor = cGroupLabelText
-		    g.FontSize = 9
+		    g.FontSize = 10
 		    g.Bold = False
 		    Var labelW As Double = g.TextWidth(group.Caption)
 		    g.DrawText(group.Caption, group.mBoundsX + (group.mBoundsW - labelW) / 2, group.mBoundsY + group.mBoundsH - 3)
