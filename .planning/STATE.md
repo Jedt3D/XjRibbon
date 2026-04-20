@@ -1,3 +1,17 @@
+---
+gsd_state_version: 1.0
+milestone: v1.0
+milestone_name: Full Control Set + Release
+status: unknown
+last_updated: "2026-04-20T12:47:59.629Z"
+progress:
+  total_phases: 8
+  completed_phases: 0
+  total_plans: 4
+  completed_plans: 1
+  percent: 25
+---
+
 milestone: v1.0
 
 # XjRibbon — Project State
@@ -7,7 +21,7 @@ milestone: v1.0
 See: .planning/PROJECT.md (updated 2026-04-20)
 
 **Core value:** Drop-in ribbon toolbar covering all MS Office control types for Xojo Desktop and Web, with a visual designer.
-**Current focus:** Phase 5 — Desktop Complete Control Set
+**Current focus:** Phase --phase — 5
 
 ## Current Status
 
@@ -17,7 +31,7 @@ See: .planning/PROJECT.md (updated 2026-04-20)
 | 2 | Desktop Polish | ✓ Complete | — |
 | 3 | Desktop Collapse | ✓ Complete | — |
 | 4 | Desktop Keyboard | ✓ Complete | — |
-| **5** | **Desktop Complete Control Set** | **Ready to Execute** | 4 |
+| **5** | **Desktop Complete Control Set** | **In Progress (1/4)** | 4 |
 | 6 | Designer v2.0 | Planned | 0 |
 | 7 | Web Phase 5 | Planned | 0 |
 | 8 | Library v1.0 Release | Planned | 0 |
@@ -53,4 +67,4 @@ See: .planning/PROJECT.md (updated 2026-04-20)
 
 ## Last Activity
 
-2026-04-20 — Phase 5 planning complete. 4 plans in 3 waves verified and committed. Ready to execute.
+2026-04-20T12:47:19Z — Completed 05-01-PLAN.md. IsSplitButton property added to XjRibbonItem (commit f752087). Phase 5 plan 1/4 done.
