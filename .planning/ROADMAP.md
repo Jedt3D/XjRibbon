@@ -12,7 +12,7 @@ Ship a complete MS Office–style ribbon library for Xojo covering every control
 - [x] **Phase 2: Desktop Polish** — Small buttons, dropdown, dark mode, icons, HiDPI, tooltips
 - [x] **Phase 3: Desktop Collapse** — Ribbon collapse, contextual tabs
 - [x] **Phase 4: Desktop Keyboard** — Toggle buttons, keyboard navigation (KeyTips)
-- [ ] **Phase 5: Desktop Complete Control Set** — SplitButton, CheckBox item, Separator item
+- [x] **Phase 5: Desktop Complete Control Set** — SplitButton, CheckBox item, Separator item
 - [ ] **Phase 6: Designer v2.0** — New control types in designer + code gen
 - [ ] **Phase 7: Web Phase 5** — CheckBox, SplitButton, Separator parity on Web
 - [ ] **Phase 8: Library v1.0 Release** — Package, README, distribution
@@ -22,7 +22,7 @@ Ship a complete MS Office–style ribbon library for Xojo covering every control
 ### Phase 5: Desktop Complete Control Set
 
 **Goal:** Add CheckBox item, SplitButton mode, and Separator item to the desktop ribbon library to reach full coverage of the Windows File Explorer reference control set.
-**Status:** In Progress (3/4 plans complete)
+**Status:** Complete (4/4 plans complete)
 **Depends on:** Phase 4
 **Plans:** 4 plans
 
@@ -30,7 +30,7 @@ Plans:
 - [x] 05-01-PLAN.md — Add IsSplitButton property to XjRibbonItem
 - [x] 05-02-PLAN.md — Add AddSplitButton, AddCheckBox, AddSeparator factory methods to XjRibbonGroup
 - [x] 05-03-PLAN.md — Core canvas changes: constants, DrawCheckBoxItem, layout, draw dispatch, SplitButton mouse handling
-- [ ] 05-04-PLAN.md — Demo update: Show/hide group and Panes SplitButton in MainWindow
+- [x] 05-04-PLAN.md — Demo update: Show/hide group and Panes SplitButton in MainWindow
 
 #### Files to Modify
 

@@ -2,8 +2,8 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Full Control Set + Release
-status: unknown
-last_updated: "2026-04-20T13:05:21.058Z"
+status: phase-5-complete
+last_updated: "2026-04-20T17:05:00.000Z"
 progress:
   total_phases: 8
   completed_phases: 1
@@ -21,7 +21,7 @@ milestone: v1.0
 See: .planning/PROJECT.md (updated 2026-04-20)
 
 **Core value:** Drop-in ribbon toolbar covering all MS Office control types for Xojo Desktop and Web, with a visual designer.
-**Current focus:** Phase --phase — 5
+**Current focus:** Phase 6 — Designer v2.0
 
 ## Current Status
 
@@ -31,7 +31,7 @@ See: .planning/PROJECT.md (updated 2026-04-20)
 | 2 | Desktop Polish | ✓ Complete | — |
 | 3 | Desktop Collapse | ✓ Complete | — |
 | 4 | Desktop Keyboard | ✓ Complete | — |
-| **5** | **Desktop Complete Control Set** | **In Progress (3/4)** | 4 |
+| **5** | **Desktop Complete Control Set** | **✓ Complete (4/4)** | 4 |
 | 6 | Designer v2.0 | Planned | 0 |
 | 7 | Web Phase 5 | Planned | 0 |
 | 8 | Library v1.0 Release | Planned | 0 |
@@ -45,6 +45,8 @@ See: .planning/PROJECT.md (updated 2026-04-20)
 - Web rendering applies 120% scaling throughout; uses single-corner `FillRoundRectangle`
 - `mPressedOnArrow` placed on canvas not XjRibbonItem — transient interaction state, avoids polluting item data model
 - Case 4 explicit in DrawGroups prevents Separator triggering DrawLargeButton render artifact
+- `kArrowZoneWidth=20` fixed-pixel constant chosen over 80/20 ratio — consistent SplitButton hit-test across all button widths
+- Group caption font settled at 10pt after iterating 11pt (too large) and 9pt (too small)
 
 ## Technical Context
 
@@ -69,4 +71,4 @@ See: .planning/PROJECT.md (updated 2026-04-20)
 
 ## Last Activity
 
-2026-04-20T13:01:11Z — Completed 05-03-PLAN.md. All canvas changes applied to XjRibbon.xojo_code: constants kItemTypeCheckBox/kItemTypeSeparator, mPressedOnArrow property, DrawCheckBoxItem method, DrawGroups Case 3/4 dispatch, LayoutTabs CheckBox batch + Separator branch, DrawDropdownButton SplitButton separator, MouseDown/MouseUp SplitButton dispatch (commits 69d6ad9, b17e2f0, e67e430, 19d8995). Phase 5 plan 3/4 done.
+2026-04-20T17:05:00Z — Completed 05-04-PLAN.md. Demo View tab extended with Show/hide group (3 checkboxes + separator + small button) and Panes group (SplitButton + 3 menu items). Human checkpoint approved. 5 visual polish fixes applied: kArrowZoneWidth constant, auto-width from caption, 2-line label, vertical centering, group caption font 10pt (commits 5f52d36, ed6a62b, 26748a2, 105deaa, b649023, 1febd1d). Phase 5 complete (4/4).
