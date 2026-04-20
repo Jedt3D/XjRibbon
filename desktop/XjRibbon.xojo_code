@@ -583,17 +583,27 @@ Inherits DesktopCanvas
 		  End If
 		  g.FontSize = 11
 		  g.Bold = False
+		  Var drawBodyW As Double = If(item.IsSplitButton, bw - kArrowZoneWidth, bw)
+		  // Center text block vertically in the space below the icon
+		  Var belowY As Double = iconY + iconSize       // top of below-icon area
+		  Var belowH As Double = bh - (belowY - by)     // height of below-icon area
+		  Var th As Double = g.TextHeight
 		  Var captionLines() As String = item.Caption.Split(Chr(10))
 		  If captionLines.Count > 1 Then
-		    Var drawBodyW As Double = If(item.IsSplitButton, bw - kArrowZoneWidth, bw)
+		    Var lineGap As Double = 3
+		    Var blockH As Double = th * 2 + lineGap
+		    Var blockTop As Double = belowY + Max(0, (belowH - blockH) / 2)
 		    Var line1W As Double = g.TextWidth(captionLines(0))
 		    Var line2W As Double = g.TextWidth(captionLines(1))
-		    g.DrawText(captionLines(0), bx + (drawBodyW - line1W) / 2, iconY + iconSize + 7)
-		    g.DrawText(captionLines(1), bx + (drawBodyW - line2W) / 2, iconY + iconSize + 19)
+		    // SplitButton: right-align in body area; others: center
+		    Var line1X As Double = If(item.IsSplitButton, bx + drawBodyW - line1W - 4, bx + (drawBodyW - line1W) / 2)
+		    Var line2X As Double = If(item.IsSplitButton, bx + drawBodyW - line2W - 4, bx + (drawBodyW - line2W) / 2)
+		    g.DrawText(captionLines(0), line1X, blockTop + th)
+		    g.DrawText(captionLines(1), line2X, blockTop + th + lineGap + th)
 		  Else
-		    Var drawBodyW As Double = If(item.IsSplitButton, bw - kArrowZoneWidth, bw)
 		    Var textW As Double = g.TextWidth(item.Caption)
-		    g.DrawText(item.Caption, bx + (drawBodyW - textW) / 2, iconY + iconSize + 12)
+		    Var textX As Double = If(item.IsSplitButton, bx + drawBodyW - textW - 4, bx + (drawBodyW - textW) / 2)
+		    g.DrawText(item.Caption, textX, belowY + (belowH - th) / 2 + th)
 		  End If
 		End Sub
 	#tag EndMethod
