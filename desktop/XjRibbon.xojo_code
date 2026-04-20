@@ -458,6 +458,10 @@ Inherits DesktopCanvas
 		        DrawSmallButton(g, item)
 		      Case 2
 		        DrawDropdownButton(g, item)
+		      Case 3
+		        DrawCheckBoxItem(g, item)
+		      Case 4
+		        // Separator — no rendering
 		      Else
 		        DrawLargeButton(g, item)
 		      End Select
@@ -601,6 +605,57 @@ Inherits DesktopCanvas
 		  g.DrawLine(arrowX, arrowY, midX, arrowY + arrowW / 2)
 		  g.DrawLine(midX, arrowY + arrowW / 2, arrowX + arrowW, arrowY)
 		  g.PenSize = 1
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Sub DrawCheckBoxItem(g As Graphics, item As XjRibbonItem)
+		  Var bx As Double = item.mBoundsX
+		  Var by As Double = item.mBoundsY
+		  Var bw As Double = item.mBoundsW
+		  Var bh As Double = item.mBoundsH
+
+		  // Hover / pressed background for the whole row
+		  If item.mIsPressed Then
+		    g.DrawingColor = cItemPressedBackground
+		    g.FillRoundRectangle(bx, by, bw, bh, 3, 3)
+		  ElseIf item.mIsHovered Then
+		    g.DrawingColor = cItemHoverBackground
+		    g.FillRoundRectangle(bx, by, bw, bh, 3, 3)
+		  End If
+
+		  // Glyph: 13x13 rounded rect, vertically centered
+		  Var glyphSize As Double = 13
+		  Var glyphX As Double = bx + 2
+		  Var glyphY As Double = by + (bh - glyphSize) / 2
+
+		  If item.IsToggleActive Then
+		    // Checked: blue fill + white checkmark
+		    g.DrawingColor = cTabAccent
+		    g.FillRoundRectangle(glyphX, glyphY, glyphSize, glyphSize, 2, 2)
+		    g.DrawingColor = Color.RGB(255, 255, 255)
+		    g.PenSize = 1.5
+		    g.DrawLine(glyphX + 2, glyphY + 6, glyphX + 5, glyphY + 9)
+		    g.DrawLine(glyphX + 5, glyphY + 9, glyphX + 11, glyphY + 3)
+		    g.PenSize = 1
+		  Else
+		    // Unchecked: white interior with cBorder border
+		    g.DrawingColor = cContentBackground
+		    g.FillRoundRectangle(glyphX, glyphY, glyphSize, glyphSize, 2, 2)
+		    g.DrawingColor = cBorder
+		    g.DrawRoundRectangle(glyphX, glyphY, glyphSize, glyphSize, 2, 2)
+		  End If
+
+		  // Text label
+		  If item.IsEnabled Then
+		    g.DrawingColor = cItemText
+		  Else
+		    g.DrawingColor = cItemDisabledText
+		  End If
+		  g.FontSize = 11
+		  g.Bold = False
+		  Var textX As Double = glyphX + glyphSize + kSmallButtonTextPadding
+		  g.DrawText(item.Caption, textX, by + (bh + g.TextHeight) / 2 - 1)
 		End Sub
 	#tag EndMethod
 
