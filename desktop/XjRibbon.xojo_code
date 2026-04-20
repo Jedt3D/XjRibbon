@@ -1167,6 +1167,9 @@ Inherits DesktopCanvas
 		Private mExpandedHeight As Double = 0
 	#tag EndProperty
 	#tag Property, Flags = &h21
+		Private mPressedOnArrow As Boolean = False
+	#tag EndProperty
+	#tag Property, Flags = &h21
 		Private mKeyTipMode As Integer = 0
 	#tag EndProperty
 	#tag Property, Flags = &h21
@@ -1300,6 +1303,10 @@ Inherits DesktopCanvas
 	#tag Constant, Name = kItemTypeSmall, Type = Double, Dynamic = False, Default = \"1", Scope = Public
 	#tag EndConstant
 	#tag Constant, Name = kItemTypeDropdown, Type = Double, Dynamic = False, Default = \"2", Scope = Public
+	#tag EndConstant
+	#tag Constant, Name = kItemTypeCheckBox, Type = Double, Dynamic = False, Default = \"3", Scope = Public
+	#tag EndConstant
+	#tag Constant, Name = kItemTypeSeparator, Type = Double, Dynamic = False, Default = \"4", Scope = Public
 	#tag EndConstant
 
 	#tag ViewBehavior
