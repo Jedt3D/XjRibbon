@@ -145,7 +145,7 @@ Begin DesktopWindow MainWindow
       FontUnit        =   0
       Height          =   20
       Index           =   -2147483648
-      InitialValue    =   "-- select item --\nRibbon Tab\nRibbon Group\nRibbon Large Button\nRibbon Small Button"
+      InitialValue    =   "-- select item --\nRibbon Tab\nRibbon Group\nRibbon Large Button\nRibbon Small Button\nRibbon SplitButton\nRibbon Toggle Button\nRibbon CheckBox"
       Italic          =   False
       Left            =   331
       LockBottom      =   False
@@ -1831,11 +1831,105 @@ End
 		    d.Value("menuItems") = emptyMenuItems
 		    RibbonStructure.RowTagAt(addedRow) = d
 		    RibbonStructure.SelectedRowIndex = addedRow
-		    
+
+		  Case "Ribbon SplitButton"
+		    Var selRow As Integer = RibbonStructure.SelectedRowIndex
+		    If selRow < 0 Then
+		      StatusBar.Text = "Select a Group to add a SplitButton inside it"
+		      Me.SelectedRowIndex = 0
+		      Return
+		    End If
+		    Var parentGroupRow As Integer = FindParentOfType(selRow, "group")
+		    If parentGroupRow < 0 Then
+		      StatusBar.Text = "Select a Group to add a SplitButton inside it"
+		      Me.SelectedRowIndex = 0
+		      Return
+		    End If
+		    Var parentTag As Dictionary = Dictionary(RibbonStructure.RowTagAt(parentGroupRow))
+		    Var parentCaption As String = parentTag.Value("caption")
+		    Var autoTag As String = GenerateTag(parentCaption, "New SplitButton")
+		    Var insertAt As Integer = FindLastChildRow(parentGroupRow) + 1
+		    RibbonStructure.AddRowAt(insertAt, "New SplitButton", 2)
+		    Var addedRow As Integer = RibbonStructure.LastAddedRowIndex
+		    RibbonStructure.CellTextAt(addedRow, 1) = "Split Button"
+		    RibbonStructure.CellTypeAt(addedRow, 0) = DesktopListBox.CellTypes.TextField
+		    Var d As New Dictionary
+		    d.Value("type") = "splitbutton"
+		    d.Value("caption") = "New SplitButton"
+		    d.Value("tag") = autoTag
+		    d.Value("isEnabled") = True
+		    d.Value("tooltipText") = ""
+		    Var emptyMenuItems() As Dictionary
+		    d.Value("menuItems") = emptyMenuItems
+		    RibbonStructure.RowTagAt(addedRow) = d
+		    RibbonStructure.SelectedRowIndex = addedRow
+
+		  Case "Ribbon Toggle Button"
+		    Var selRow As Integer = RibbonStructure.SelectedRowIndex
+		    If selRow < 0 Then
+		      StatusBar.Text = "Select a Group to add a Toggle Button inside it"
+		      Me.SelectedRowIndex = 0
+		      Return
+		    End If
+		    Var parentGroupRow As Integer = FindParentOfType(selRow, "group")
+		    If parentGroupRow < 0 Then
+		      StatusBar.Text = "Select a Group to add a Toggle Button inside it"
+		      Me.SelectedRowIndex = 0
+		      Return
+		    End If
+		    Var parentTag As Dictionary = Dictionary(RibbonStructure.RowTagAt(parentGroupRow))
+		    Var parentCaption As String = parentTag.Value("caption")
+		    Var autoTag As String = GenerateTag(parentCaption, "New Toggle Button")
+		    Var insertAt As Integer = FindLastChildRow(parentGroupRow) + 1
+		    RibbonStructure.AddRowAt(insertAt, "New Toggle Button", 2)
+		    Var addedRow As Integer = RibbonStructure.LastAddedRowIndex
+		    RibbonStructure.CellTextAt(addedRow, 1) = "Toggle Button"
+		    RibbonStructure.CellTypeAt(addedRow, 0) = DesktopListBox.CellTypes.TextField
+		    Var d As New Dictionary
+		    d.Value("type") = "toggle"
+		    d.Value("caption") = "New Toggle Button"
+		    d.Value("tag") = autoTag
+		    d.Value("isEnabled") = True
+		    d.Value("tooltipText") = ""
+		    d.Value("isToggleActive") = False
+		    Var emptyMenuItems() As Dictionary
+		    d.Value("menuItems") = emptyMenuItems
+		    RibbonStructure.RowTagAt(addedRow) = d
+		    RibbonStructure.SelectedRowIndex = addedRow
+
+		  Case "Ribbon CheckBox"
+		    Var selRow As Integer = RibbonStructure.SelectedRowIndex
+		    If selRow < 0 Then
+		      StatusBar.Text = "Select a Group to add a CheckBox inside it"
+		      Me.SelectedRowIndex = 0
+		      Return
+		    End If
+		    Var parentGroupRow As Integer = FindParentOfType(selRow, "group")
+		    If parentGroupRow < 0 Then
+		      StatusBar.Text = "Select a Group to add a CheckBox inside it"
+		      Me.SelectedRowIndex = 0
+		      Return
+		    End If
+		    Var parentTag As Dictionary = Dictionary(RibbonStructure.RowTagAt(parentGroupRow))
+		    Var parentCaption As String = parentTag.Value("caption")
+		    Var autoTag As String = GenerateTag(parentCaption, "New CheckBox")
+		    Var insertAt As Integer = FindLastChildRow(parentGroupRow) + 1
+		    RibbonStructure.AddRowAt(insertAt, "New CheckBox", 2)
+		    Var addedRow As Integer = RibbonStructure.LastAddedRowIndex
+		    RibbonStructure.CellTextAt(addedRow, 1) = "CheckBox"
+		    RibbonStructure.CellTypeAt(addedRow, 0) = DesktopListBox.CellTypes.TextField
+		    Var d As New Dictionary
+		    d.Value("type") = "checkbox"
+		    d.Value("caption") = "New CheckBox"
+		    d.Value("tag") = autoTag
+		    d.Value("isToggleActive") = False
+		    RibbonStructure.RowTagAt(addedRow) = d
+		    RibbonStructure.SelectedRowIndex = addedRow
+
 		  End Select
-		  
+
 		  MarkDirty
-		  
+
 		  // Reset popup to placeholder
 		  Me.SelectedRowIndex = 0
 		End Sub
