@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Full Control Set + Release
 status: unknown
-last_updated: "2026-04-20T18:18:51.519Z"
+last_updated: "2026-04-20T18:23:28.202Z"
 progress:
   total_phases: 8
   completed_phases: 1
   total_plans: 9
-  completed_plans: 6
-  percent: 67
+  completed_plans: 7
+  percent: 78
 ---
 
 milestone: v1.0
@@ -73,4 +73,4 @@ See: .planning/PROJECT.md (updated 2026-04-20)
 
 ## Last Activity
 
-2026-04-20T18:34:00Z — Completed 06-02-PLAN.md. IsToggleActive DesktopCheckBox added to GroupBox1 inspector; SetInspectorState extended with hasToggleState/hasIsEnabled vars for all 5 item types; PopulateInspector uses Select Case for ItemTypeField.Text; IsToggleActive.ValueChanged event wired (commits 94734b1, 467d530). REQ-604, REQ-605, REQ-606 complete.
+2026-04-20T18:22:30Z — Completed 06-03-PLAN.md. BuildJSON now emits isToggleActive for toggle/checkbox types; LoadFromJSON Select Case replaces binary If/Else for all 5 item types with correct col-1 labels; isToggleActive parsed from JSON into row Dictionary (commits 44c7fc2, 7866193). REQ-602, REQ-603 complete.

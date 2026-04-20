@@ -35,8 +35,10 @@
 
 - [x] REQ-601
 : `AddItemPopup` in designer lists SplitButton, Toggle Button, CheckBox as new options
-- [ ] REQ-602: `.ribbon` JSON schema supports `"itemType": "splitbutton" | "toggle" | "checkbox"`
-- [ ] REQ-603: `BuildJSON` and `LoadFromJSON` handle new item types
+- [x] REQ-602
+: `.ribbon` JSON schema supports `"itemType": "splitbutton" | "toggle" | "checkbox"`
+- [x] REQ-603
+: `BuildJSON` and `LoadFromJSON` handle new item types
 - [x] REQ-604
 : Inspector for SplitButton: identical to Dropdown (has MenuItem list)
 - [x] REQ-605
