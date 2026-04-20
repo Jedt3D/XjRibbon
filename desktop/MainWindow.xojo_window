@@ -181,7 +181,23 @@ End
 		  gridItem.IsToggle = True
 		  Var guidesItem As XjRibbonItem = showGroup.AddSmallButton("Guides", "view.guides")
 		  guidesItem.IsToggle = True
-		  
+
+		  // === Phase 5: Show/hide group (checkboxes + separator + small button) ===
+		  Var showHide As XjRibbonGroup = viewTab.AddNewGroup("Show/hide")
+		  Call showHide.AddCheckBox("Item check boxes", "view.checkboxes")
+		  Call showHide.AddCheckBox("File name extensions", "view.extensions")
+		  Var hiddenCb As XjRibbonItem = showHide.AddCheckBox("Hidden items", "view.hidden", True)
+		  #Pragma Unused hiddenCb
+		  showHide.AddSeparator()
+		  Call showHide.AddSmallButton("Hide selected", "view.hide_selected")
+
+		  // === Phase 5: Panes group (SplitButton with menu items) ===
+		  Var panesGroup As XjRibbonGroup = viewTab.AddNewGroup("Panes")
+		  Var navPane As XjRibbonItem = panesGroup.AddSplitButton("Navigation pane", "view.nav_pane")
+		  navPane.AddMenuItem("Navigation pane", "view.nav_pane.toggle")
+		  navPane.AddMenuItem("Expand to open folder", "view.nav_pane.expand")
+		  navPane.AddMenuItem("Show all folders", "view.nav_pane.allfolders")
+
 		  // === Contextual Tab: Table Tools ===
 		  Var tableDesign As XjRibbonTab = XjRibbon1.AddContextualTab("Design", "Table Tools", Color.RGB(0, 128, 0))
 		  Var styleGroup As XjRibbonGroup = tableDesign.AddNewGroup("Table Styles")
