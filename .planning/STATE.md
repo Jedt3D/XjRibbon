@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Full Control Set + Release
 status: unknown
-last_updated: "2026-04-20T18:14:18.694Z"
+last_updated: "2026-04-20T18:18:51.519Z"
 progress:
   total_phases: 8
   completed_phases: 1
   total_plans: 9
-  completed_plans: 5
-  percent: 56
+  completed_plans: 6
+  percent: 67
 ---
 
 milestone: v1.0
@@ -47,6 +47,8 @@ See: .planning/PROJECT.md (updated 2026-04-20)
 - Case 4 explicit in DrawGroups prevents Separator triggering DrawLargeButton render artifact
 - `kArrowZoneWidth=20` fixed-pixel constant chosen over 80/20 ratio — consistent SplitButton hit-test across all button widths
 - Group caption font settled at 10pt after iterating 11pt (too large) and 9pt (too small)
+- IsToggleActive placed at Top=248 (same row as ResourceNameField) — always-disabled ResourceNameField creates no functional conflict
+- CheckBox inspector excludes IsEnabled and Tooltip controls — gated on hasIsEnabled not isItem per DEV_PLAN spec
 
 ## Technical Context
 
@@ -71,4 +73,4 @@ See: .planning/PROJECT.md (updated 2026-04-20)
 
 ## Last Activity
 
-2026-04-20T17:05:00Z — Completed 05-04-PLAN.md. Demo View tab extended with Show/hide group (3 checkboxes + separator + small button) and Panes group (SplitButton + 3 menu items). Human checkpoint approved. 5 visual polish fixes applied: kArrowZoneWidth constant, auto-width from caption, 2-line label, vertical centering, group caption font 10pt (commits 5f52d36, ed6a62b, 26748a2, 105deaa, b649023, 1febd1d). Phase 5 complete (4/4).
+2026-04-20T18:34:00Z — Completed 06-02-PLAN.md. IsToggleActive DesktopCheckBox added to GroupBox1 inspector; SetInspectorState extended with hasToggleState/hasIsEnabled vars for all 5 item types; PopulateInspector uses Select Case for ItemTypeField.Text; IsToggleActive.ValueChanged event wired (commits 94734b1, 467d530). REQ-604, REQ-605, REQ-606 complete.
