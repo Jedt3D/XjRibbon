@@ -1,0 +1,926 @@
+{
+  "_meta": {
+    "title": "Windows File Explorer Ribbon Toolbar — Reference Specification",
+    "source_application": "Windows File Explorer (explorer.exe)",
+    "os_version": "Windows 8.1 / Windows 10",
+    "ms_ribbon_framework_docs": "https://learn.microsoft.com/windows/win32/windowsribbon/windowsribbon-controls-entry",
+    "purpose": "Reference for XjRibbon control styles, button types, and dropdown items",
+    "image_notes": {
+      "home_tab.png": {
+        "actual_tab_shown": "Home",
+        "status": "correct"
+      },
+      "share_tab.png": {
+        "actual_tab_shown": "Share",
+        "status": "correct"
+      },
+      "view_atb.png": {
+        "actual_tab_shown": "View",
+        "status": "correct"
+      }
+    }
+  },
+
+  "ms_ribbon_control_type_catalog": {
+    "Button": {
+      "description": "Standard action button. Fires a single command on click. No state retained.",
+      "sizes_supported": ["Large", "Medium", "Small"],
+      "ms_element": "Button"
+    },
+    "ToggleButton": {
+      "description": "On/off button that retains pressed/unpressed state. Used for show/hide toggles (e.g. Preview pane). Visually distinct from CheckBox — no checkbox glyph.",
+      "sizes_supported": ["Large", "Medium", "Small"],
+      "ms_element": "ToggleButton"
+    },
+    "CheckBox": {
+      "description": "Boolean control with a visible checkbox glyph (checked/unchecked). Used for persistent settings that feel like 'always on/off' (e.g. File name extensions, Hidden items). Semantically identical to ToggleButton but visually renders as a labeled checkbox row.",
+      "sizes_supported": ["Small"],
+      "ms_element": "CheckBox"
+    },
+    "SplitButton": {
+      "description": "Composite control with TWO hit areas: (1) primary button fires the main command directly; (2) dropdown arrow opens a menu of related options. Example: Navigation pane — click icon to toggle pane, click arrow to change pane options.",
+      "sizes_supported": ["Large", "Medium"],
+      "ms_element": "SplitButton",
+      "key_distinction": "Primary area is clickable independently from the dropdown arrow"
+    },
+    "DropDownButton": {
+      "description": "Entire button (icon + label + arrow) opens a dropdown menu. No separate primary action — all clicks open the menu. Example: Sort by, Group by, Options.",
+      "sizes_supported": ["Large", "Medium", "Small"],
+      "ms_element": "DropDownButton",
+      "key_distinction": "Any click opens the menu; there is no standalone primary action"
+    },
+    "InRibbonGallery": {
+      "description": "A scrollable collection embedded directly in the ribbon band. Shown with up/down scroll arrows on the right edge. Items are mutually exclusive (radio-style) or command-based. Can have an expand arrow to show all items in a popup. Example: Layout view modes (Icons, Details, List...).",
+      "sizes_supported": ["Small", "Medium"],
+      "ms_element": "InRibbonGallery",
+      "scroll_behavior": "Vertical or horizontal scrolling within ribbon band itself"
+    },
+    "DropDownGallery": {
+      "description": "A button that opens a full gallery in a dropdown panel (popup). Richer than DropDownButton — gallery items have images and can be laid out in a grid. Not seen in these screenshots but part of the framework.",
+      "ms_element": "DropDownGallery"
+    },
+    "SplitButtonGallery": {
+      "description": "Like SplitButton but the dropdown section opens a gallery panel instead of a plain menu. The primary button shows the currently selected gallery item.",
+      "ms_element": "SplitButtonGallery"
+    },
+    "Group": {
+      "description": "Container that organises related controls under a text label shown at the bottom. Separated from adjacent groups by vertical dividers. Can collapse to a popup icon when space is constrained.",
+      "ms_element": "Group"
+    },
+    "Tab": {
+      "description": "Top-level navigation element. Clicking activates it and reveals its groups. The selected tab is visually highlighted (blue underline in these screenshots).",
+      "ms_element": "Tab"
+    }
+  },
+
+  "visual_size_catalog": {
+    "Large": {
+      "icon_px": 32,
+      "layout": "Large icon on top, text label below (up to 2 lines). Button spans full group height (~48-52px). Most prominent — used for primary group actions.",
+      "examples": ["Navigation pane", "Share", "Stop sharing", "Options"]
+    },
+    "Medium": {
+      "icon_px": 16,
+      "layout": "Small icon on left, text label to the right on a single line. Two or three fit vertically in a group column. Standard workhorse size.",
+      "examples": ["Sort by", "Group by", "Add columns", "Size all columns to fit", "Hide selected items"]
+    },
+    "Small": {
+      "icon_px": 16,
+      "layout": "Small icon on left, compact label to the right (or label omitted). Typically three stack vertically in a group column. Used for secondary commands.",
+      "examples": ["Preview pane", "Details pane", "Email", "Zip", "Burn to disc", "Print", "Fax"]
+    }
+  },
+
+  "ribbon": {
+    "application_button": {
+      "label": "File",
+      "control_type": "ApplicationMenu",
+      "note": "Opens backstage/application menu. Not captured in provided images."
+    },
+    "tabs": [
+      {
+        "id": "home",
+        "label": "Home",
+        "source_image": "home_tab.png",
+        "groups": [
+          {
+            "id": "clipboard",
+            "label": "Clipboard",
+            "controls": [
+              {
+                "id": "pin_to_quick_access",
+                "label": "Pin to Quick access",
+                "control_type": "Button",
+                "visual_size": "Large",
+                "icon_px": 32,
+                "icon_description": "Pushpin / thumbtack icon",
+                "tooltip": "Pin selected folder to Quick access in the navigation pane",
+                "action": "Pins or unpins the selected folder from the Quick access section",
+                "has_dropdown": false
+              },
+              {
+                "id": "copy",
+                "label": "Copy",
+                "control_type": "Button",
+                "visual_size": "Small",
+                "icon_px": 16,
+                "icon_description": "Two overlapping documents icon",
+                "tooltip": "Copy the selected items to the clipboard",
+                "action": "Copies selected item(s) to the clipboard",
+                "has_dropdown": false
+              },
+              {
+                "id": "paste",
+                "label": "Paste",
+                "control_type": "Button",
+                "visual_size": "Large",
+                "icon_px": 32,
+                "icon_description": "Clipboard with document paste icon",
+                "tooltip": "Paste items from the clipboard into the current folder",
+                "action": "Pastes clipboard item(s) into current folder",
+                "has_dropdown": false,
+                "state": "context_dependent",
+                "enabled_when": "Clipboard contains file/folder items"
+              },
+              {
+                "id": "cut",
+                "label": "Cut",
+                "control_type": "Button",
+                "visual_size": "Small",
+                "icon_px": 16,
+                "icon_description": "Scissors icon",
+                "tooltip": "Cut the selected items (moved on paste)",
+                "action": "Cuts selected item(s) to clipboard; item moves on next Paste",
+                "has_dropdown": false
+              },
+              {
+                "id": "copy_path",
+                "label": "Copy path",
+                "control_type": "Button",
+                "visual_size": "Small",
+                "icon_px": 16,
+                "icon_description": "Copy with file path / address bar icon",
+                "tooltip": "Copy the path of the selected item to the clipboard",
+                "action": "Copies the full file system path (e.g. C:\\Users\\...) to clipboard as text",
+                "has_dropdown": false
+              },
+              {
+                "id": "paste_shortcut",
+                "label": "Paste shortcut",
+                "control_type": "Button",
+                "visual_size": "Small",
+                "icon_px": 16,
+                "icon_description": "Paste icon with shortcut arrow overlay",
+                "tooltip": "Create a shortcut to the clipboard item in the current folder",
+                "action": "Creates a .lnk shortcut file pointing to the clipboard item",
+                "has_dropdown": false,
+                "state": "context_dependent",
+                "enabled_when": "Clipboard contains a file or folder"
+              }
+            ]
+          },
+          {
+            "id": "organize",
+            "label": "Organize",
+            "controls": [
+              {
+                "id": "move_to",
+                "label": "Move to",
+                "control_type": "SplitButton",
+                "visual_size": "Medium",
+                "icon_px": 16,
+                "icon_description": "Folder with move arrow icon",
+                "tooltip": "Move the selected items to another folder",
+                "primary_action": "Opens Browse For Folder dialog to choose destination",
+                "has_dropdown": true,
+                "dropdown_items": [
+                  {"id": "move_documents",  "label": "Documents",           "type": "Button"},
+                  {"id": "move_pictures",   "label": "Pictures",            "type": "Button"},
+                  {"id": "move_music",      "label": "Music",               "type": "Button"},
+                  {"id": "move_desktop",    "label": "Desktop",             "type": "Button"},
+                  {"type": "Separator"},
+                  {"id": "move_choose",     "label": "Choose location...",  "type": "Button", "action": "Opens folder browser dialog"}
+                ]
+              },
+              {
+                "id": "copy_to",
+                "label": "Copy to",
+                "control_type": "SplitButton",
+                "visual_size": "Medium",
+                "icon_px": 16,
+                "icon_description": "Folder with copy/duplicate arrow icon",
+                "tooltip": "Copy the selected items to another folder",
+                "primary_action": "Opens Browse For Folder dialog to choose destination",
+                "has_dropdown": true,
+                "dropdown_items": [
+                  {"id": "copy_documents",  "label": "Documents",           "type": "Button"},
+                  {"id": "copy_pictures",   "label": "Pictures",            "type": "Button"},
+                  {"id": "copy_music",      "label": "Music",               "type": "Button"},
+                  {"id": "copy_desktop",    "label": "Desktop",             "type": "Button"},
+                  {"type": "Separator"},
+                  {"id": "copy_choose",     "label": "Choose location...",  "type": "Button", "action": "Opens folder browser dialog"}
+                ]
+              },
+              {
+                "id": "delete",
+                "label": "Delete",
+                "control_type": "SplitButton",
+                "visual_size": "Medium",
+                "icon_px": 16,
+                "icon_description": "Recycle bin / X delete icon",
+                "tooltip": "Delete the selected items",
+                "primary_action": "Moves selected item(s) to the Recycle Bin",
+                "has_dropdown": true,
+                "dropdown_items": [
+                  {"id": "delete_recycle",   "label": "Recycle",             "type": "Button", "action": "Move to Recycle Bin — can be restored"},
+                  {"id": "delete_permanent", "label": "Permanently delete",  "type": "Button", "action": "Delete immediately, bypassing Recycle Bin — cannot be undone"}
+                ]
+              },
+              {
+                "id": "rename",
+                "label": "Rename",
+                "control_type": "Button",
+                "visual_size": "Medium",
+                "icon_px": 16,
+                "icon_description": "Pencil / rename icon",
+                "tooltip": "Rename the selected item",
+                "action": "Puts the selected item's filename into inline edit mode",
+                "has_dropdown": false
+              }
+            ]
+          },
+          {
+            "id": "new",
+            "label": "New",
+            "controls": [
+              {
+                "id": "new_folder",
+                "label": "New folder",
+                "control_type": "Button",
+                "visual_size": "Large",
+                "icon_px": 32,
+                "icon_description": "Yellow folder with star / new folder icon",
+                "tooltip": "Create a new, empty folder",
+                "action": "Creates a new folder in the current location with an editable name",
+                "has_dropdown": false
+              },
+              {
+                "id": "new_item",
+                "label": "New item",
+                "control_type": "DropDownButton",
+                "visual_size": "Small",
+                "icon_px": 16,
+                "icon_description": "Blank document with plus / star icon",
+                "tooltip": "Create a new file",
+                "action": "Opens a menu of new file types to create",
+                "has_dropdown": true,
+                "dropdown_items": [
+                  {"id": "new_folder_item",   "label": "Folder",                      "type": "Button"},
+                  {"id": "new_shortcut",      "label": "Shortcut",                    "type": "Button"},
+                  {"type": "Separator"},
+                  {"id": "new_bitmap",        "label": "Bitmap image",                "type": "Button"},
+                  {"id": "new_contact",       "label": "Contact",                     "type": "Button"},
+                  {"id": "new_journal",       "label": "Journal Document",            "type": "Button"},
+                  {"id": "new_richtext",      "label": "Rich Text Document",          "type": "Button"},
+                  {"id": "new_text",          "label": "Text Document",               "type": "Button"},
+                  {"id": "new_compressed",    "label": "Compressed (zipped) Folder",  "type": "Button"}
+                ]
+              }
+            ]
+          },
+          {
+            "id": "open",
+            "label": "Open",
+            "controls": [
+              {
+                "id": "properties",
+                "label": "Properties",
+                "control_type": "SplitButton",
+                "visual_size": "Large",
+                "icon_px": 32,
+                "icon_description": "Document with checkmark / info icon",
+                "tooltip": "View the properties of the selected item",
+                "primary_action": "Opens the Properties dialog (General, Security, Details tabs)",
+                "has_dropdown": true,
+                "dropdown_items": [
+                  {"id": "properties_dialog",  "label": "Properties",         "type": "Button", "action": "Opens Properties dialog"},
+                  {"id": "remove_properties",  "label": "Remove properties",  "type": "Button", "action": "Opens dialog to strip metadata/properties from the file"}
+                ]
+              },
+              {
+                "id": "open",
+                "label": "Open",
+                "control_type": "SplitButton",
+                "visual_size": "Medium",
+                "icon_px": 16,
+                "icon_description": "Open folder / open file icon",
+                "tooltip": "Open the selected item",
+                "primary_action": "Opens selected item with its default application",
+                "has_dropdown": true,
+                "dropdown_items": [
+                  {"id": "open_default",  "label": "Open",       "type": "Button", "action": "Open with the default associated app"},
+                  {"id": "open_with",     "label": "Open with",  "type": "Button", "action": "Choose which application to open the file with"}
+                ]
+              },
+              {
+                "id": "edit",
+                "label": "Edit",
+                "control_type": "Button",
+                "visual_size": "Small",
+                "icon_px": 16,
+                "icon_description": "Pencil / edit icon",
+                "tooltip": "Edit the selected file",
+                "action": "Opens the selected file in its default editing application (e.g. Paint for images, Notepad for .txt)",
+                "has_dropdown": false
+              },
+              {
+                "id": "history",
+                "label": "History",
+                "control_type": "Button",
+                "visual_size": "Small",
+                "icon_px": 16,
+                "icon_description": "Clock / history icon",
+                "tooltip": "View previous versions of this file from File History backup",
+                "action": "Opens File History to browse and restore previous versions of the selected file",
+                "has_dropdown": false
+              }
+            ]
+          },
+          {
+            "id": "select",
+            "label": "Select",
+            "controls": [
+              {
+                "id": "select_all",
+                "label": "Select all",
+                "control_type": "Button",
+                "visual_size": "Small",
+                "icon_px": 16,
+                "icon_description": "Multiple items / select-all icon",
+                "tooltip": "Select all items in the folder",
+                "action": "Selects every visible item in the current folder view",
+                "has_dropdown": false
+              },
+              {
+                "id": "select_none",
+                "label": "Select none",
+                "control_type": "Button",
+                "visual_size": "Small",
+                "icon_px": 16,
+                "icon_description": "Empty / deselect icon",
+                "tooltip": "Deselect all items",
+                "action": "Removes selection from all currently selected items",
+                "has_dropdown": false
+              },
+              {
+                "id": "invert_selection",
+                "label": "Invert selection",
+                "control_type": "Button",
+                "visual_size": "Small",
+                "icon_px": 16,
+                "icon_description": "Selection swap / invert icon",
+                "tooltip": "Invert the current selection",
+                "action": "Selects all unselected items and deselects all currently selected items",
+                "has_dropdown": false
+              }
+            ]
+          }
+        ]
+      },
+
+      {
+        "id": "share",
+        "label": "Share",
+        "source_image": "share_tab.png",
+        "groups": [
+          {
+            "id": "send",
+            "label": "Send",
+            "controls": [
+              {
+                "id": "share",
+                "label": "Share",
+                "control_type": "Button",
+                "visual_size": "Large",
+                "icon_px": 32,
+                "icon_description": "Two people / sharing icon",
+                "tooltip": "Share the selected items with other people or devices",
+                "action": "Opens the Windows sharing picker dialog for selected file(s)",
+                "has_dropdown": false,
+                "state": "context_dependent",
+                "enabled_when": "One or more items selected"
+              },
+              {
+                "id": "email",
+                "label": "Email",
+                "control_type": "Button",
+                "visual_size": "Small",
+                "icon_px": 16,
+                "icon_description": "Envelope / email icon",
+                "tooltip": "Send the selected items as email attachments",
+                "action": "Opens default mail client with selected file(s) as attachments",
+                "has_dropdown": false,
+                "state": "context_dependent"
+              },
+              {
+                "id": "zip",
+                "label": "Zip",
+                "control_type": "Button",
+                "visual_size": "Small",
+                "icon_px": 16,
+                "icon_description": "Zipper / compressed folder icon",
+                "tooltip": "Compress and share the selected items",
+                "action": "Creates a compressed (.zip) folder from selected file(s)",
+                "has_dropdown": false,
+                "state": "context_dependent"
+              }
+            ]
+          },
+          {
+            "id": "share_with",
+            "label": "Share with",
+            "controls": [
+              {
+                "id": "burn_to_disc",
+                "label": "Burn to disc",
+                "control_type": "Button",
+                "visual_size": "Small",
+                "icon_px": 16,
+                "icon_description": "CD/DVD disc icon",
+                "tooltip": "Burn selected files to optical disc using Windows Disc Image Burner",
+                "action": "Burns selected file(s) to CD/DVD",
+                "has_dropdown": false
+              },
+              {
+                "id": "print",
+                "label": "Print",
+                "control_type": "Button",
+                "visual_size": "Small",
+                "icon_px": 16,
+                "icon_description": "Printer icon",
+                "tooltip": "Send the selected items to a printer",
+                "action": "Opens the Print dialog for selected file(s)",
+                "has_dropdown": false
+              },
+              {
+                "id": "fax",
+                "label": "Fax",
+                "control_type": "Button",
+                "visual_size": "Small",
+                "icon_px": 16,
+                "icon_description": "Fax machine icon",
+                "tooltip": "Send the selected items as a fax",
+                "action": "Opens Windows Fax and Scan with selected file(s)",
+                "has_dropdown": false
+              },
+              {
+                "id": "sharing_targets",
+                "label": null,
+                "control_type": "InRibbonGallery",
+                "visual_size": "Medium",
+                "layout_note": "Vertical scrollable list on the right side of the 'Share with' group. Shows up/down scroll arrows on the far right edge.",
+                "selection_mode": "command",
+                "scroll_arrows": "vertical (up/down)",
+                "items_visible_in_image": [
+                  {
+                    "id": "create_homegroup",
+                    "label": "Create or join a homegroup",
+                    "icon_description": "Homegroup / house-with-people icon",
+                    "action": "Opens the HomeGroup setup and joining wizard",
+                    "item_type": "static"
+                  },
+                  {
+                    "id": "dynamic_user_example",
+                    "label": "Barticus",
+                    "icon_description": "User avatar / person silhouette",
+                    "action": "Share selected file(s) with this specific network user",
+                    "item_type": "dynamic",
+                    "note": "Represents a discovered network user. Label = user/computer name. This is a runtime-populated item."
+                  },
+                  {
+                    "id": "specific_people",
+                    "label": "Specific people...",
+                    "icon_description": "Multiple people / group icon",
+                    "action": "Opens File Sharing dialog to manually choose sharing targets",
+                    "item_type": "static"
+                  }
+                ],
+                "inferred_additional_items": [
+                  {
+                    "id": "nobody",
+                    "label": "Nobody",
+                    "icon_description": "Single person with X or lock icon",
+                    "action": "Stops sharing — makes file/folder private (not shared with anyone)",
+                    "item_type": "static"
+                  },
+                  {
+                    "id": "homegroup_read",
+                    "label": "Homegroup (view)",
+                    "icon_description": "Homegroup icon",
+                    "action": "Share with all homegroup members in read-only mode",
+                    "item_type": "static"
+                  },
+                  {
+                    "id": "homegroup_readwrite",
+                    "label": "Homegroup (view and edit)",
+                    "icon_description": "Homegroup icon with pencil",
+                    "action": "Share with all homegroup members with read+write permissions",
+                    "item_type": "static"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "access_control",
+            "label": null,
+            "layout_note": "Appears after 'Share with' group, separated by a vertical divider. No visible group label in screenshot.",
+            "controls": [
+              {
+                "id": "stop_sharing",
+                "label": "Stop sharing",
+                "control_type": "Button",
+                "visual_size": "Large",
+                "icon_px": 32,
+                "icon_description": "Padlock closed / stop sharing icon",
+                "tooltip": "Stop sharing the selected item",
+                "action": "Removes all sharing permissions from the selected file/folder",
+                "has_dropdown": false,
+                "state": "context_dependent",
+                "enabled_when": "Selected item is currently shared"
+              },
+              {
+                "id": "advanced_security",
+                "label": "Advanced security",
+                "control_type": "DropDownButton",
+                "visual_size": "Large",
+                "icon_px": 32,
+                "icon_description": "Shield / security lock icon",
+                "tooltip": "View or edit detailed security permissions",
+                "action": "Opens advanced security and permissions management",
+                "has_dropdown": true,
+                "dropdown_items": [
+                  {
+                    "id": "security_properties",
+                    "label": "Properties...",
+                    "type": "Button",
+                    "action": "Opens the Security tab of the file's Properties dialog"
+                  },
+                  {
+                    "id": "edit_permissions",
+                    "label": "Edit permissions...",
+                    "type": "Button",
+                    "action": "Opens dialog to add/remove/modify NTFS permissions for users and groups"
+                  },
+                  {
+                    "id": "effective_access",
+                    "label": "Effective access...",
+                    "type": "Button",
+                    "action": "Shows the calculated effective permissions for a given user or group"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+
+      {
+        "id": "view",
+        "label": "View",
+        "source_image": "view_atb.png",
+        "capture_note": "Correctly shows the View tab with 'Details' layout selected (highlighted blue).",
+        "groups": [
+          {
+            "id": "panes",
+            "label": "Panes",
+            "controls": [
+              {
+                "id": "navigation_pane",
+                "label": "Navigation pane",
+                "control_type": "SplitButton",
+                "visual_size": "Large",
+                "icon_px": 32,
+                "icon_description": "Panel layout with left sidebar highlighted",
+                "tooltip": "Show or hide the Navigation pane",
+                "primary_action": "Toggle visibility of the navigation pane (tree view on left)",
+                "dropdown_arrow_position": "below label",
+                "has_dropdown": true,
+                "dropdown_items": [
+                  {
+                    "id": "nav_pane_show",
+                    "label": "Navigation pane",
+                    "type": "CheckBox",
+                    "action": "Show or hide the navigation pane",
+                    "default": "checked"
+                  },
+                  {
+                    "id": "expand_to_open_folder",
+                    "label": "Expand to open folder",
+                    "type": "CheckBox",
+                    "action": "Auto-expand the folder tree to reveal the currently open folder"
+                  },
+                  {
+                    "id": "show_all_folders",
+                    "label": "Show all folders",
+                    "type": "CheckBox",
+                    "action": "Show all shell folders in the navigation pane (including Control Panel, Recycle Bin, etc.)"
+                  },
+                  {
+                    "id": "show_libraries",
+                    "label": "Show libraries",
+                    "type": "CheckBox",
+                    "action": "Show the Libraries section in the navigation pane"
+                  }
+                ]
+              },
+              {
+                "id": "preview_pane",
+                "label": "Preview pane",
+                "control_type": "ToggleButton",
+                "visual_size": "Small",
+                "icon_px": 16,
+                "icon_description": "Panel layout with right preview area highlighted",
+                "tooltip": "Show or hide the preview pane (displays file content on the right)",
+                "action": "Toggle the preview pane on the right side of Explorer window",
+                "has_dropdown": false,
+                "default_state": "off"
+              },
+              {
+                "id": "details_pane",
+                "label": "Details pane",
+                "control_type": "ToggleButton",
+                "visual_size": "Small",
+                "icon_px": 16,
+                "icon_description": "Panel layout with bottom details strip highlighted",
+                "tooltip": "Show or hide the details pane (shows file metadata at bottom)",
+                "action": "Toggle the details pane at the bottom of Explorer window",
+                "has_dropdown": false,
+                "default_state": "off"
+              }
+            ]
+          },
+
+          {
+            "id": "layout",
+            "label": "Layout",
+            "controls": [
+              {
+                "id": "view_layout_gallery",
+                "label": null,
+                "control_type": "InRibbonGallery",
+                "visual_size": "Small",
+                "layout_note": "2-column grid embedded in ribbon band. Scroll arrows on right. Items are radio-style — selecting one deselects all others.",
+                "selection_mode": "radio",
+                "scroll_arrows": "vertical (up/down)",
+                "items": [
+                  {
+                    "id": "extra_large_icons",
+                    "label": "Extra large icons",
+                    "icon_description": "Very large image thumbnails icon",
+                    "column": 1, "row": 1
+                  },
+                  {
+                    "id": "large_icons",
+                    "label": "Large icons",
+                    "icon_description": "Large image thumbnails icon",
+                    "column": 2, "row": 1
+                  },
+                  {
+                    "id": "medium_icons",
+                    "label": "Medium icons",
+                    "icon_description": "Medium image thumbnails icon",
+                    "column": 1, "row": 2
+                  },
+                  {
+                    "id": "small_icons",
+                    "label": "Small icons",
+                    "icon_description": "Small image thumbnails icon",
+                    "column": 2, "row": 2
+                  },
+                  {
+                    "id": "list",
+                    "label": "List",
+                    "icon_description": "Single-column list with small icons",
+                    "column": 1, "row": 3
+                  },
+                  {
+                    "id": "details",
+                    "label": "Details",
+                    "icon_description": "Multi-column table/list with column headers",
+                    "column": 2, "row": 3,
+                    "selected_in_screenshot": true,
+                    "visual_note": "Highlighted blue in the screenshot — this is the active layout"
+                  }
+                ],
+                "inferred_additional_items_below_scroll": [
+                  {
+                    "id": "tiles",
+                    "label": "Tiles",
+                    "icon_description": "Medium tile grid with text to the right of each icon"
+                  },
+                  {
+                    "id": "content",
+                    "label": "Content",
+                    "icon_description": "List with icon and multiple lines of metadata"
+                  }
+                ]
+              }
+            ]
+          },
+
+          {
+            "id": "current_view",
+            "label": "Current view",
+            "controls": [
+              {
+                "id": "sort_by",
+                "label": "Sort by",
+                "control_type": "DropDownButton",
+                "visual_size": "Medium",
+                "icon_px": 16,
+                "icon_description": "Sort arrows (A↑Z or ↕) icon",
+                "tooltip": "Change the sort order of items in the current folder",
+                "action": "Opens menu to select sort column and direction",
+                "has_dropdown": true,
+                "dropdown_items": [
+                  {"id": "sort_name",          "label": "Name",          "type": "RadioButton", "group": "column"},
+                  {"id": "sort_date_modified", "label": "Date modified", "type": "RadioButton", "group": "column"},
+                  {"id": "sort_type",          "label": "Type",          "type": "RadioButton", "group": "column"},
+                  {"id": "sort_size",          "label": "Size",          "type": "RadioButton", "group": "column"},
+                  {"id": "sort_date_created",  "label": "Date created",  "type": "RadioButton", "group": "column"},
+                  {"id": "sort_authors",       "label": "Authors",       "type": "RadioButton", "group": "column"},
+                  {"id": "sort_tags",          "label": "Tags",          "type": "RadioButton", "group": "column"},
+                  {"id": "sort_title",         "label": "Title",         "type": "RadioButton", "group": "column"},
+                  {"type": "Separator"},
+                  {"id": "sort_ascending",     "label": "Ascending",     "type": "RadioButton", "group": "direction"},
+                  {"id": "sort_descending",    "label": "Descending",    "type": "RadioButton", "group": "direction"}
+                ]
+              },
+              {
+                "id": "group_by",
+                "label": "Group by",
+                "control_type": "DropDownButton",
+                "visual_size": "Medium",
+                "icon_px": 16,
+                "icon_description": "Stacked groups / category icon",
+                "tooltip": "Arrange items in groups based on a property",
+                "action": "Opens menu to select grouping column and direction",
+                "has_dropdown": true,
+                "dropdown_items": [
+                  {"id": "group_name",          "label": "Name",          "type": "RadioButton", "group": "column"},
+                  {"id": "group_date_modified", "label": "Date modified", "type": "RadioButton", "group": "column"},
+                  {"id": "group_type",          "label": "Type",          "type": "RadioButton", "group": "column"},
+                  {"id": "group_size",          "label": "Size",          "type": "RadioButton", "group": "column"},
+                  {"id": "group_tags",          "label": "Tags",          "type": "RadioButton", "group": "column"},
+                  {"type": "Separator"},
+                  {"id": "group_ascending",     "label": "Ascending",     "type": "RadioButton", "group": "direction"},
+                  {"id": "group_descending",    "label": "Descending",    "type": "RadioButton", "group": "direction"},
+                  {"type": "Separator"},
+                  {"id": "group_none", "label": "(None)", "type": "Button", "action": "Remove all grouping"}
+                ]
+              },
+              {
+                "id": "add_columns",
+                "label": "Add columns",
+                "control_type": "DropDownButton",
+                "visual_size": "Medium",
+                "icon_px": 16,
+                "icon_description": "Columns / table with plus icon",
+                "tooltip": "Add or remove columns in Details view",
+                "action": "Opens menu to toggle visible columns in Details view",
+                "has_dropdown": true,
+                "note": "Only meaningful when Layout is set to Details",
+                "dropdown_items": [
+                  {"id": "col_name",          "label": "Name",          "type": "CheckBox", "always_on": true},
+                  {"id": "col_date_modified", "label": "Date modified", "type": "CheckBox"},
+                  {"id": "col_type",          "label": "Type",          "type": "CheckBox"},
+                  {"id": "col_size",          "label": "Size",          "type": "CheckBox"},
+                  {"id": "col_tags",          "label": "Tags",          "type": "CheckBox"},
+                  {"id": "col_date_created",  "label": "Date created",  "type": "CheckBox"},
+                  {"id": "col_authors",       "label": "Authors",       "type": "CheckBox"},
+                  {"type": "Separator"},
+                  {"id": "col_more", "label": "More...", "type": "Button", "action": "Opens 'Choose Details' dialog with full list of available columns"}
+                ]
+              },
+              {
+                "id": "size_all_columns_to_fit",
+                "label": "Size all columns to fit",
+                "control_type": "Button",
+                "visual_size": "Medium",
+                "icon_px": 16,
+                "icon_description": "Column resize / auto-fit icon",
+                "tooltip": "Automatically resize all columns to fit their content",
+                "action": "Resizes all columns in Details view to best-fit their content width",
+                "has_dropdown": false,
+                "note": "Only meaningful when Layout is set to Details"
+              }
+            ]
+          },
+
+          {
+            "id": "show_hide",
+            "label": "Show/hide",
+            "controls": [
+              {
+                "id": "item_check_boxes",
+                "label": "Item check boxes",
+                "control_type": "CheckBox",
+                "visual_size": "Small",
+                "icon_description": "File icon with a checkbox overlay",
+                "tooltip": "Show checkboxes on items so you can select multiple items easily",
+                "action": "Toggles selection checkboxes on file and folder icons",
+                "default_state": "unchecked",
+                "state_in_screenshot": "unchecked"
+              },
+              {
+                "id": "file_name_extensions",
+                "label": "File name extensions",
+                "control_type": "CheckBox",
+                "visual_size": "Small",
+                "icon_description": "File icon with .ext suffix visible",
+                "tooltip": "Show or hide file name extensions for known file types",
+                "action": "Toggles display of extensions (e.g. .txt, .docx) in file names",
+                "default_state": "unchecked",
+                "state_in_screenshot": "unchecked",
+                "note": "Extensions hidden in screenshot — typical default Windows setting"
+              },
+              {
+                "id": "hidden_items",
+                "label": "Hidden items",
+                "control_type": "CheckBox",
+                "visual_size": "Small",
+                "icon_description": "File icon with eye / visibility symbol",
+                "tooltip": "Show or hide files and folders marked as hidden",
+                "action": "Toggles visibility of files/folders with the Hidden attribute set",
+                "default_state": "unchecked",
+                "state_in_screenshot": "checked",
+                "note": "Checked (enabled) in screenshot — hidden items are visible"
+              },
+              {
+                "id": "hide_selected_items",
+                "label": "Hide selected items",
+                "control_type": "Button",
+                "visual_size": "Medium",
+                "icon_px": 16,
+                "icon_description": "File icon with hidden/eye-slash indicator",
+                "tooltip": "Mark the selected items as hidden",
+                "action": "Sets the Hidden file attribute on selected file(s) or folder(s)",
+                "has_dropdown": false,
+                "state": "context_dependent",
+                "enabled_when": "One or more items selected"
+              },
+              {
+                "id": "options",
+                "label": "Options",
+                "control_type": "DropDownButton",
+                "visual_size": "Large",
+                "icon_px": 32,
+                "icon_description": "Gear / settings icon",
+                "tooltip": "Change options for files, folders, and search",
+                "action": "Opens folder and search options",
+                "has_dropdown": true,
+                "dropdown_items": [
+                  {
+                    "id": "change_folder_options",
+                    "label": "Change folder and search options",
+                    "type": "Button",
+                    "action": "Opens the Folder Options dialog (View, General, Search tabs)"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+
+  "xjribbon_implementation_notes": {
+    "control_priority": [
+      "Button (Large + Medium + Small) — most common, implement first",
+      "CheckBox — simple toggle, implement early for Show/hide group",
+      "ToggleButton — similar to CheckBox but without glyph (Preview pane, Details pane)",
+      "DropDownButton — needed for Sort by, Group by, Add columns, Options",
+      "SplitButton — needed for Navigation pane (split primary + dropdown)",
+      "InRibbonGallery — needed for Layout view selector and Share with targets list"
+    ],
+    "visual_anatomy": {
+      "group_separator": "Vertical divider line between groups",
+      "group_label": "Small text label centred below the group's controls",
+      "tab_indicator": "Blue underline/highlight on the active tab label",
+      "selected_gallery_item": "Blue highlight background on the currently selected InRibbonGallery item",
+      "checked_checkbox": "Filled checkbox glyph (✓) next to label",
+      "split_button_divider": "Thin vertical line separating primary area from dropdown arrow area"
+    },
+    "key_interactions": {
+      "SplitButton_primary": "Click on icon/label area → fires main command directly",
+      "SplitButton_dropdown": "Click on arrow area → opens dropdown menu",
+      "DropDownButton_any": "Click anywhere → opens dropdown menu",
+      "InRibbonGallery_item": "Click item → selects it (radio) or fires command",
+      "InRibbonGallery_scroll": "Click up/down arrows → scroll through items",
+      "CheckBox_click": "Toggles between checked and unchecked state",
+      "ToggleButton_click": "Toggles between pressed and unpressed state"
+    }
+  }
+}
