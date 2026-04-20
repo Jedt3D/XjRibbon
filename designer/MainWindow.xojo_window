@@ -11,7 +11,7 @@ Begin DesktopWindow MainWindow
    HasMaximizeButton=   True
    HasMinimizeButton=   True
    HasTitleBar     =   True
-   Height          =   554
+   Height          =   522
    ImplicitInstance=   True
    MacProcID       =   0
    MaximumHeight   =   32000
@@ -24,7 +24,7 @@ Begin DesktopWindow MainWindow
    Title           =   "XjRibbon Menu Creator"
    Type            =   0
    Visible         =   True
-   Width           =   820
+   Width           =   922
    Begin DesktopLabel ProjectName
       AllowAutoDeactivate=   True
       Bold            =   False
@@ -80,7 +80,7 @@ Begin DesktopWindow MainWindow
       HasHorizontalScrollbar=   False
       HasVerticalScrollbar=   True
       HeadingIndex    =   -1
-      Height          =   450
+      Height          =   418
       Index           =   -2147483648
       InitialValue    =   "Caption	Type	Dropdown"
       Italic          =   False
@@ -101,7 +101,7 @@ Begin DesktopWindow MainWindow
       Transparent     =   False
       Underline       =   False
       Visible         =   True
-      Width           =   434
+      Width           =   536
       _ScrollOffset   =   0
       _ScrollWidth    =   -1
    End
@@ -118,7 +118,7 @@ Begin DesktopWindow MainWindow
       Height          =   22
       Index           =   -2147483648
       Italic          =   False
-      Left            =   664
+      Left            =   766
       LockBottom      =   False
       LockedInPosition=   False
       LockLeft        =   False
@@ -147,7 +147,7 @@ Begin DesktopWindow MainWindow
       Index           =   -2147483648
       InitialValue    =   "-- select item --\nRibbon Tab\nRibbon Group\nRibbon Large Button\nRibbon Small Button\nRibbon SplitButton\nRibbon Toggle Button\nRibbon CheckBox"
       Italic          =   False
-      Left            =   331
+      Left            =   433
       LockBottom      =   False
       LockedInPosition=   False
       LockLeft        =   False
@@ -175,7 +175,7 @@ Begin DesktopWindow MainWindow
       Height          =   20
       Index           =   -2147483648
       Italic          =   False
-      Left            =   286
+      Left            =   388
       LockBottom      =   False
       LockedInPosition=   False
       LockLeft        =   False
@@ -223,11 +223,11 @@ Begin DesktopWindow MainWindow
       TextAlignment   =   0
       TextColor       =   &c000000
       Tooltip         =   ""
-      Top             =   514
+      Top             =   482
       Transparent     =   False
       Underline       =   False
       Visible         =   True
-      Width           =   780
+      Width           =   882
    End
    Begin DesktopGroupBox GroupBox1
       AllowAutoDeactivate=   True
@@ -237,10 +237,10 @@ Begin DesktopWindow MainWindow
       FontName        =   "System"
       FontSize        =   0.0
       FontUnit        =   0
-      Height          =   450
+      Height          =   418
       Index           =   -2147483648
       Italic          =   False
-      Left            =   466
+      Left            =   568
       LockBottom      =   True
       LockedInPosition=   False
       LockLeft        =   False
@@ -274,7 +274,7 @@ Begin DesktopWindow MainWindow
          Index           =   -2147483648
          InitialParent   =   "GroupBox1"
          Italic          =   False
-         Left            =   598
+         Left            =   700
          LockBottom      =   False
          LockedInPosition=   False
          LockLeft        =   True
@@ -309,7 +309,7 @@ Begin DesktopWindow MainWindow
          Index           =   -2147483648
          InitialParent   =   "GroupBox1"
          Italic          =   False
-         Left            =   486
+         Left            =   588
          LockBottom      =   False
          LockedInPosition=   False
          LockLeft        =   True
@@ -342,7 +342,7 @@ Begin DesktopWindow MainWindow
          Index           =   -2147483648
          InitialParent   =   "GroupBox1"
          Italic          =   False
-         Left            =   486
+         Left            =   588
          LockBottom      =   False
          LockedInPosition=   False
          LockLeft        =   True
@@ -375,7 +375,7 @@ Begin DesktopWindow MainWindow
          Index           =   -2147483648
          InitialParent   =   "GroupBox1"
          Italic          =   False
-         Left            =   486
+         Left            =   588
          LockBottom      =   False
          LockedInPosition=   False
          LockLeft        =   True
@@ -408,7 +408,7 @@ Begin DesktopWindow MainWindow
          Index           =   -2147483648
          InitialParent   =   "GroupBox1"
          Italic          =   False
-         Left            =   486
+         Left            =   588
          LockBottom      =   False
          LockedInPosition=   False
          LockLeft        =   True
@@ -442,7 +442,7 @@ Begin DesktopWindow MainWindow
          Index           =   -2147483648
          InitialParent   =   "GroupBox1"
          Italic          =   False
-         Left            =   598
+         Left            =   700
          LockBottom      =   False
          LockedInPosition=   False
          LockLeft        =   True
@@ -473,7 +473,7 @@ Begin DesktopWindow MainWindow
          Index           =   -2147483648
          InitialParent   =   "GroupBox1"
          Italic          =   False
-         Left            =   598
+         Left            =   700
          LockBottom      =   False
          LockedInPosition=   False
          LockLeft        =   True
@@ -510,7 +510,7 @@ Begin DesktopWindow MainWindow
          Index           =   -2147483648
          InitialParent   =   "GroupBox1"
          Italic          =   False
-         Left            =   598
+         Left            =   700
          LockBottom      =   False
          LockedInPosition=   False
          LockLeft        =   True
@@ -552,7 +552,7 @@ Begin DesktopWindow MainWindow
          Index           =   -2147483648
          InitialParent   =   "GroupBox1"
          Italic          =   False
-         Left            =   598
+         Left            =   700
          LockBottom      =   False
          LockedInPosition=   False
          LockLeft        =   True
@@ -587,7 +587,7 @@ Begin DesktopWindow MainWindow
          Index           =   -2147483648
          InitialParent   =   "GroupBox1"
          Italic          =   False
-         Left            =   486
+         Left            =   588
          LockBottom      =   False
          LockedInPosition=   False
          LockLeft        =   True
@@ -627,7 +627,7 @@ Begin DesktopWindow MainWindow
          Index           =   -2147483648
          InitialParent   =   "GroupBox1"
          Italic          =   False
-         Left            =   598
+         Left            =   700
          LockBottom      =   False
          LockedInPosition=   False
          LockLeft        =   True
@@ -662,7 +662,7 @@ Begin DesktopWindow MainWindow
          Index           =   -2147483648
          InitialParent   =   "GroupBox1"
          Italic          =   False
-         Left            =   486
+         Left            =   588
          LockBottom      =   False
          LockedInPosition=   False
          LockLeft        =   True
@@ -712,7 +712,7 @@ Begin DesktopWindow MainWindow
          InitialParent   =   "GroupBox1"
          InitialValue    =   "Caption	Tag"
          Italic          =   False
-         Left            =   486
+         Left            =   588
          LockBottom      =   False
          LockedInPosition=   False
          LockLeft        =   True
@@ -747,7 +747,7 @@ Begin DesktopWindow MainWindow
          Index           =   -2147483648
          InitialParent   =   "GroupBox1"
          Italic          =   False
-         Left            =   657
+         Left            =   759
          LockBottom      =   False
          LockedInPosition=   False
          LockLeft        =   True
@@ -783,7 +783,7 @@ Begin DesktopWindow MainWindow
          Index           =   -2147483648
          InitialParent   =   "GroupBox1"
          Italic          =   False
-         Left            =   598
+         Left            =   700
          LockBottom      =   False
          LockedInPosition=   False
          LockLeft        =   True
@@ -820,7 +820,7 @@ Begin DesktopWindow MainWindow
       Index           =   -2147483648
       InitialValue    =   "Desktop\nWeb"
       Italic          =   False
-      Left            =   476
+      Left            =   578
       LockBottom      =   False
       LockedInPosition=   False
       LockLeft        =   False
@@ -946,11 +946,11 @@ End
 		            itemObj.Value("itemType") = id.Value("type")
 		            itemObj.Value("isEnabled") = id.Lookup("isEnabled", True)
 		            itemObj.Value("tooltipText") = id.Lookup("tooltipText", "")
-
+		            
 		            If id.Value("type") = "toggle" Or id.Value("type") = "checkbox" Then
 		              itemObj.Value("isToggleActive") = id.Lookup("isToggleActive", False)
 		            End If
-
+		            
 		            Var menuItemsArr As New JSONItem("[]")
 		            Var miList() As Dictionary = id.Lookup("menuItems", Nil)
 		            If miList <> Nil Then
@@ -1444,7 +1444,7 @@ End
 		  + "{""caption"":""Hide selected"",""tag"":""view.hide_selected"",""itemType"":""small"",""isEnabled"":true,""tooltipText"":"""",""menuItems"":[]}" _
 		  + "]}," _
 		  + "{""caption"":""Panes"",""items"":[" _
-		  + "{""caption"":""Navigation" + Chr(10) + "pane"",""tag"":""view.nav_pane"",""itemType"":""splitbutton"",""isEnabled"":true,""tooltipText"":"""",""menuItems"":[{""caption"":""Navigation pane"",""tag"":""view.nav_pane.toggle""},{""caption"":""Expand to open folder"",""tag"":""view.nav_pane.expand""},{""caption"":""Show all folders"",""tag"":""view.nav_pane.allfolders""}]}" _
+		  + "{""caption"":""Navigation\npane"",""tag"":""view.nav_pane"",""itemType"":""splitbutton"",""isEnabled"":true,""tooltipText"":"""",""menuItems"":[{""caption"":""Navigation pane"",""tag"":""view.nav_pane.toggle""},{""caption"":""Expand to open folder"",""tag"":""view.nav_pane.expand""},{""caption"":""Show all folders"",""tag"":""view.nav_pane.allfolders""}]}" _
 		  + "]}" _
 		  + "]}" _
 		  + "]}"
@@ -1477,7 +1477,7 @@ End
 	#tag Method, Flags = &h0
 		Sub OpenProject()
 		  If Not PromptSaveIfDirty Then Return
-
+		  
 		  Var dlg As New OpenFileDialog
 		  dlg.Filter = RibbonFileType.Ribbon
 		  
@@ -1533,7 +1533,7 @@ End
 		    IsEnabled.Value = d.Lookup("isEnabled", True)
 		    TooltipTextField.Text = d.Lookup("tooltipText", "")
 		    IsToggleActive.Value = d.Lookup("isToggleActive", False)
-
+		    
 		    // Load menu items for large and splitbutton
 		    MenuItems.RemoveAllRows
 		    If rowType = "large" Or rowType = "splitbutton" Then
@@ -1583,19 +1583,6 @@ End
 		    // Cancel
 		    Return False
 		  End If
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
-		Function UniqueVarName(baseName As String, usedNames As Dictionary) As String
-		  // Append counter if name already used: fontGroup → fontGroup2
-		  If Not usedNames.HasKey(baseName) Then
-		    usedNames.Value(baseName) = 1
-		    Return baseName
-		  End If
-		  Var count As Integer = usedNames.Value(baseName) + 1
-		  usedNames.Value(baseName) = count
-		  Return baseName + count.ToString
 		End Function
 	#tag EndMethod
 
@@ -1675,7 +1662,7 @@ End
 		  // "toggle" = all item fields + IsToggleActive enabled; no menu items
 		  // "checkbox" = Tag, ItemType, IsToggleActive only; no IsEnabled/Tooltip/MenuItems
 		  // "none" = all disabled
-
+		  
 		  Var isTab As Boolean = (rowType = "tab")
 		  Var isGroup As Boolean = (rowType = "group")
 		  Var isItem As Boolean = (rowType = "large" Or rowType = "small" Or rowType = "splitbutton" Or rowType = "toggle" Or rowType = "checkbox")
@@ -1683,36 +1670,36 @@ End
 		  Var hasToggleState As Boolean = (rowType = "toggle" Or rowType = "checkbox")
 		  Var hasIsEnabled As Boolean = (rowType = "large" Or rowType = "small" Or rowType = "splitbutton" Or rowType = "toggle")
 		  Var anythingSelected As Boolean = (rowType <> "none")
-
+		  
 		  // Caption enabled for all types
 		  CaptionField.Enabled = anythingSelected
 		  Label4.Enabled = anythingSelected
-
+		  
 		  // Tag, ItemType — all item types
 		  TagField.Enabled = isItem
 		  Label5.Enabled = isItem
 		  ItemTypeField.Enabled = isItem
 		  Label6.Enabled = isItem
-
+		  
 		  // IsEnabled — large, small, splitbutton, toggle only (not checkbox per spec)
 		  IsEnabled.Enabled = hasIsEnabled
-
+		  
 		  // Tooltip — same as IsEnabled (not shown for checkbox)
 		  TooltipTextField.Enabled = hasIsEnabled
 		  Label8.Enabled = hasIsEnabled
-
+		  
 		  // IsToggleActive (Default Active?) — toggle and checkbox only
 		  IsToggleActive.Enabled = hasToggleState
-
+		  
 		  // Resource Name — always disabled (deferred)
 		  ResourceNameField.Enabled = False
 		  Label10.Enabled = False
-
+		  
 		  // Menu Items — large and splitbutton only
 		  MenuItems.Enabled = isLarge
 		  AddMenuItem.Enabled = isLarge
 		  Label11.Enabled = isLarge
-
+		  
 		  // Clear fields when nothing selected
 		  If Not anythingSelected Then
 		    CaptionField.Text = ""
@@ -1747,6 +1734,19 @@ End
 		  UpdateDropdownColumn(row)
 		  MarkDirty
 		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function UniqueVarName(baseName As String, usedNames As Dictionary) As String
+		  // Append counter if name already used: fontGroup → fontGroup2
+		  If Not usedNames.HasKey(baseName) Then
+		    usedNames.Value(baseName) = 1
+		    Return baseName
+		  End If
+		  Var count As Integer = usedNames.Value(baseName) + 1
+		  usedNames.Value(baseName) = count
+		  Return baseName + count.ToString
+		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
@@ -1960,7 +1960,7 @@ End
 		    d.Value("menuItems") = emptyMenuItems
 		    RibbonStructure.RowTagAt(addedRow) = d
 		    RibbonStructure.SelectedRowIndex = addedRow
-
+		    
 		  Case "Ribbon SplitButton"
 		    Var selRow As Integer = RibbonStructure.SelectedRowIndex
 		    If selRow < 0 Then
@@ -1992,7 +1992,7 @@ End
 		    d.Value("menuItems") = emptyMenuItems
 		    RibbonStructure.RowTagAt(addedRow) = d
 		    RibbonStructure.SelectedRowIndex = addedRow
-
+		    
 		  Case "Ribbon Toggle Button"
 		    Var selRow As Integer = RibbonStructure.SelectedRowIndex
 		    If selRow < 0 Then
@@ -2025,7 +2025,7 @@ End
 		    d.Value("menuItems") = emptyMenuItems
 		    RibbonStructure.RowTagAt(addedRow) = d
 		    RibbonStructure.SelectedRowIndex = addedRow
-
+		    
 		  Case "Ribbon CheckBox"
 		    Var selRow As Integer = RibbonStructure.SelectedRowIndex
 		    If selRow < 0 Then
@@ -2054,11 +2054,11 @@ End
 		    d.Value("isToggleActive") = False
 		    RibbonStructure.RowTagAt(addedRow) = d
 		    RibbonStructure.SelectedRowIndex = addedRow
-
+		    
 		  End Select
-
+		  
 		  MarkDirty
-
+		  
 		  // Reset popup to placeholder
 		  Me.SelectedRowIndex = 0
 		End Sub
@@ -2106,13 +2106,13 @@ End
 	#tag Event
 		Sub ValueChanged()
 		  If mUpdatingInspector Then Return
-
+		  
 		  Var row As Integer = RibbonStructure.SelectedRowIndex
 		  If row < 0 Then Return
-
+		  
 		  Var d As Dictionary = Dictionary(RibbonStructure.RowTagAt(row))
 		  If d = Nil Then Return
-
+		  
 		  d.Value("isToggleActive") = Me.Value
 		  MarkDirty
 		End Sub
@@ -2456,6 +2456,14 @@ End
 		Visible=true
 		Group="Deprecated"
 		InitialValue="False"
+		Type="Boolean"
+		EditorType=""
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="mIsDirty"
+		Visible=false
+		Group="Behavior"
+		InitialValue=""
 		Type="Boolean"
 		EditorType=""
 	#tag EndViewProperty
