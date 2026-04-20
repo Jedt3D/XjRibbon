@@ -76,7 +76,7 @@ Begin DesktopWindow AboutBox
       TabIndex        =   1
       TabPanelIndex   =   0
       TabStop         =   True
-      Text            =   "XjRibbon Designer\nversion 1.0.0\n\nCopyright\nWorajedt Sitthidumrong\n2026\nsjedt@3ddaily.com"
+      Text            =   "XjRibbon Designer\nversion 2.0.0\n\nCopyright\nWorajedt Sitthidumrong\n2026\nsjedt@3ddaily.com"
       TextAlignment   =   2
       TextColor       =   &c000000
       Tooltip         =   ""
