@@ -1458,6 +1458,8 @@ Inherits DesktopCanvas
 	#tag EndConstant
 	#tag Constant, Name = kItemTypeSeparator, Type = Double, Dynamic = False, Default = \"4", Scope = Public
 	#tag EndConstant
+	#tag Constant, Name = kXjRibbonVersion, Type = String, Dynamic = False, Default = \"1.0.0", Scope = Public
+	#tag EndConstant
 
 	#tag ViewBehavior
 		#tag ViewProperty
