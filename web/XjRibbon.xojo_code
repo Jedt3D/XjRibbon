@@ -329,13 +329,49 @@ Inherits WebCanvas
 		        Next
 
 		        itemX = itemX + colWidth + kItemGap
+		      ElseIf item.ItemType = 3 Then
+		        // CheckBox column batch: same 3-per-column stacking as small buttons; no icon column
+		        Var cbBatch() As XjRibbonItem
+		        Var cbMaxTextW As Double = 0
+		        While idx <= group.mItems.LastIndex And group.mItems(idx).ItemType = 3 And cbBatch.Count < 3
+		          cbBatch.Add(group.mItems(idx))
+		          Var cbTw As Double = MeasureTextWidth(group.mItems(idx).Caption, 11, False)
+		          If cbTw > cbMaxTextW Then cbMaxTextW = cbTw
+		          idx = idx + 1
+		        Wend
+		        Var cbGlyph As Double = 16
+		        Var cbColWidth As Double = cbGlyph + kSmallButtonTextPadding + cbMaxTextW + kSmallButtonTextPadding * 2
+		        If cbColWidth < kSmallButtonMinWidth Then cbColWidth = kSmallButtonMinWidth
+		        Var cbTotalH As Double = cbBatch.Count * kSmallButtonHeight + (cbBatch.Count - 1) * kSmallRowGap
+		        Var cbStartY As Double = contentY + (itemAreaH - cbTotalH) / 2
+		        For row As Integer = 0 To cbBatch.LastIndex
+		          cbBatch(row).mBoundsX = itemX
+		          cbBatch(row).mBoundsY = cbStartY + row * (kSmallButtonHeight + kSmallRowGap)
+		          cbBatch(row).mBoundsW = cbColWidth
+		          cbBatch(row).mBoundsH = kSmallButtonHeight
+		        Next
+		        itemX = itemX + cbColWidth + kItemGap
+		      ElseIf item.ItemType = 4 Then
+		        // Separator: visual column gap, no bounds needed, no draw
+		        item.mBoundsW = 0
+		        item.mBoundsH = 0
+		        itemX = itemX + kItemGap
+		        idx = idx + 1
 		      Else
-		        // Large or Dropdown: full height column
+		        // Large, Dropdown, SplitButton: full height column; auto-expand width from caption
 		        item.mBoundsX = itemX
 		        item.mBoundsY = contentY
-		        item.mBoundsW = kLargeButtonWidth
+		        Var captionLines() As String = item.Caption.Split(Chr(10))
+		        Var maxCapW As Double = 0
+		        For Each cl As String In captionLines
+		          Var clw As Double = MeasureTextWidth(cl, 11, False)
+		          If clw > maxCapW Then maxCapW = clw
+		        Next
+		        Var btnW As Double = Max(kLargeButtonWidth, maxCapW + 16)
+		        If item.IsSplitButton Then btnW = btnW + kArrowZoneWidth
+		        item.mBoundsW = btnW
 		        item.mBoundsH = itemAreaH
-		        itemX = itemX + kLargeButtonWidth + kItemGap
+		        itemX = itemX + btnW + kItemGap
 		        idx = idx + 1
 		      End If
 		    Wend
@@ -556,10 +592,28 @@ Inherits WebCanvas
 		  End If
 		  g.FontSize = 11
 		  g.Bold = False
-		  Var textW As Double = MeasureTextWidth(item.Caption, 11, False)
-		  Var textX As Double = bx + (bw - textW) / 2
-		  Var textY As Double = iconY + iconSize + 12
-		  g.DrawText(item.Caption, textX, textY)
+		  Var drawBodyW As Double = If(item.IsSplitButton, bw - kArrowZoneWidth, bw)
+		  // Center text block vertically in the below-icon area
+		  Var belowY As Double = iconY + iconSize
+		  Var belowH As Double = bh - (belowY - by)
+		  Var th As Double = MeasureTextHeight(11)
+		  Var captionLines() As String = item.Caption.Split(Chr(10))
+		  If captionLines.Count > 1 Then
+		    Var lineGap As Double = 1
+		    Var blockH As Double = th * 2 + lineGap
+		    Var blockTop As Double = belowY + Max(0, (belowH - blockH) / 2)
+		    Var line1W As Double = MeasureTextWidth(captionLines(0), 11, False)
+		    Var line2W As Double = MeasureTextWidth(captionLines(1), 11, False)
+		    // SplitButton: right-align in body area with 4px padding; others: center
+		    Var line1X As Double = If(item.IsSplitButton, bx + drawBodyW - line1W - 4, bx + (drawBodyW - line1W) / 2)
+		    Var line2X As Double = If(item.IsSplitButton, bx + drawBodyW - line2W - 4, bx + (drawBodyW - line2W) / 2)
+		    g.DrawText(captionLines(0), line1X, blockTop + th)
+		    g.DrawText(captionLines(1), line2X, blockTop + th + lineGap + th)
+		  Else
+		    Var textW As Double = MeasureTextWidth(item.Caption, 11, False)
+		    Var textX As Double = If(item.IsSplitButton, bx + drawBodyW - textW - 4, bx + (drawBodyW - textW) / 2)
+		    g.DrawText(item.Caption, textX, belowY + (belowH - th) / 2 + th)
+		  End If
 		End Sub
 	#tag EndMethod
 
@@ -622,22 +676,94 @@ Inherits WebCanvas
 		  // Draw base like a large button
 		  DrawLargeButton(g, item)
 
-		  // Draw dropdown chevron arrow
 		  Var arrowW As Double = kDropdownArrowSize
-		  Var arrowX As Double = item.mBoundsX + (item.mBoundsW - arrowW) / 2
-		  Var arrowY As Double = item.mBoundsY + item.mBoundsH - 6
 
+		  If item.IsSplitButton Then
+		    // Separator at kArrowZoneWidth from right edge
+		    Var sepX As Double = item.mBoundsX + item.mBoundsW - kArrowZoneWidth
+		    g.DrawingColor = cBorder
+		    g.FillRectangle(sepX, item.mBoundsY + 5, 1, item.mBoundsH - 10)
+		    // Chevron centered in arrow zone
+		    Var arrowX As Double = sepX + (kArrowZoneWidth - arrowW) / 2
+		    Var arrowY As Double = item.mBoundsY + item.mBoundsH - 7
+		    If item.IsEnabled Then
+		      g.DrawingColor = cItemText
+		    Else
+		      g.DrawingColor = cItemDisabledText
+		    End If
+		    Var midX As Double = arrowX + arrowW / 2
+		    g.PenSize = 1.5
+		    g.DrawLine(arrowX, arrowY, midX, arrowY + arrowW / 2)
+		    g.DrawLine(midX, arrowY + arrowW / 2, arrowX + arrowW, arrowY)
+		    g.PenSize = 1
+		  Else
+		    // Plain dropdown: chevron centered in full button width
+		    Var arrowX As Double = item.mBoundsX + (item.mBoundsW - arrowW) / 2
+		    Var arrowY As Double = item.mBoundsY + item.mBoundsH - 6
+		    If item.IsEnabled Then
+		      g.DrawingColor = cItemText
+		    Else
+		      g.DrawingColor = cItemDisabledText
+		    End If
+		    Var midX As Double = arrowX + arrowW / 2
+		    g.PenSize = 1.5
+		    g.DrawLine(arrowX, arrowY, midX, arrowY + arrowW / 2)
+		    g.DrawLine(midX, arrowY + arrowW / 2, arrowX + arrowW, arrowY)
+		    g.PenSize = 1
+		  End If
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Sub DrawCheckBoxItem(g As WebGraphics, item As XjRibbonItem)
+		  Var bx As Double = item.mBoundsX
+		  Var by As Double = item.mBoundsY
+		  Var bw As Double = item.mBoundsW
+		  Var bh As Double = item.mBoundsH   // = kSmallButtonHeight = 26
+
+		  // Hover/pressed background for whole row
+		  If item.mIsPressed Then
+		    g.DrawingColor = cItemPressedBackground
+		    g.FillRoundRectangle(bx, by, bw, bh, 3)
+		  ElseIf item.mIsHovered Then
+		    g.DrawingColor = cItemHoverBackground
+		    g.FillRoundRectangle(bx, by, bw, bh, 3)
+		  End If
+
+		  // Glyph: 16x16 rounded rect (scaled from desktop 13x13), vertically centered
+		  Var glyphSize As Double = 16
+		  Var glyphX As Double = bx + 2
+		  Var glyphY As Double = by + (bh - glyphSize) / 2
+
+		  If item.IsToggleActive Then
+		    // Checked: blue fill + white checkmark
+		    g.DrawingColor = cTabAccent
+		    g.FillRoundRectangle(glyphX, glyphY, glyphSize, glyphSize, 2)
+		    g.DrawingColor = Color.RGB(255, 255, 255)
+		    g.PenSize = 1.5
+		    // Checkmark proportionally scaled to 16px glyph
+		    g.DrawLine(glyphX + 3, glyphY + 8, glyphX + 6, glyphY + 11)
+		    g.DrawLine(glyphX + 6, glyphY + 11, glyphX + 13, glyphY + 4)
+		    g.PenSize = 1
+		  Else
+		    // Unchecked: white interior with cBorder border
+		    g.DrawingColor = cContentBackground
+		    g.FillRoundRectangle(glyphX, glyphY, glyphSize, glyphSize, 2)
+		    g.DrawingColor = cBorder
+		    g.DrawRoundRectangle(glyphX, glyphY, glyphSize, glyphSize, 2)
+		  End If
+
+		  // Text label
 		  If item.IsEnabled Then
 		    g.DrawingColor = cItemText
 		  Else
 		    g.DrawingColor = cItemDisabledText
 		  End If
-
-		  Var midX As Double = arrowX + arrowW / 2
-		  g.PenSize = 1.5
-		  g.DrawLine(arrowX, arrowY, midX, arrowY + arrowW / 2)
-		  g.DrawLine(midX, arrowY + arrowW / 2, arrowX + arrowW, arrowY)
-		  g.PenSize = 1
+		  g.FontSize = 11
+		  g.Bold = False
+		  Var textX As Double = glyphX + glyphSize + kSmallButtonTextPadding
+		  Var textY As Double = by + (bh + MeasureTextHeight(11)) / 2 - 1
+		  g.DrawText(item.Caption, textX, textY)
 		End Sub
 	#tag EndMethod
 
