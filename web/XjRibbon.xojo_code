@@ -68,8 +68,15 @@ Inherits WebCanvas
 		  Var hitItem As XjRibbonItem = HitTestItems(x, y)
 		  If hitItem <> Nil And hitItem.IsEnabled Then
 		    If hitItem.ItemType = 2 And hitItem.mMenuItems.Count > 0 Then
-		      mDropdownPendingItem = hitItem
-		      ShowDropdownMenu(hitItem, x, y)
+		      If hitItem.IsSplitButton And x < hitItem.mBoundsX + hitItem.mBoundsW - kArrowZoneWidth Then
+		        // SplitButton body click — fire ItemPressed, no menu
+		        RaiseEvent ItemPressed(hitItem.Tag)
+		        Me.Refresh
+		      Else
+		        // Arrow click or plain dropdown — open JS menu
+		        mDropdownPendingItem = hitItem
+		        ShowDropdownMenu(hitItem, x, y)
+		      End If
 		    Else
 		      If hitItem.IsToggle Then
 		        hitItem.IsToggleActive = Not hitItem.IsToggleActive
@@ -470,15 +477,19 @@ Inherits WebCanvas
 		        DrawSmallButton(g, item)
 		      Case 2
 		        DrawDropdownButton(g, item)
+		      Case 3
+		        DrawCheckBoxItem(g, item)
+		      Case 4
+		        // Separator — no rendering
 		      Else
 		        DrawLargeButton(g, item)
 		      End Select
 		    Next
 
 		    g.DrawingColor = cGroupLabelText
-		    g.FontSize = 11
+		    g.FontSize = 10
 		    g.Bold = False
-		    Var labelW As Double = MeasureTextWidth(group.Caption, 11, False)
+		    Var labelW As Double = MeasureTextWidth(group.Caption, 10, False)
 		    Var labelX As Double = group.mBoundsX + (group.mBoundsW - labelW) / 2
 		    Var labelY As Double = group.mBoundsY + group.mBoundsH - 3
 		    g.DrawText(group.Caption, labelX, labelY)
@@ -1081,6 +1092,15 @@ Inherits WebCanvas
 	#tag EndConstant
 
 	#tag Constant, Name = kDoubleClickUs, Type = Double, Dynamic = False, Default = \"400000", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = kItemTypeCheckBox, Type = Double, Dynamic = False, Default = \"3", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = kItemTypeSeparator, Type = Double, Dynamic = False, Default = \"4", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = kArrowZoneWidth, Type = Double, Dynamic = False, Default = \"24", Scope = Private
 	#tag EndConstant
 
 	#tag ViewBehavior
