@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Full Control Set + Release
-status: in_progress
-last_updated: "2026-04-21T06:33:00Z"
+status: unknown
+last_updated: "2026-04-21T06:43:00Z"
 progress:
   total_phases: 8
   completed_phases: 2
   total_plans: 12
-  completed_plans: 10
-  percent: 83
+  completed_plans: 12
+  percent: 100
 ---
 
 milestone: v1.0
@@ -33,7 +33,7 @@ See: .planning/PROJECT.md (updated 2026-04-20)
 | 4 | Desktop Keyboard | ✓ Complete | — |
 | **5** | **Desktop Complete Control Set** | **✓ Complete (4/4)** | 4 |
 | 6 | Designer v2.0 | In Progress (5/5) | 5 |
-| 7 | Web Phase 5 | In Progress (1/5) | 5 |
+| 7 | Web Phase 5 | In Progress (2/5) | 5 |
 | 8 | Library v1.0 Release | Planned | 0 |
 
 ## Key Decisions
@@ -80,3 +80,5 @@ See: .planning/PROJECT.md (updated 2026-04-20)
 2026-04-20T18:40:00Z — Completed 06-05-PLAN.md. Version strings bumped from 1.0.0 to 2.0.0 in all four locations: StatusBar Text, AboutBox CopyrightLabel, GenerateCode header comment, BuildJSON root.Value("version"). Also bumped LoadSampleRibbon sample JSON from "1.0" to "2.0" for schema consistency (Rule 2 auto-fix). Commit 5dcaa57. REQ-608 complete.
 
 2026-04-21T06:31:42Z — Completed 07-01-PLAN.md. Added IsSplitButton As Boolean = False property to web/XjRibbonItem.xojo_code, inserted after IsToggleActive and before mMenuItems. No KeyTip added (web skips Phase 4 keyboard nav). File grew from 72 to 77 lines. Commit d5559e7. REQ-701 complete.
+
+2026-04-21T06:43:00Z — Completed 07-02-PLAN.md. Added three factory methods to web/XjRibbonGroup.xojo_code: AddSplitButton (ItemType=2, IsSplitButton=True), AddCheckBox (ItemType=3, IsToggle=True, IsToggleActive=initialState, default False), AddSeparator Sub (ItemType=4 only). All inserted after AddDropdownButton, before #tag Property section. File grew from 79 to 112 lines. Commits 8613812, 0f94a52, ff7a031. REQ-705 complete.

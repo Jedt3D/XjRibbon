@@ -89,13 +89,13 @@ Plans:
 ### Phase 7: Web Phase 5
 
 **Goal:** Port desktop Phase 5 control types (CheckBox, SplitButton, Separator) to the WebCanvas ribbon library.
-**Status:** In Progress (1/3 plans complete)
+**Status:** In Progress (2/3 plans complete)
 **Depends on:** Phase 5
 **Plans:** 3 plans
 
 Plans:
 - [x] 07-01-PLAN.md — Add IsSplitButton property to web XjRibbonItem
-- [ ] 07-02-PLAN.md — Add AddSplitButton, AddCheckBox, AddSeparator factory methods to web XjRibbonGroup
+- [x] 07-02-PLAN.md — Add AddSplitButton, AddCheckBox, AddSeparator factory methods to web XjRibbonGroup
 - [ ] 07-03-PLAN.md — All canvas changes: constants, DrawCheckBoxItem, layout, draw dispatch, SplitButton Pressed dispatch, visual polish
 
 #### Web Adaptations
