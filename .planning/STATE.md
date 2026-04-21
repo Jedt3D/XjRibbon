@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Full Control Set + Release
-status: ready_to_plan
-last_updated: "2026-04-20T18:29:44.685Z"
+status: in_progress
+last_updated: "2026-04-21T06:33:00Z"
 progress:
   total_phases: 8
-  completed_phases: 3
-  total_plans: 9
-  completed_plans: 9
-  percent: 38
+  completed_phases: 2
+  total_plans: 12
+  completed_plans: 10
+  percent: 83
 ---
 
 milestone: v1.0
@@ -33,7 +33,7 @@ See: .planning/PROJECT.md (updated 2026-04-20)
 | 4 | Desktop Keyboard | ✓ Complete | — |
 | **5** | **Desktop Complete Control Set** | **✓ Complete (4/4)** | 4 |
 | 6 | Designer v2.0 | In Progress (5/5) | 5 |
-| 7 | Web Phase 5 | Planned | 0 |
+| 7 | Web Phase 5 | In Progress (1/5) | 5 |
 | 8 | Library v1.0 Release | Planned | 0 |
 
 ## Key Decisions
@@ -78,3 +78,5 @@ See: .planning/PROJECT.md (updated 2026-04-20)
 2026-04-20T18:30:00Z — Completed 06-04-PLAN.md. GenerateCode item dispatch restructured from If/End If to Select Case with Case blocks for all 5 item types: splitbutton (AddSplitButton + menu loop), toggle (AddLargeButton + .IsToggle = True + conditional .IsToggleActive = True), checkbox (conditional Var/Call form of AddCheckBox). Case "large","small" unchanged — no regression. Commit d08dd44. REQ-607 complete.
 
 2026-04-20T18:40:00Z — Completed 06-05-PLAN.md. Version strings bumped from 1.0.0 to 2.0.0 in all four locations: StatusBar Text, AboutBox CopyrightLabel, GenerateCode header comment, BuildJSON root.Value("version"). Also bumped LoadSampleRibbon sample JSON from "1.0" to "2.0" for schema consistency (Rule 2 auto-fix). Commit 5dcaa57. REQ-608 complete.
+
+2026-04-21T06:31:42Z — Completed 07-01-PLAN.md. Added IsSplitButton As Boolean = False property to web/XjRibbonItem.xojo_code, inserted after IsToggleActive and before mMenuItems. No KeyTip added (web skips Phase 4 keyboard nav). File grew from 72 to 77 lines. Commit d5559e7. REQ-701 complete.

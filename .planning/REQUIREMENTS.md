@@ -51,7 +51,8 @@
 
 ## Phase 7: Web Phase 5 — Control Set Parity
 
-- [ ] REQ-701: Web `XjRibbonItem` gains `IsSplitButton As Boolean` property
+- [x] REQ-701
+: Web `XjRibbonItem` gains `IsSplitButton As Boolean` property
 - [ ] REQ-702: Web SplitButton hit-test and rendering mirrors desktop Phase 5
 - [ ] REQ-703: Web `DrawCheckBoxItem` uses `g.FillRoundRectangle(x, y, w, h, 3)` (single corner param)
 - [ ] REQ-704: Web `kItemTypeCheckBox = 3` and `kItemTypeSeparator = 4` added
