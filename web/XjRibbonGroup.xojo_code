@@ -76,6 +76,14 @@ Protected Class XjRibbonGroup
 		End Function
 	#tag EndMethod
 
+	#tag Method, Flags = &h0
+		Sub AddSeparator()
+		  Var item As New XjRibbonItem
+		  item.ItemType = 4
+		  mItems.Add(item)
+		End Sub
+	#tag EndMethod
+
 	#tag Property, Flags = &h0
 		Caption As String
 	#tag EndProperty
