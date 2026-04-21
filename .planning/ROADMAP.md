@@ -91,18 +91,25 @@ Plans:
 **Goal:** Port desktop Phase 5 control types (CheckBox, SplitButton, Separator) to the WebCanvas ribbon library.
 **Status:** Planned
 **Depends on:** Phase 5
+**Plans:** 3 plans
+
+Plans:
+- [ ] 07-01-PLAN.md — Add IsSplitButton property to web XjRibbonItem
+- [ ] 07-02-PLAN.md — Add AddSplitButton, AddCheckBox, AddSeparator factory methods to web XjRibbonGroup
+- [ ] 07-03-PLAN.md — All canvas changes: constants, DrawCheckBoxItem, layout, draw dispatch, SplitButton Pressed dispatch, visual polish
 
 #### Web Adaptations
 
-- `DrawCheckBoxItem`: `g.FillRoundRectangle(x, y, w, h, 3)` single corner param
-- Hit-test: same 80%/20% split, hover already handled by existing JS mousemove hash injection
+- `DrawCheckBoxItem`: `g.FillRoundRectangle(x, y, w, h, 3)` single corner param (5 args not 6)
+- Hit-test: `kArrowZoneWidth = 24` inline in Pressed event (no mPressedOnArrow needed)
 - No new JS injection required; existing hover infrastructure handles SplitButton
+- 120% scaling throughout: glyph=16, arrowZone=24, icon=38, buttonWidth=67
 
 #### Files to Modify
 
 - `web/XjRibbonItem.xojo_code` — add `IsSplitButton As Boolean`
 - `web/XjRibbonGroup.xojo_code` — add `AddSplitButton`, `AddCheckBox`, `AddSeparator`
-- `web/XjRibbon.xojo_code` — constants, drawing, hit-test, mouse handling
+- `web/XjRibbon.xojo_code` — constants, drawing, hit-test, Pressed dispatch, visual polish
 
 ---
 
