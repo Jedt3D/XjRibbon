@@ -803,23 +803,27 @@ No automated test framework exists. Manual validation checklist for Phase 7:
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **CheckBox glyph size 16 vs 13:** The DEV_PLAN says "draw a 13x13 rounded rect border"
    (from the desktop spec). For the web at 120% scale, 16 is the natural value. Since no
    explicit web glyph size is specified in the requirements, 16 is recommended — consistent
    with all other web constants being ~1.2x desktop values.
+   RESOLVED: Use glyph size 16 throughout web DrawCheckBoxItem.
 
 2. **SplitButton body zone threshold:** Desktop uses `kArrowZoneWidth` (a fixed pixel width
    from the right edge) rather than the 80% percentage described in the DEV_PLAN. The actual
    desktop implementation uses `hitItem.mBoundsX + hitItem.mBoundsW - kArrowZoneWidth`
    as the threshold. This is cleaner than a percentage. Web should use the same approach
    with `kArrowZoneWidth = 24`.
+   RESOLVED: Use `kArrowZoneWidth = 24` (20 × 1.2) and fixed-width threshold in Pressed event.
 
 3. **DrawLargeButton multi-line caption:** Desktop Phase 5 added multi-line caption support
    (split on `Chr(10)`) to DrawLargeButton. Web DrawLargeButton does not have this. Phase 7
    can add the SplitButton text centering fix without adding full multi-line support (it's
    a separate, non-required feature for Phase 7).
+   RESOLVED: Include full multi-line + visual polish parity per user request — implement
+   Chr(10) split, vertical centering, right-align for SplitButton, 1px line gap.
 
 ---
 
