@@ -51,6 +51,18 @@ Protected Class XjRibbonGroup
 		End Function
 	#tag EndMethod
 
+	#tag Method, Flags = &h0
+		Function AddSplitButton(caption As String, tag As String) As XjRibbonItem
+		  Var item As New XjRibbonItem
+		  item.Caption = caption
+		  item.Tag = tag
+		  item.ItemType = 2
+		  item.IsSplitButton = True
+		  mItems.Add(item)
+		  Return item
+		End Function
+	#tag EndMethod
+
 	#tag Property, Flags = &h0
 		Caption As String
 	#tag EndProperty
