@@ -41,6 +41,10 @@ Protected Class XjRibbonItem
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
+		IsSplitButton As Boolean = False
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
 		mMenuItems() As WebMenuItem
 	#tag EndProperty
 
