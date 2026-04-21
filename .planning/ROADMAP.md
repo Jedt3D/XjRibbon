@@ -14,7 +14,7 @@ Ship a complete MS Office–style ribbon library for Xojo covering every control
 - [x] **Phase 4: Desktop Keyboard** — Toggle buttons, keyboard navigation (KeyTips)
 - [x] **Phase 5: Desktop Complete Control Set** — SplitButton, CheckBox item, Separator item
 - [x] **Phase 6: Designer v2.0** — New control types in designer + code gen (5/5 plans complete)
-- [ ] **Phase 7: Web Phase 5** — CheckBox, SplitButton, Separator parity on Web
+- [x] **Phase 7: Web Phase 5** — CheckBox, SplitButton, Separator parity on Web
 - [ ] **Phase 8: Library v1.0 Release** — Package, README, distribution
 
 ---
@@ -89,7 +89,7 @@ Plans:
 ### Phase 7: Web Phase 5
 
 **Goal:** Port desktop Phase 5 control types (CheckBox, SplitButton, Separator) to the WebCanvas ribbon library.
-**Status:** In Progress (3/3 plans complete — awaiting human verification checkpoint)
+**Status:** Complete (3/3 plans complete — human verification passed)
 **Depends on:** Phase 5
 **Plans:** 3 plans
 
