@@ -115,16 +115,25 @@ Plans:
 
 ### Phase 8: Library v1.0 Release
 
-**Goal:** Package XjRibbon for distribution with updated README, doc comments, version tag, and example project.
-**Status:** Planned
+**Goal:** Package XjRibbon for distribution with updated README, doc comments, and v1.0.0 git tag.
+**Status:** In Progress (0/4 plans complete)
 **Depends on:** Phase 7
+**Plans:** 4 plans
 
-#### Deliverables
+Plans:
+- [ ] 08-01-PLAN.md — Full GA-quality English README with all 7 control types, API Reference, screenshot placeholders
+- [ ] 08-02-PLAN.md — Doc comments on all public methods/properties in desktop/ and web/ library files
+- [ ] 08-03-PLAN.md — Complete Thai translation (README_TH.md) — same structure as English README
+- [ ] 08-04-PLAN.md — v1.0.0 git tag on main branch + push to origin
 
-- Updated README covering Desktop, Web, Designer with code examples for all control types
-- Public API doc comments throughout
-- Example project demonstrating all 7 control types (Large, Small, Toggle, Dropdown, SplitButton, CheckBox, Separator)
-- Git tag `v1.0.0` on main branch
+#### Files to Modify
+
+- `README.md` — full GA rewrite covering Desktop, Web, Designer, all 7 control types
+- `README_TH.md` — new Thai translation (bilingual release)
+- `desktop/XjRibbonGroup.xojo_code` — doc comments on factory methods
+- `desktop/XjRibbonItem.xojo_code` — doc comments on public properties
+- `web/XjRibbonGroup.xojo_code` — doc comments on factory methods
+- `web/XjRibbonItem.xojo_code` — doc comments on public properties
 
 ---
 
