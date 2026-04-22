@@ -1,191 +1,182 @@
 # XjRibbon
 
-A Microsoft Office-style ribbon toolbar component for **Xojo 2025**, supporting both Desktop and Web platforms. Includes a standalone visual designer for building ribbon layouts and generating Xojo source code.
+[screenshot](full ribbon with all 7 control types visible — Home tab showing Large/Small/Toggle buttons, View tab showing SplitButton + CheckBox items + Separator)
 
-![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)
+> MS Office-style ribbon toolbar for Xojo Desktop and Web.
 
 ## Features
 
-- **Tab-based navigation** with active/hover states
-- **Three button types:** Large (icon + caption), Small (stacked columns of 3), Dropdown (with popup menu)
-- **Contextual tabs** that show/hide by context (e.g., "Table Tools", "Picture Tools")
-- **Collapse/Expand** via double-click or chevron toggle
-- **Dark mode** support with automatic color adaptation
-- **Icon support** with HiDPI-aware rendering and placeholder fallback
-- **Per-item tooltips** and disabled states
-- **Toggle buttons** with active highlight (Bold/Italic style)
-- **Keyboard navigation** with KeyTip badges (Desktop only)
-- **Visual Designer** for building ribbon structures and generating code
+- 7 control types: Large Button, Small Button, Toggle Button, Dropdown, SplitButton, CheckBox, Separator
+- Desktop (DesktopCanvas) and Web (WebCanvas) — identical API
+- Dark mode, HiDPI, keyboard navigation (KeyTips) on Desktop
+- Visual designer with code generator
 
-![Screenshot](screenshot.jpg)
+## Requirements
 
-## Project Structure
+- Xojo 2024r3 or later
+- macOS, Windows, or Linux (Desktop); any web browser (Web)
 
-```
-XjRibbon/
-├── desktop/          Desktop (DesktopCanvas) ribbon component
-├── web/              Web (WebCanvas) ribbon component
-├── designer/         Visual ribbon builder tool
-├── LESSONS_LEARNED.md
-└── LICENSE
-```
+## Quick Start (Desktop)
 
-## Desktop
+[screenshot](ribbon running in the demo app — Home tab active)
 
-The desktop implementation is a `DesktopCanvas` subclass with full rendering, layout, and event handling.
+```xojo
+// 1. Add XjRibbon canvas to your window (Height = 122)
+// 2. In Opening event:
 
-### Quick Start
-
-Drop `XjRibbon` (canvas), `XjRibbonTab`, `XjRibbonGroup`, and `XjRibbonItem` into your project, then configure in the window's `Opening` event:
-
-```vb
 Var homeTab As XjRibbonTab = XjRibbon1.AddTab("Home")
+homeTab.KeyTip = "H"
 
 Var clipGroup As XjRibbonGroup = homeTab.AddNewGroup("Clipboard")
 Call clipGroup.AddLargeButton("Paste", "clipboard.paste")
 Call clipGroup.AddSmallButton("Cut", "clipboard.cut")
 Call clipGroup.AddSmallButton("Copy", "clipboard.copy")
-
-Var fontGroup As XjRibbonGroup = homeTab.AddNewGroup("Font")
-Var boldItem As XjRibbonItem = fontGroup.AddSmallButton("Bold", "font.bold")
-boldItem.IsToggle = True
 ```
 
-### Events
+Handle events in XjRibbon1:
+```xojo
+Sub ItemPressed(tag As String)
+  MessageBox "Pressed: " + tag
+End Sub
 
-| Event | Description |
-|-------|-------------|
-| `ItemPressed(tag As String)` | Fired when a button is clicked |
-| `DropdownMenuAction(itemTag, menuItemTag)` | Fired when a dropdown menu item is selected |
-| `CollapseStateChanged(isCollapsed As Boolean)` | Fired when the ribbon collapses or expands |
+Sub DropdownMenuAction(itemTag As String, menuItemTag As String)
+  MessageBox itemTag + " → " + menuItemTag
+End Sub
+```
+
+## Quick Start (Web)
+
+[screenshot](web ribbon in browser — same layout as desktop)
+
+Same API — add XjRibbon to your WebPage instead of a DesktopWindow.
+
+## Control Types
+
+[screenshot](all 7 control types labeled — View tab with SplitButton, CheckBox rows, Separator gap visible)
+
+| Type | Method | Description |
+|------|--------|-------------|
+| Large Button | `group.AddLargeButton(caption, tag)` | 32px icon + label below, full group height |
+| Small Button | `group.AddSmallButton(caption, tag)` | 16px icon + label right, stacks 3-per-column |
+| Toggle Button | `group.AddLargeButton(caption, tag)` + `.IsToggle = True` | Pressed/active state |
+| Dropdown Button | `group.AddDropdownButton(caption, tag)` + `.AddMenuItem(...)` | Opens popup menu |
+| SplitButton | `group.AddSplitButton(caption, tag)` + `.AddMenuItem(...)` | Body fires ItemPressed; arrow opens menu |
+| CheckBox | `group.AddCheckBox(caption, tag, initialChecked)` | ☐/☑ glyph with label |
+| Separator | `group.AddSeparator()` | Visual gap between control clusters |
+
+## API Reference
+
+### XjRibbon (Canvas)
+
+#### Tabs
+```xojo
+Function AddTab(caption As String) As XjRibbonTab
+Function AddContextualTab(caption As String, contextGroup As String, accentColor As Color) As XjRibbonTab
+Sub ShowContextualTabs(contextGroup As String)
+Sub HideContextualTabs(contextGroup As String)
+Sub SelectTab(index As Integer)
+```
+
+#### Items
+```xojo
+Function GetToggleState(tag As String) As Boolean
+Sub SetToggleState(tag As String, value As Boolean)
+Sub SetCollapsed(value As Boolean)
+Function IsCollapsed() As Boolean
+Sub Clear()
+```
+
+#### Events
+```xojo
+Event ItemPressed(tag As String)
+Event DropdownMenuAction(itemTag As String, menuItemTag As String)
+Event CollapseStateChanged(isCollapsed As Boolean)
+```
+
+#### Constants
+```xojo
+kXjRibbonVersion As String  // "1.0.0"
+```
+
+### XjRibbonTab
+```xojo
+Function AddNewGroup(caption As String) As XjRibbonGroup
+Property KeyTip As String
+```
+
+### XjRibbonGroup
+```xojo
+Function AddLargeButton(caption As String, tag As String) As XjRibbonItem
+Function AddLargeButton(caption As String, tag As String, icon As Picture) As XjRibbonItem
+Function AddSmallButton(caption As String, tag As String) As XjRibbonItem
+Function AddDropdownButton(caption As String, tag As String) As XjRibbonItem
+Function AddSplitButton(caption As String, tag As String) As XjRibbonItem
+Function AddCheckBox(caption As String, tag As String, initialChecked As Boolean = False) As XjRibbonItem
+Sub AddSeparator()
+```
+
+### XjRibbonItem
+```xojo
+Property Icon As Picture
+Property TooltipText As String
+Property IsEnabled As Boolean
+Property IsToggle As Boolean
+Property IsToggleActive As Boolean
+Property IsSplitButton As Boolean
+Property KeyTip As String
+Sub AddMenuItem(caption As String, tag As String)
+```
+
+## Advanced Topics
+
+### Multi-line Button Labels
+Use Chr(10) to split a label across two lines:
+```xojo
+Var navPane As XjRibbonItem = group.AddSplitButton("Navigation" + Chr(10) + "pane", "nav")
+```
+
+### Icons
+```xojo
+Var btn As XjRibbonItem = group.AddLargeButton("Save", "file.save")
+btn.Icon = SaveIcon  // 32×32 Picture
+```
 
 ### Contextual Tabs
-
-```vb
-Var tableTab As XjRibbonTab = XjRibbon1.AddContextualTab("Design", "Table Tools", Color.RGB(0, 128, 0))
-
-' Show/hide by context
-XjRibbon1.ShowContextualTabs("Table Tools")
-XjRibbon1.HideContextualTabs("Table Tools")
+[screenshot](contextual tab with accent color visible — Table Tools style)
+```xojo
+Var tableTab As XjRibbonTab = XjRibbon1.AddContextualTab("Table Tools", "table", Color.RGB(68, 114, 196))
+// Show when table is selected:
+XjRibbon1.ShowContextualTabs("table")
 ```
 
-### Keyboard Navigation (Desktop Only)
-
-- **Ctrl+Option** (macOS) / **Alt** (Windows) or **F6** activates KeyTip mode
-- Press the displayed letter to navigate to a tab or activate a button
-- **Escape** backs out one level or dismisses KeyTips
-- **Arrow keys** navigate between tabs or items
-
-### Toggle Buttons
-
-```vb
-Var state As Boolean = XjRibbon1.GetToggleState("font.bold")
-XjRibbon1.SetToggleState("font.bold", True)
+### KeyTips (Desktop only)
+```xojo
+homeTab.KeyTip = "H"
+pasteItem.KeyTip = "V"
+// Press Alt to reveal badges; type key to activate
 ```
 
-## Web
+### Dark Mode
+XjRibbon detects the system dark mode automatically. No code required.
 
-The web implementation mirrors the desktop version using `WebCanvas`, with ~95% identical rendering and layout logic.
+## Web Notes
 
-### Key Differences from Desktop
-
-| Aspect | Desktop | Web |
-|--------|---------|-----|
-| Base class | `DesktopCanvas` | `WebCanvas` |
-| Mouse tracking | Native events | JavaScript injection |
-| Text measurement | `g.TextWidth()` | `Picture.Graphics` workaround |
-| Transparency | `g.Transparency` | Color alpha channel |
-| Scaling | 100% | 120% (optimized for web controls) |
-| Dropdown menus | `DesktopMenuItem.PopUp` | Event-based |
-| Keyboard nav | Full KeyTip support | Not implemented |
-
-### Web Quick Start
-
-Same API as desktop, configured in the page's `Shown` event:
-
-```vb
-Var homeTab As XjRibbonTab = XjRibbon1.AddTab("Home")
-Var clipGroup As XjRibbonGroup = homeTab.AddNewGroup("Clipboard")
-Call clipGroup.AddLargeButton("Paste", "clipboard.paste")
-```
+The Web library shares the same API with these constraints:
+- No KeyTip keyboard navigation (web is mouse-driven)
+- Hover via JS mousemove injection (automatic — no setup needed)
+- Apply 120% scaling in your layout (canvas height = 146 instead of 122)
 
 ## Designer
 
-A standalone Xojo Desktop application for visually building ribbon structures.
+[screenshot](XjRibbon Designer v2.0.0 — showing tree structure with all 7 control types, inspector panel, and Copy Code button)
 
-### Workflow
+**XjRibbon Designer v2.0.0** — visual ribbon builder with code generator.
 
-1. **Add** tabs, groups, and buttons via the toolbar popup menu
-2. **Edit** properties in the inspector panel (Caption, Tag, Type, Tooltip, Menu Items)
-3. **Reorder** items by dragging in the hierarchy list
-4. **Save** as `.ribbon` JSON file for future editing
-5. **Generate** Xojo source code and copy to clipboard
+Supports all 7 control types. Build your ribbon visually, then click **Copy Code** to paste Xojo code directly into your project's Opening/Shown event.
 
-### Code Generation
-
-The designer produces ready-to-paste Xojo code for either the `Opening` (Desktop) or `Shown` (Web) event. Variable names are auto-sanitized to valid Xojo identifiers with type suffixes.
-
-### File Format
-
-Ribbon definitions are saved as `.ribbon` JSON files:
-
-```json
-{
-  "version": "1.0",
-  "projectType": "desktop",
-  "tabs": [
-    {
-      "caption": "Home",
-      "groups": [
-        {
-          "caption": "Clipboard",
-          "items": [
-            {
-              "caption": "Paste",
-              "tag": "clipboard.paste",
-              "itemType": "large",
-              "isEnabled": true,
-              "tooltipText": "Paste from clipboard"
-            }
-          ]
-        }
-      ]
-    }
-  ]
-}
-```
-
-## Architecture
-
-```
-XjRibbon (Canvas subclass - controller + renderer)
- └── mTabs() As XjRibbonTab
-      └── mGroups() As XjRibbonGroup
-           └── mItems() As XjRibbonItem
-```
-
-- **XjRibbon** handles all rendering, layout computation, hit-testing, and event dispatch
-- **XjRibbonTab** holds caption, groups, contextual properties, and KeyTip assignment
-- **XjRibbonGroup** holds caption and items, with convenience methods for adding buttons
-- **XjRibbonItem** holds caption, tag, type, icon, tooltip, toggle state, and menu items
-
-Layout is computed in a single pass during `Paint`, storing bounds on each object for hit-testing.
-
-## Color System
-
-Colors adapt automatically based on `Color.IsDarkMode`:
-
-- **Light mode:** White backgrounds, gray borders, dark text, blue accents
-- **Dark mode:** Dark gray backgrounds (40-70 range), lighter borders, white text, blue accents
-
-## Requirements
-
-- Xojo 2025r3.1 or later
-- macOS, Windows, or Linux (Desktop)
-- Any modern browser (Web)
+- Save/load `.ribbon` project files
+- Dark mode aware
+- Generates ready-to-run Xojo code for Desktop or Web
 
 ## License
-
-MIT License - Copyright (c) 2026 Worajedt Sitthidumrong <sjedt@3ddaily.com>
-
-See [LICENSE](LICENSE) for details.
+MIT — see [LICENSE](LICENSE)
