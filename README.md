@@ -1,5 +1,7 @@
 # XjRibbon
 
+🇺🇸 [English] | 🇹🇭 [ภาษาไทย](README_TH.md)
+
 [screenshot](full ribbon with all 7 control types visible — Home tab showing Large/Small/Toggle buttons, View tab showing SplitButton + CheckBox items + Separator)
 
 > MS Office-style ribbon toolbar for Xojo Desktop and Web.
