@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Full Control Set + Release
 status: ready_to_plan
-last_updated: "2026-04-21T07:20:00Z"
+last_updated: "2026-04-22T08:43:15Z"
 progress:
   total_phases: 8
   completed_phases: 4
-  total_plans: 12
-  completed_plans: 12
-  percent: 50
+  total_plans: 16
+  completed_plans: 13
+  percent: 53
 ---
 
 milestone: v1.0
@@ -21,7 +21,7 @@ milestone: v1.0
 See: .planning/PROJECT.md (updated 2026-04-20)
 
 **Core value:** Drop-in ribbon toolbar covering all MS Office control types for Xojo Desktop and Web, with a visual designer.
-**Current focus:** Phase 6 — Designer v2.0
+**Current focus:** Phase 8 — Library v1.0 Release
 
 ## Current Status
 
@@ -34,7 +34,7 @@ See: .planning/PROJECT.md (updated 2026-04-20)
 | **5** | **Desktop Complete Control Set** | **✓ Complete (4/4)** | 4 |
 | 6 | Designer v2.0 | In Progress (5/5) | 5 |
 | 7 | Web Phase 5 | ✓ Complete (3/3) | 3 |
-| 8 | Library v1.0 Release | Planned | 0 |
+| **8** | **Library v1.0 Release** | **In Progress (1/4)** | 4 |
 
 ## Key Decisions
 
@@ -84,3 +84,5 @@ See: .planning/PROJECT.md (updated 2026-04-20)
 2026-04-21T06:43:00Z — Completed 07-02-PLAN.md. Added three factory methods to web/XjRibbonGroup.xojo_code: AddSplitButton (ItemType=2, IsSplitButton=True), AddCheckBox (ItemType=3, IsToggle=True, IsToggleActive=initialState, default False), AddSeparator Sub (ItemType=4 only). All inserted after AddDropdownButton, before #tag Property section. File grew from 79 to 112 lines. Commits 8613812, 0f94a52, ff7a031. REQ-705 complete.
 
 2026-04-21T07:20:00Z — Completed 07-03-PLAN.md. All 9 canvas changes applied to web/XjRibbon.xojo_code: constants kItemTypeCheckBox=3/kItemTypeSeparator=4/kArrowZoneWidth=24, Pressed event inline SplitButton hit-test, DrawGroups Case 3+Case 4 dispatch, group label font 11->10, LayoutTabs CheckBox batch + Separator bump + Else auto-expand, DrawDropdownButton SplitButton separator+chevron, DrawLargeButton drawBodyW+belowY+multi-line+SplitButton right-align, DrawCheckBoxItem new Private Sub. Phase 5 demo added to MainWebPage Shown event. Commits b2bb945, c220d55, 0cc0ac6. REQ-702, REQ-703, REQ-704 complete. Human verification PASSED — all 8 verification items confirmed in browser.
+
+2026-04-22T08:43:15Z — Completed 08-01-PLAN.md. Full GA-quality English README.md written at repo root: 7 control types in Control Types table, Quick Start for Desktop and Web, complete API Reference for all four classes (XjRibbon, XjRibbonTab, XjRibbonGroup, XjRibbonItem), Advanced Topics, Web Notes with 120% scaling, Designer v2.0.0 section, 6 screenshot placeholders. Commit 6ce2e9f. REQ-801, REQ-804 complete.

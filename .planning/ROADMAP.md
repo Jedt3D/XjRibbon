@@ -116,12 +116,12 @@ Plans:
 ### Phase 8: Library v1.0 Release
 
 **Goal:** Package XjRibbon for distribution with updated README, doc comments, and v1.0.0 git tag.
-**Status:** In Progress (0/4 plans complete)
+**Status:** In Progress (1/4 plans complete)
 **Depends on:** Phase 7
 **Plans:** 4 plans
 
 Plans:
-- [ ] 08-01-PLAN.md — Full GA-quality English README with all 7 control types, API Reference, screenshot placeholders
+- [x] 08-01-PLAN.md — Full GA-quality English README with all 7 control types, API Reference, screenshot placeholders
 - [ ] 08-02-PLAN.md — Doc comments on all public methods/properties in desktop/ and web/ library files
 - [ ] 08-03-PLAN.md — Complete Thai translation (README_TH.md) — same structure as English README
 - [ ] 08-04-PLAN.md — v1.0.0 git tag on main branch + push to origin
