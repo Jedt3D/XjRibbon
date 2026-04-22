@@ -63,4 +63,5 @@
 - [ ] REQ-801: README updated covering Desktop, Web, and Designer with code examples
 - [ ] REQ-802: All public API documented with doc comments
 - [ ] REQ-803: Version tagged v1.0.0 on main branch
-- [ ] REQ-804: Example project included demonstrating all control types
+- [ ] REQ-804: Example project included demonstrating all control types (existing desktop/web demo projects qualify — referenced from README)
+- [ ] REQ-805: Thai translation README_TH.md delivered at repository root
