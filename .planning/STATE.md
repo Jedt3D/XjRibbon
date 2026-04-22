@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: Full Control Set + Release
 status: in_progress
-last_updated: "2026-04-22T08:46:33Z"
+last_updated: "2026-04-22T08:54:00Z"
 progress:
   total_phases: 8
   completed_phases: 3
   total_plans: 16
-  completed_plans: 14
-  percent: 88
+  completed_plans: 15
+  percent: 94
 ---
 
 milestone: v1.0
@@ -34,7 +34,7 @@ See: .planning/PROJECT.md (updated 2026-04-20)
 | **5** | **Desktop Complete Control Set** | **✓ Complete (4/4)** | 4 |
 | 6 | Designer v2.0 | In Progress (5/5) | 5 |
 | 7 | Web Phase 5 | ✓ Complete (3/3) | 3 |
-| **8** | **Library v1.0 Release** | **In Progress (2/4)** | 4 |
+| **8** | **Library v1.0 Release** | **In Progress (3/4)** | 4 |
 
 ## Key Decisions
 
@@ -90,3 +90,5 @@ See: .planning/PROJECT.md (updated 2026-04-20)
 2026-04-22T08:43:15Z — Completed 08-01-PLAN.md. Full GA-quality English README.md written at repo root: 7 control types in Control Types table, Quick Start for Desktop and Web, complete API Reference for all four classes (XjRibbon, XjRibbonTab, XjRibbonGroup, XjRibbonItem), Advanced Topics, Web Notes with 120% scaling, Designer v2.0.0 section, 6 screenshot placeholders. Commit 6ce2e9f. REQ-801, REQ-804 complete.
 
 2026-04-22T08:46:33Z — Completed 08-02-PLAN.md. Xojo-style // doc comments added to all public factory methods in XjRibbonGroup and all key properties in XjRibbonItem, both desktop/ and web/ files. 7 method comments per Group file, 9 comments in desktop Item (AddMenuItem + 8 properties), 8 in web Item (no KeyTip). No logic changed. Commits 8de4df7, 43f7d59. REQ-802 complete.
+
+2026-04-22T08:54:00Z — Completed 08-03-PLAN.md. README_TH.md created at repo root — complete Thai translation of README.md. All 9 section headings translated, all 13 xojo code blocks kept verbatim in English, all 6 screenshot placeholders identical to README.md. Language switcher links added to top of both README.md and README_TH.md. Commit 27fb7b0. REQ-805 complete.
